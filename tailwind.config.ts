@@ -12,6 +12,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        kanit: ['"Kanit"', 'sans-serif'], // Add Kanit font here
+      },
     },
   },
   plugins: [],
