@@ -1,11 +1,15 @@
 "use client";
 import TextField from "@mui/material/TextField";
+import { GoogleLogin } from '@react-oauth/google';
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from 'react-hot-toast';
 
 export default function Signup() {
+
+  const router=useRouter()
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,6 +55,30 @@ export default function Signup() {
     return isValid;
   };
 
+  const handleGoogleLoginSuccess = async (credentialResponse:any) => {
+    const idToken = credentialResponse.credential; // Extract ID token
+    console.log('ID Token:', idToken);
+
+    try {
+       await axios.post('http://localhost:5713/google-signup', { idToken });
+
+      toast.success('User registered successfully!', {
+        duration: 2000,   
+        position: 'top-right',
+        style: {
+          background: '#4caf50',   
+          color: '#fff',  
+        },
+      });
+      setTimeout(()=>{
+        router.push('/login')
+      },2000)
+      
+    } catch (error) {
+      console.error('Error sending token to backend:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -76,20 +104,15 @@ export default function Signup() {
         password,
       });
        
-      toast.success("Signup successful!", {
-        duration: 3000,  
-        position: 'top-right',
-        style: {
-            background: '#333',  
-            color: '#fff',  
-        },
-    });
+     
+      router.push('/email-sent');
+        
+      
 
       setFullName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-      // setErrors({});
 
     } catch (error:any) {
       if(error.response && error.response.status==400)
@@ -115,12 +138,28 @@ export default function Signup() {
      }
     }
   };
+  
+
+  
+  const handleGitHubLogin = () => {
+    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;  
+    console.log('github:',clientId);
+    
+    const redirectUri = `http://localhost:5713/auth/github/callback`; // Ensure this matches your backend callback route
+    // Permissions for user info
+    const scope = 'read:user user:email';
+  
+    // Redirect to GitHub's authorization page
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+  };
+  
+
 
   return (
     <div className="min-h-screen bg-[#2A2852] flex items-center justify-center p-4">
       {/* Toast Container */}
 
-      <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl h-[600px] w-full border-black rounded-lg shadow-xl">
+      <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl h-[600px] w-full ">
         {/* Left Section */}
         <div className="flex flex-1 flex-col items-center text-center md:text-left space-y-28 bg-[#2A2852] p-14 rounded-lg">
           <img
@@ -143,22 +182,49 @@ export default function Signup() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name Field */}
             <div className="space-y-2">
-              <TextField
-                id="fullName"
-                label="Full Name"
-                variant="outlined"
-                fullWidth
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                error={!!errors.fullName}
-                helperText={errors.fullName && <span className="text-red-600">{errors.fullName}</span>}
-                InputProps={{
-                  style: { backgroundColor: "white" },
-                }}
-                InputLabelProps={{
-                  style: { color: "darkgray", fontWeight: 400 },
-                }}
-              />
+            <TextField
+            id="fullName"
+            label="Full Name"
+            variant="outlined"
+            fullWidth
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            error={!!errors.fullName}
+            helperText={errors.fullName && <span className="text-red-600">{errors.fullName}</span>}
+            InputProps={{
+              style: {
+                backgroundColor: "transparent",
+                color: "white",  
+              },
+            }}
+            InputLabelProps={{
+              style: { color: "white", fontWeight: 100 }, 
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "gray", // Default border color
+                  borderWidth: "1px", // Reduced border thickness
+                },
+                "&:hover fieldset": {
+                  borderColor: "darkgray", // Border color on hover
+                  borderWidth: "1px", // Keep the border thickness on hover
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "gray", // Border color when focused
+                  borderWidth: "1px", // Keep the border thickness when focused
+                },
+              },
+              "& .MuiInputBase-input": {
+                color: "white", // Input text color
+              },
+              "& .MuiFormHelperText-root": {
+                color: "white", // Helper text color
+              },
+            }}
+          />
+
+
             </div>
 
             {/* Email Field */}
@@ -173,10 +239,35 @@ export default function Signup() {
                 error={!!errors.email}
                 helperText={errors.email && <span className="text-red-600">{errors.email}</span>}
                 InputProps={{
-                  style: { backgroundColor: "white" },
+                  style: {
+                    backgroundColor: "transparent",
+                    color: "white", // Text color set to white
+                  },
                 }}
                 InputLabelProps={{
-                  style: { color: "darkgray", fontWeight: 400 },
+                  style: { color: "white", fontWeight: 100 }, 
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "gray", // Default border color
+                      borderWidth: "1px", // Reduced border thickness
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "darkgray", // Border color on hover
+                      borderWidth: "1px", // Keep the border thickness on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "gray", // Border color when focused
+                      borderWidth: "1px", // Keep the border thickness when focused
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Input text color
+                  },
+                  "& .MuiFormHelperText-root": {
+                    color: "white", // Helper text color
+                  },
                 }}
               />
             </div>
@@ -194,10 +285,35 @@ export default function Signup() {
                 error={!!errors.password}
                 helperText={errors.password && <span className="text-red-600">{errors.password}</span>}
                 InputProps={{
-                  style: { backgroundColor: "white" },
+                  style: {
+                    backgroundColor: "transparent",
+                    color: "white", // Text color set to white
+                  },
                 }}
                 InputLabelProps={{
-                  style: { color: "darkgray", fontWeight: 400 },
+                  style: { color: "white", fontWeight: 100 }, 
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "gray", // Default border color
+                      borderWidth: "1px", // Reduced border thickness
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "darkgray", // Border color on hover
+                      borderWidth: "1px", // Keep the border thickness on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "gray", // Border color when focused
+                      borderWidth: "1px", // Keep the border thickness when focused
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Input text color
+                  },
+                  "& .MuiFormHelperText-root": {
+                    color: "white", // Helper text color
+                  },
                 }}
               />
             </div>
@@ -219,10 +335,35 @@ export default function Signup() {
                   )
                 }
                 InputProps={{
-                  style: { backgroundColor: "white" },
+                  style: {
+                    backgroundColor: "transparent",
+                    color: "white", // Text color set to white
+                  },
                 }}
                 InputLabelProps={{
-                  style: { color: "darkgray", fontWeight: 400 },
+                  style: { color: "white", fontWeight: 100 }, 
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "gray", // Default border color
+                      borderWidth: "1px", // Reduced border thickness
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "darkgray", // Border color on hover
+                      borderWidth: "1px", // Keep the border thickness on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "gray", // Border color when focused
+                      borderWidth: "1px", // Keep the border thickness when focused
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Input text color
+                  },
+                  "& .MuiFormHelperText-root": {
+                    color: "white", // Helper text color
+                  },
                 }}
               />
             </div>
@@ -235,6 +376,23 @@ export default function Signup() {
               Sign Up
             </button>
           </form>
+              {/* Divider */}
+              <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-500"></span>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 text-white bg-[#2A2852]">OR</span>
+            </div>
+          </div>
+
+          {/* Social Login buttons */}
+          <div className="grid grid-cols-2 gap-4">
+            <GoogleLogin onSuccess={handleGoogleLoginSuccess} onError={()=>console.log("signup failed")}/> 
+             <button onClick={handleGitHubLogin} className="bg-white hover:bg-gray-100 text-gray-800 flex items-center justify-center space-x-2 h-[45px] rounded-[2px]">
+              <img src="https://github.com/favicon.ico" alt="GitHub" className="w-auto h-7" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
