@@ -1,5 +1,9 @@
+"use client";
 import Link from "next/link";
+
+
 function HeaderAndLandingHome() {
+const user=null
     return (
       <>
       <div className="relative overflow-x-hidden bg-[radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
@@ -14,12 +18,20 @@ function HeaderAndLandingHome() {
           </div>
           <div className="flex-grow"></div>
           <div className="flex items-center space-x-3 md:mr-3">
-            <button className="text-white h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
-             <Link href="/login">Login</Link>
-            </button>
-            <button className="bg-white text-black h-[32px] rounded w-20 font-extralight text-sm hover:bg-gray-200 transition duration-200">
-            <Link href="/signup">Signup</Link>
-            </button>
+          {user ? (
+              <button className="bg-white text-black h-[32px] rounded w-20 font-extralight text-sm hover:bg-gray-200 transition duration-200">
+                <Link href="/dashboard">Dashboard</Link>
+              </button>
+            ) : (
+              <>
+              <button className="text-white h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
+                <Link href="/login">Login</Link>
+              </button>
+              <button className="bg-white text-black h-[32px] rounded w-20 font-extralight text-sm hover:bg-gray-200 transition duration-200">
+                <Link href="/signup">Signup</Link>
+              </button>
+          </>
+           )}
           </div>
         </div>
   
@@ -97,11 +109,7 @@ function HeaderAndLandingHome() {
 
  
         </div>
-
-
-
-
-
+ 
 
       <div className="w-full h-auto  py-10 flex justify-center items-center">
   <div className="w-[1100px] flex flex-col gap-6">
@@ -160,9 +168,9 @@ function HeaderAndLandingHome() {
         Get Started
       </button>
     </div>
-  </div>
-</div>
-      </div>
+    </div>
+    </div>
+    </div>
 
 
 

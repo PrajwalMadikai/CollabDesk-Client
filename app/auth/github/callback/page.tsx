@@ -1,9 +1,9 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { setUser } from '@/store/slice/userSlice';
 import { useAppDispatch } from '@/store/store';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const GitHubCallback = () => {
     const router = useRouter();
@@ -28,7 +28,7 @@ const GitHubCallback = () => {
 
                 const userData = JSON.parse(decodeURIComponent(data));
                  
-                 dispath(setUser{name:userData.name,avatar:userData.avatar,email:userData.email,_id:userData._id})
+                 dispath(setUser({name:userData.name,avatar:userData.avatar,email:userData.email,_id:userData._id}))
 
                 router.push('/');
             } catch (err: any) {
