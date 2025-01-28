@@ -1,7 +1,5 @@
 'use client';
 
-import { setUser } from '@/store/slice/userSlice';
-import { useAppDispatch } from '@/store/store';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -10,7 +8,6 @@ const GitHubCallback = () => {
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const dispath=useAppDispatch()
 
     useEffect(() => {
         const data = searchParams.get('data');
@@ -28,7 +25,6 @@ const GitHubCallback = () => {
 
                 const userData = JSON.parse(decodeURIComponent(data));
                  
-                 dispath(setUser({name:userData.name,avatar:userData.avatar,email:userData.email,_id:userData._id}))
 
                 router.push('/');
             } catch (err: any) {

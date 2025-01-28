@@ -1,4 +1,6 @@
 "use client";
+import { setUser } from "@/store/slice/userSlice";
+import { AppDispatch } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from "axios";
@@ -6,8 +8,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 
 export default function Home() {
+
+  const dispath=useDispatch<AppDispatch>()
 
   const router=useRouter()
   const [email, setEmail] = useState<string>("");
@@ -53,9 +58,7 @@ export default function Home() {
         });
 
         if (response.status === 200) {
-          
-          console.log('res:',response);
-          
+                    
           toast.success("Login successful!", {
             duration: 2000,
             position: 'top-right',
@@ -64,7 +67,15 @@ export default function Home() {
               color: '#fff',          
             },
           });
-          
+
+          const userData=response.data.user
+          const accessToken=response.data.accessToken
+          const refreshToken=response.data.refreshToken
+          localStorage.setItem('user', JSON.stringify(userData));
+          localStorage.setItem('accessToken', accessToken); 
+
+          dispath(setUser(userData))
+
           setTimeout(()=>{
             router.push('/')
           },2100)
@@ -112,8 +123,8 @@ export default function Home() {
         duration: 2000,
         position: 'top-right',
         style: {
-          background: '#f44336', // Error toast background color
-          color: '#fff',         // Error toast text color
+          background: '#f44336',  
+          color: '#fff',        
         },
       });
     }
@@ -139,19 +150,17 @@ export default function Home() {
   
 
   const handleGitHubLogin = () => {
+
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;  
-    console.log('github:',clientId);
     
     const redirectUri = `http://localhost:5713/auth/github/callback`;  
-    // Permissions for user info
     const scope = 'read:user user:email';
   
-    //GitHub's authorization page
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(0,163,255,0.4)_0,rgba(0,163,255,0.2)_50%,rgba(0,163,255,0)_100%)] flex items-center justify-center p-4">
     <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl h-[600px] w-full">
       
       {/* Left Section: Signup */}
