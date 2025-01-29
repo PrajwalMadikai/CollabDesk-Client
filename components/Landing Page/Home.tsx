@@ -3,12 +3,14 @@
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 function HeaderAndLandingHome() {
 
   const user=useSelector((state:RootState)=>state.user)
+  const router=useRouter()
   const dispath=useDispatch<AppDispatch>()
   
   useEffect(()=>{
@@ -16,8 +18,23 @@ function HeaderAndLandingHome() {
    if(userData)
    {
      dispath(setUser(JSON.parse(userData)))
+      
    }
+
+   
   },[dispath])
+console.log('user:',user);
+
+  const handleDashboard=()=>{
+    console.log("len:",user.workSpaces);
+    
+        if(user.workSpaces.length==0)
+        {
+          router.push('/workspace')
+        }else{
+          router.push('/dashboard')
+        }
+  }
 
     return (
       <>
@@ -70,10 +87,12 @@ function HeaderAndLandingHome() {
   
           {/* Button under Big Text */}
           <div className="text-center mt-5">
-            <button className="bg-blue-500 sm:w-full text-white font-medium rounded-[13px] py-1 px-8 text-base md:text-lg hover:bg-blue-600 transition duration-300 shadow-lg">
-              Get Started
-            </button>
-          </div>
+          <button onClick={handleDashboard} className="bg-transparent hover:bg-blue-600 hover:border-0 border border-gray w-[160px] rounded-[5px] text-[16px] text-white h-10">
+            Get Started
+          </button>
+          
+        </div>
+
   
           {/* Features boxes */}
         <div className="w-full flex flex-wrap justify-center gap-5 mt-10 px-4 sm:px-6 md:px-0">

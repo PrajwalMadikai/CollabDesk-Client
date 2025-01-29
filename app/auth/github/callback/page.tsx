@@ -1,10 +1,14 @@
 'use client';
 
+import { setUser } from '@/store/slice/userSlice';
+import { AppDispatch } from '@/store/store';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 const GitHubCallback = () => {
     const router = useRouter();
+    const dispath=useDispatch<AppDispatch>()
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -24,6 +28,8 @@ const GitHubCallback = () => {
                 }
 
                 const userData = JSON.parse(decodeURIComponent(data));
+                dispath(setUser(userData))
+                 console.log('user data in github:',userData);
                  
 
                 router.push('/');
