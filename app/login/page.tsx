@@ -86,12 +86,19 @@ export default function Home() {
             duration: 3000,
           });
         }
-      } catch (error) {
+      } catch (error:any) {
         console.error("Error during login:", error);
-        toast.error("Error during login", {
-          position:'top-right',
-          duration: 3000,
-        });
+        if (error.response && error.response.data && error.response.data.message === "User not found") {
+          toast.error("User not found. Please check your credentials.", {
+              position: 'top-right',
+              duration: 3000,
+          });
+      } else {
+          toast.error("Error during login", {
+              position: 'top-right',
+              duration: 3000,
+          });
+      }
       }
     }
   };
@@ -152,7 +159,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(0,163,255,0.4)_0,rgba(0,163,255,0.2)_50%,rgba(0,163,255,0)_100%)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(98,51,238,1)_0,rgba(0,0,0,0.8)_50%,rgba(0,0,0,1)_100%)] flex items-center justify-center p-4">
     <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl h-[600px] w-full">
       
       {/* Left Section: Signup */}

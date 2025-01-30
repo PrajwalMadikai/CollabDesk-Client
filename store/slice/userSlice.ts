@@ -8,7 +8,7 @@ interface Workspace {
 
 interface UserState {
   id: string | null;
-  name: string | null;
+  fullname: string | null;
   email: string | null;
   isAuthenticated: boolean;
   workSpaces: Workspace[];
@@ -16,7 +16,7 @@ interface UserState {
 
 const initialState: UserState = {
   id: null,
-  name: null,
+  fullname: null,
   email: null,
   isAuthenticated: false,
   workSpaces:[]
@@ -26,16 +26,16 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<{ id: string; name: string; email: string; workSpaces: Workspace[] }>) {
+    setUser(state, action: PayloadAction<{ id: string; fullname: string; email: string; workSpaces: Workspace[] }>) {
       state.id = action.payload.id;
-      state.name = action.payload.name;
+      state.fullname = action.payload.fullname;
       state.email = action.payload.email;
       state.isAuthenticated = true;
       state.workSpaces = action.payload.workSpaces;  
     },
     clearUser(state) {
       state.id = null;
-      state.name = null;
+      state.fullname = null;
       state.email = null;
       state.isAuthenticated = false;
     },

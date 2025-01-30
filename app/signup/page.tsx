@@ -101,11 +101,12 @@ export default function Signup() {
 
     try {
       
-      
+      const isAdmin=false
       await axios.post("http://localhost:5713/signup", {
         fullName,
         email,
         password,
+        isAdmin
       });
        
      
@@ -207,7 +208,8 @@ export default function Signup() {
 
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(0,163,255,0.4)_0,rgba(0,163,255,0.2)_50%,rgba(0,163,255,0)_100%)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(98,51,238,1)_0,rgba(0,0,0,0.8)_50%,rgba(0,0,0,1)_100%)]
+ flex items-center justify-center p-4">
       
       {/* Toast Container */}
 
