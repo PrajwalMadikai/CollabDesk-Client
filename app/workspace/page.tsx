@@ -1,14 +1,23 @@
 "use client";
+import API from "@/api/handle-token-expire";
+import { RootState } from "@/store/store";
 import { workspaceSchema } from "@/validations/workspace";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 
 export default function CreateWorkspace() {
-  const [loading, setLoading] = useState(false);
 
+  const[spaceName,setName]=useState('')
+  const [loading, setLoading] = useState(false);
+   const route=useRouter()
+  const user=useSelector((state:RootState)=>state.user)
+  const userId=user.id
+  console.log("d",userId);
+  
   const {
     register,
     handleSubmit,
@@ -16,12 +25,22 @@ export default function CreateWorkspace() {
   } = useForm({
     resolver: zodResolver(workspaceSchema),
   });
-
+  const token = localStorage.getItem("accessToken");
   const onSubmit = async () => {
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5713/api/workspace");
+
+      const response = await API.post("http://localhost:5713/workspace/create",{spaceName,userId},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  
+          },
+        }
+      
+      );
       console.log("Success:", response.data);
+      console.log("Success:", response.data.space);
+       route.push('/dashboard')
       console.log("Workspace created successfully!");
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
@@ -55,6 +74,8 @@ export default function CreateWorkspace() {
               type="text"
               {...register("workspaceName")}
               placeholder="Workspace name"
+              value={spaceName}
+              onChange={e=>setName(e.target.value)}
               className="flex-1 bg-transparent p-3 outline-none text-white"
             />
           </div>

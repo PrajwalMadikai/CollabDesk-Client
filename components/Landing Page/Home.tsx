@@ -18,7 +18,6 @@ function HeaderAndLandingHome() {
    if(userData)
    {
      dispath(setUser(JSON.parse(userData)))
-     
    }
 
    
@@ -52,15 +51,15 @@ console.log('user:',user);
           <div className="flex items-center space-x-3 md:mr-3">
           {user.isAuthenticated ? (
               <button className="bg-white text-black h-[32px] rounded w-24 mt-2 font-extralight text-sm hover:bg-gray-200 transition duration-200">
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard" prefetch={true}>Dashboard</Link>
               </button>
             ) : (
               <>
               <button className="text-white h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
-                <Link href="/login">Login</Link>
+                <Link href="/login" prefetch={true}>Login</Link>
               </button>
               <button className="bg-white text-black h-[32px] rounded w-20 font-extralight text-sm hover:bg-gray-200 transition duration-200">
-                <Link href="/signup">Signup</Link>
+                <Link href="/signup" prefetch={true}>Signup</Link>
               </button>
           </>
            )}

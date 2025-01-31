@@ -1,9 +1,9 @@
 "use client";
+import API from "@/api/handle-token-expire";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
-import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -102,7 +102,7 @@ export default function Signup() {
     try {
       
       const isAdmin=false
-      await axios.post("http://localhost:5713/signup", {
+      await API.post("http://localhost:5713/signup", {
         fullName,
         email,
         password,
@@ -150,7 +150,7 @@ export default function Signup() {
     console.log('id token:', idToken);
 
     try {
-      const response = await axios.post('http://localhost:5713/google-signup', { idToken });
+      const response = await API.post('http://localhost:5713/google-signup', { idToken });
       
       toast.success('User registered successfully!', {
         duration: 2000,
