@@ -9,8 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 function HeaderAndLandingHome() {
 
-  const user=useSelector((state:RootState)=>state.user)
   const router=useRouter()
+  const user=useSelector((state:RootState)=>state.user)
   const dispath=useDispatch<AppDispatch>()
   
   useEffect(()=>{
@@ -22,7 +22,7 @@ function HeaderAndLandingHome() {
 
    
   },[dispath])
-console.log('user:',user);
+console.log('user home:',user);
 
   const handleDashboard=()=>{
     console.log("len:",user.workSpaces);

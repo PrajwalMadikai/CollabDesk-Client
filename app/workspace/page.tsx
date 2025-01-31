@@ -1,13 +1,15 @@
 "use client";
 import API from "@/api/handle-token-expire";
-import { RootState } from "@/store/store";
+import { setUser } from "@/store/slice/userSlice";
+import { AppDispatch, RootState } from "@/store/store";
 import { workspaceSchema } from "@/validations/workspace";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function CreateWorkspace() {
 
@@ -15,8 +17,18 @@ export default function CreateWorkspace() {
   const [loading, setLoading] = useState(false);
    const route=useRouter()
   const user=useSelector((state:RootState)=>state.user)
+  const dispath=useDispatch<AppDispatch>()
   const userId=user.id
-  console.log("d",userId);
+  
+  useEffect(()=>{
+   const userData= localStorage.getItem('user')
+   if(userData)
+   {
+     dispath(setUser(JSON.parse(userData)))
+   }
+
+   
+  },[dispath])
   
   const {
     register,
@@ -28,26 +40,63 @@ export default function CreateWorkspace() {
   const token = localStorage.getItem("accessToken");
   const onSubmit = async () => {
     try {
-      setLoading(true);
+        setLoading(true);
 
-      const response = await API.post("http://localhost:5713/workspace/create",{spaceName,userId},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,  
-          },
+        const response = await API.post(
+            "http://localhost:5713/workspace/create",
+            { spaceName, userId },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (response.status === 201) {
+            toast.success("Workspace created successfully!", {
+                duration: 2000,
+                position: 'top-right',
+                style: {
+                    background: '#28a745',
+                    color: '#fff',
+                },
+            });
+            route.push('/dashboard');
+        } else {
+            toast.error(response.data.message, {
+                duration: 2000,
+                position: 'top-right',
+                style: {
+                    background: '#e74c3c',
+                    color: '#fff',
+                },
+            });
         }
-      
-      );
-      console.log("Success:", response.data);
-      console.log("Success:", response.data.space);
-       route.push('/dashboard')
-      console.log("Workspace created successfully!");
     } catch (error: any) {
-      console.error("Error:", error.response?.data || error.message);
+        if (error.response?.status === 409) {   
+            toast.error(error.response.data.message, {
+                duration: 3000,
+                position: 'top-right',
+                style: {
+                    background: '#f44336',  
+                    color: '#fff',
+                },
+            });
+        } else {
+            toast.error("An error occurred", {
+                duration: 2000,
+                position: 'top-right',
+                style: {
+                    background: '#e74c3c',
+                    color: '#fff',
+                },
+            });
+        }
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4 relative">
