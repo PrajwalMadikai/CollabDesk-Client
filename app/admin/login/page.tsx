@@ -28,6 +28,7 @@ export default function AdminLogin() {
 
         localStorage.setItem("admin", JSON.stringify(response.data.admin));
         localStorage.setItem("adminAccessToken", response.data.accessToken);
+        
         const admin=localStorage.getItem('admin')
         const adminaces=localStorage.getItem('adminAccessToken')
         console.log('admin from :',admin);

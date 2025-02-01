@@ -1,10 +1,12 @@
 "use client";
 
-import { setUser } from "@/store/slice/userSlice";
+import API from "@/api/handle-token-expire";
+import { clearUser, setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
 function HeaderAndLandingHome() {
@@ -22,6 +24,24 @@ function HeaderAndLandingHome() {
 
    
   },[dispath])
+
+  const logout=async()=>{
+
+    try {
+    
+      await API.post('/logout', { withCredentials: true })
+    
+      localStorage.removeItem('user');
+      localStorage.removeItem('accessToken');
+      
+       dispath(clearUser())
+
+       toast.success('Logged out successfully');
+       router.push('/');  
+     } catch (error) {
+       toast.error('Error logging out');
+     }
+  }
   
 console.log('user home:',user);
 
@@ -55,9 +75,15 @@ console.log('user home:',user);
           <div className="flex-grow"></div>
           <div className="flex items-center space-x-3 md:mr-3">
           {user.isAuthenticated ? (
-              <button className="bg-white text-black h-[32px] rounded w-24 mt-2 font-extralight text-sm hover:bg-gray-200 transition duration-200">
+            <>
+              <button onClick={logout} className="text-white  h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
+                <Link href="/logout">Logout</Link>
+              </button>
+            
+              <button className="bg-white text-black h-[32px] rounded w-24  font-extralight text-sm hover:bg-gray-200 transition duration-200">
                 <Link href="/dashboard" prefetch={true}>Dashboard</Link>
               </button>
+            </>
             ) : (
               <>
               <button className="text-white h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">

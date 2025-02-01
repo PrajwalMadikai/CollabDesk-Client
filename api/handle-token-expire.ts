@@ -7,14 +7,15 @@ const API = axios.create({
 
 const refreshAccess = async () => {
   try {
-    const response = await axios.post("http://localhost:5713/refreshtoken");
+    const response = await axios.post("http://localhost:5713/refreshtoken", {
+      withCredentials: true, 
+    });
     const newAccessToken = response.data.accessToken;
     localStorage.setItem("accessToken", newAccessToken);
     return newAccessToken;
   } catch (error) {
     console.error("Refresh token failed:", error);
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
     window.location.href = "/login";  
     return null;
   }
