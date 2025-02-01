@@ -25,6 +25,17 @@ const user = {
   avatar: "/path/to/avatar.jpg",
 };
 
+const Logout=async()=>{
+  try {
+
+
+    
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
 const items = [
   { title: "Home", key: "home", icon: Home },
   { title: "Users", key: "users", icon: Users },
