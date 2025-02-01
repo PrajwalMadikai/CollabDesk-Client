@@ -79,4 +79,5 @@ ADMIN_API.interceptors.response.use(
 );
 
 
-  export default {API,ADMIN_API};
+  export { ADMIN_API, API };
+

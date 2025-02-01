@@ -1,5 +1,5 @@
 "use client";
-import API from "@/api/handle-token-expire";
+import { API } from "@/api/handle-token-expire";
 import ProtectedRoute from "@/components/Providers/ProtectedRoute";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";

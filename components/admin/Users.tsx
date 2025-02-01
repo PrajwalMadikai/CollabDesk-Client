@@ -1,16 +1,28 @@
 "use client";
+import { ADMIN_API } from "@/api/handle-token-expire";
+import usersInterface from "@/interfaces/adminUsers";
 import { Search, Users as UsersIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Users = () => {
-  const [users] = useState([
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User", status: "Active" },
-    { id: 3, name: "Bob Wilson", email: "bob@example.com", role: "User", status: "Inactive" },
-  ]);
+  
+  const [users, setUsers] = useState<usersInterface[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await ADMIN_API.get("http://localhost:5713/users");  
+        setUsers(response.data.users);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
-    <div className="w-full min-h-screen   text-white p-4 sm:p-6 md:p-8 border-gray-300 rounded-[3px] ">
+    <div className=" md:w-[1250px] min-h-screen  bg-black text-white p-4 sm:p-6 md:p-8 border-gray-400 rounded-[5px] px-10">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -42,7 +54,6 @@ const Users = () => {
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
             <h3 className="text-gray-400 text-sm font-medium">Active Users</h3>
             <p className="text-2xl font-bold mt-2">
-              {users.filter(user => user.status === "Active").length}
             </p>
           </div>
 
@@ -50,7 +61,6 @@ const Users = () => {
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:col-span-2 md:col-span-1">
             <h3 className="text-gray-400 text-sm font-medium">Admin Users</h3>
             <p className="text-2xl font-bold mt-2">
-              {users.filter(user => user.role === "Admin").length}
             </p>
           </div>
         </div>
@@ -62,8 +72,6 @@ const Users = () => {
               <tr>
                 <th className="px-6 py-3 text-sm font-semibold">Name</th>
                 <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Email</th>
-                <th className="px-6 py-3 text-sm font-semibold">Role</th>
-                <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -71,8 +79,7 @@ const Users = () => {
                 <tr key={user.id} className="hover:bg-gray-800 transition-colors">
                   <td className="px-6 py-4 font-medium">{user.name}</td>
                   <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>
-                  <td className="px-6 py-4">{user.role}</td>
-                  <td className="px-6 py-4 hidden sm:table-cell">
+                  {/* <td className="px-6 py-4 hidden sm:table-cell">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       user.status === "Active" 
                         ? "bg-green-500/20 text-green-500" 
@@ -80,7 +87,7 @@ const Users = () => {
                     }`}>
                       {user.status}
                     </span>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

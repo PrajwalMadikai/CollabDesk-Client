@@ -1,4 +1,5 @@
 "use client";
+import { ADMIN_API } from "@/api/handle-token-expire";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,7 +18,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar";
+import { clearAdmin } from "@/store/slice/adminSlice";
+import { AppDispatch, RootState } from "@/store/store";
 import { DollarSign, Home, LogOut, Plus, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 const user = {
   name: "Admin User",
@@ -25,16 +31,7 @@ const user = {
   avatar: "/path/to/avatar.jpg",
 };
 
-const Logout=async()=>{
-  try {
-
-
-    
-  } catch (error) {
-    console.log(error);
-    
-  }
-}
+ 
 
 const items = [
   { title: "Home", key: "home", icon: Home },
@@ -44,8 +41,41 @@ const items = [
 ];
 
 const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) => {
+  const dispatch=useDispatch<AppDispatch>()
+   const router=useRouter()
+   const admin=useSelector((state:RootState)=>state.admin)
+
+  const Logout=async()=>{
+    console.log('lso;f');
+    
+    try {
+  
+      const response= await ADMIN_API.post('http://localhost:5713/admin/logout')
+       
+  
+        if (response.status === 200) {
+          toast.success("Logout successful!", {
+            duration: 2000,
+            position: "top-right",
+            style: { background: "#28a745", color: "#fff" },
+            
+          });
+           localStorage.removeItem('admin');
+           localStorage.removeItem('adminAccessToken');
+           dispatch(clearAdmin())
+           router.push('/admin/login')
+        }
+    } catch (error) {
+      console.log(error);
+      toast.success("Error during logout", {
+        duration: 2000,
+        position: "top-right",
+      });
+    }
+  }
+
   return (
-    <Sidebar className="h-screen w-[250px] bg-black text-white shadow-xl rounded-r-3xl flex flex-col items-center">
+    <Sidebar className="h-screen w-[260px]  text-white shadow-xl rounded-r-3xl flex flex-col items-center">
       <div className="text-lg  text-white text-center mt-6 uppercase tracking-tight">
         Admin Dashboard
       </div>
@@ -82,12 +112,12 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-gray-800 border-gray-700">
-            <DropdownMenuLabel className="text-white">{user.name}</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-gray text-sm">{admin.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-white hover:bg-gray-700">Subscription</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 hover:bg-gray-700">
-              <LogOut className="mr-2" /> Logout
+            <DropdownMenuItem onClick={Logout} className="text-red-600 hover:bg-gray-700">
+              <LogOut className="mr-2"  /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

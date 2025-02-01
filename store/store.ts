@@ -1,11 +1,13 @@
 "use client";
 
 import { configureStore } from '@reduxjs/toolkit';
+import adminReducer from './slice/adminSlice';
 import userReducer from './slice/userSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
+    admin:adminReducer
   },
 });
 

@@ -27,11 +27,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="dark flex">
       <SidebarProvider>
         <AppSidebar onSelectMenu={setSelectedMenu} />
-        <main className="flex-1   overflow-auto">
-          <SidebarTrigger >
-          <button className="text-white">
-              <span className="text-white">☰</span> {/* Change this to your sidebar trigger icon */}
-            </button>
+        <main className="flex-1 bg-black  overflow-auto">
+          <SidebarTrigger style={{ color: "white"}} >
+          
             </SidebarTrigger>
           {renderContent()}
         </main>

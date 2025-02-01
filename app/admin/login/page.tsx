@@ -1,4 +1,5 @@
 "use client";
+import { setAdmin } from "@/store/slice/adminSlice";
 import { AppDispatch } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
@@ -25,15 +26,12 @@ export default function AdminLogin() {
           position: "top-right",
           style: { background: "#28a745", color: "#fff" },
         });
-
+        const admin=response.data.admin
         localStorage.setItem("admin", JSON.stringify(response.data.admin));
         localStorage.setItem("adminAccessToken", response.data.accessToken);
         
-        const admin=localStorage.getItem('admin')
-        const adminaces=localStorage.getItem('adminAccessToken')
-        console.log('admin from :',admin);
-        console.log(adminaces);
-        
+
+        dispatch(setAdmin({id:admin.id,email:admin.email}))
 
         setTimeout(() => {
           router.push("/admin");
