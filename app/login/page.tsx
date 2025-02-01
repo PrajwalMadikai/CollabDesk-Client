@@ -88,23 +88,28 @@ export default function Home() {
         }
       } catch (error:any) {
         console.error("Error during login:", error);
-        if (error.response && error.response.data && error.response.data.message === "User not found") {
-          toast.error("User not found. Please check your credentials.", {
-              position: 'top-right',
-              duration: 3000,
+        if (error.response && error.response.status === 404 && error.response.data.message === "No User Found!") {
+          toast.error("!", {
+            position: 'top-right',
+            duration: 3000,
           });
-      } else {
+        } else if (error.response && error.response.data && error.response.data.message) {
+          toast.error(error.response.data.message, {
+            position: 'top-right',
+            duration: 3000,
+          });
+        } else {
           toast.error("Error during login", {
-              position: 'top-right',
-              duration: 3000,
+            position: 'top-right',
+            duration: 3000,
           });
-      }
+        }
       }
     }
   };
 
   const handleGoogleLoginSuccess = async (credentialResponse: any) => {
-    const idToken = credentialResponse.credential; // Extract the ID token
+    const idToken = credentialResponse.credential; // google ID token
     console.log('id token:', idToken);
 
     try {
@@ -148,14 +153,14 @@ export default function Home() {
   
   
 
-  const handleGitHubLogin = () => {
-
-    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;  
-    
-    const redirectUri = `http://localhost:5713/auth/github/callback`;  
+  const handleGitHubLogin = (mode: 'login' | 'signup') => {
+    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+    const redirectUri = `http://localhost:5713/auth/github/callback`;
+    // Add mode as state parameter
+    const state = encodeURIComponent(JSON.stringify({ mode }));
     const scope = 'read:user user:email';
-  
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+    
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
   };
 
   return (
@@ -300,7 +305,7 @@ export default function Home() {
              width="auto"
           />
             <button
-            onClick={handleGitHubLogin}
+            onClick={()=>handleGitHubLogin('login')}
             className="bg-white hover:bg-gray-100 text-gray-800 flex items-center justify-center space-x-2 h-[40px] rounded-[4px] px-4 w-full md:w-[200px]" // Full-width on small screens and max width on large
             >
             {/* Avatar */}

@@ -1,5 +1,6 @@
 "use client";
 import API from "@/api/handle-token-expire";
+import ProtectedRoute from "@/components/Providers/ProtectedRoute";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { workspaceSchema } from "@/validations/workspace";
@@ -98,7 +99,9 @@ export default function CreateWorkspace() {
 };
 
 
-  return (
+  return (<>
+  <ProtectedRoute>
+  
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4 relative">
     {/* Logo Section */}
     <div className="absolute top-0 left-0 p-4 flex items-center">
@@ -146,6 +149,7 @@ export default function CreateWorkspace() {
       </form>
     </div>
   </div>
-  
+  </ProtectedRoute>
+  </>
   );
 }

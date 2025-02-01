@@ -22,10 +22,15 @@ function HeaderAndLandingHome() {
 
    
   },[dispath])
+  
 console.log('user home:',user);
 
   const handleDashboard=()=>{
-    console.log("len:",user.workSpaces);
+
+    if (!user.isAuthenticated) {
+      router.push('/login');
+      return;
+    }
     
         if(user.workSpaces.length==0)
         {
