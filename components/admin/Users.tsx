@@ -8,18 +8,23 @@ const Users = () => {
   
   const [users, setUsers] = useState<usersInterface[]>([]);
 
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await ADMIN_API.get("http://localhost:5713/users");  
+        const response = await ADMIN_API.get("http://localhost:5713/admin/users");  
+        console.log("API Response:", response.data.users);  // Log the response
         setUsers(response.data.users);
       } catch (error) {
         console.error("Failed to fetch users:", error);
+        setUsers([]);
       }
     };
 
     fetchUsers();
   }, []);
+  console.log('users[]:',users);
+  
 
   return (
     <div className=" md:w-[1250px] min-h-screen  bg-black text-white p-4 sm:p-6 md:p-8 border-gray-400 rounded-[5px] px-10">
@@ -75,7 +80,7 @@ const Users = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
-              {users.map((user) => (
+              {Array.isArray(users) && users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-800 transition-colors">
                   <td className="px-6 py-4 font-medium">{user.name}</td>
                   <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>

@@ -3,12 +3,21 @@ import AddPayment from "@/components/admin/AddPayment";
 import Payments from "@/components/admin/Payments";
 import Users from "@/components/admin/Users";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import AppSidebar from "./page";
- 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+
   const [selectedMenu, setSelectedMenu] = useState<string>("home");
+  const router=useRouter()
+
+  useEffect(() => {
+    const adminToken = localStorage.getItem('adminAccessToken');
+    if (!adminToken) {
+      router.replace('/admin/login');
+    }
+  }, [router]);
 
   const renderContent = () => {
     switch (selectedMenu) {
@@ -19,7 +28,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       case "add-payment":
         return <AddPayment />;
       default:
-        return <div className="w-full bg-black h-full p-6 text-black flex justify-center ">Welcome to the Admin Dashboard!</div>;
+        return (
+          <div className="w-full h-full flex justify-center items-center bg-black">
+            <img src="/collabdesk white logo.png" alt="Admin Dashboard Logo" className="h-[170px] w-auto md:h-[155px]" />
+          </div>
+        );
     }
   };
 

@@ -5,7 +5,7 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
@@ -15,6 +15,13 @@ export default function AdminLogin() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  useEffect(() => {
+    const adminToken = localStorage.getItem('adminAccessToken');
+    if (adminToken) {
+      router.replace('/admin/dashboard');
+    }
+  }, [router])
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -33,9 +40,10 @@ export default function AdminLogin() {
 
         dispatch(setAdmin({id:admin.id,email:admin.email}))
 
-        setTimeout(() => {
-          router.push("/admin");
-        }, 2100);
+        
+          router.replace("/admin/dashboard");
+
+
       } else {
         toast.error(response.data.message || "Login failed", {
           position: "top-right",
