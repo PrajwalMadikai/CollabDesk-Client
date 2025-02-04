@@ -62,7 +62,7 @@ export default function CreateWorkspace() {
                     color: '#fff',
                 },
             });
-            route.push('/dashboard');
+            // route.push('/dashboard');
         } else {
             toast.error(response.data.message, {
                 duration: 2000,

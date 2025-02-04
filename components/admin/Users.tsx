@@ -13,7 +13,7 @@ const Users = () => {
     const fetchUsers = async () => {
       try {
         const response = await ADMIN_API.get("http://localhost:5713/admin/users");  
-        console.log("API Response:", response.data.users);  // Log the response
+        console.log("API Response:", response.data.users); 
         setUsers(response.data.users);
       } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -75,14 +75,13 @@ const Users = () => {
           <table className="w-full text-left">
             <thead className="bg-gray-800 border-b border-gray-700">
               <tr>
-                <th className="px-6 py-3 text-sm font-semibold">Name</th>
                 <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Email</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
               {Array.isArray(users) && users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-800 transition-colors">
-                  <td className="px-6 py-4 font-medium">{user.name}</td>
+                  
                   <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>
                   {/* <td className="px-6 py-4 hidden sm:table-cell">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

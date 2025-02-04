@@ -1,5 +1,5 @@
 "use client";
-import API from '@/api/handle-token-expire';
+import axios from 'axios';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ export default function VerifyEmail() {
     const verifyEmail = async () => {
       if (email && token) {
         try {
-          const response = await API.post('http://localhost:5713/verify-email', {
+          const response = await axios.post('http://localhost:5713/verify-email', {
             email,
             token
           });

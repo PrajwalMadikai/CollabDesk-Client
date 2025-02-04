@@ -1,19 +1,21 @@
 "use client";
-import API from "@/api/handle-token-expire";
+import { API } from "@/api/handle-token-expire";
 import { setUser } from "@/store/slice/userSlice";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from 'react-hot-toast';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Signup() {
 
   const router=useRouter()
   const dispath=useDispatch<AppDispatch>()
+  const user=useSelector((state:RootState)=>state.user)
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +27,7 @@ export default function Signup() {
     confirmPassword: "",
   });
 
+   
   const validate = () => {
     let isValid = true;
     const newErrors: any = {};

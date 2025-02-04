@@ -26,18 +26,19 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<{ id: string; fullname: string; email: string; workSpaces: Workspace[] }>) {
+    setUser(state, action: PayloadAction<UserState>) {
       state.id = action.payload.id;
       state.fullname = action.payload.fullname;
       state.email = action.payload.email;
       state.isAuthenticated = true;
-      state.workSpaces = action.payload.workSpaces;  
+      state.workSpaces = action.payload.workSpaces;
     },
     clearUser(state) {
       state.id = null;
       state.fullname = null;
       state.email = null;
       state.isAuthenticated = false;
+      state.workSpaces = [];
     },
   },
 });

@@ -1,6 +1,6 @@
 "use client";
 import { setUser } from "@/store/slice/userSlice";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
 import axios from "axios";
@@ -8,12 +8,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Home() {
 
-  const dispath=useDispatch<AppDispatch>()
-
+  const dispatch=useDispatch<AppDispatch>()
+  const user=useSelector((state:RootState)=>state.user)
+  console.log("User from Redux:", user);
   const router=useRouter()
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,6 +22,8 @@ export default function Home() {
     email: "",
     password: "",
   });
+  
+   
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -59,25 +62,33 @@ export default function Home() {
 
         if (response.status === 200) {
                     
+          const userData = response.data.user;
+          const accessToken = response.data.accessToken;
+          
+          localStorage.setItem('user', JSON.stringify(userData));
+          localStorage.setItem('accessToken', accessToken);
+          
+          dispatch(setUser({
+            id: userData.id,
+            fullname: userData.fullname,
+            email: userData.email,
+            workSpaces: userData.workSpaces ,  
+            isAuthenticated: true
+          }));
+          
           toast.success("Login successful!", {
             duration: 2000,
             position: 'top-right',
             style: {
-              background: '#28a745',  
-              color: '#fff',          
+              background: '#28a745',
+              color: '#fff',
             },
           });
-
-          const userData=response.data.user
-          const accessToken=response.data.accessToken
-          localStorage.setItem('user', JSON.stringify(userData));
-          localStorage.setItem('accessToken', accessToken); 
-
-          dispath(setUser(userData))
-
-          setTimeout(()=>{
-            router.push('/')
-          },2100)
+  
+          setTimeout(() => {
+            router.push('/');
+          }, 2100);
+        
           
         } else {
           console.error("Login failed:", response.data.message );
@@ -131,9 +142,16 @@ export default function Home() {
          localStorage.setItem('user', JSON.stringify(userData));
          localStorage.setItem('accessToken', accessToken); 
 
-         dispath(setUser(userData))
+        
+
+        dispatch(setUser({
+          id: userData.id,
+          fullname: userData.fullname,
+          email: userData.email,
+          workSpaces: userData.workSpaces,
+          isAuthenticated:true
+        }))
        }
-      
 
       setTimeout(() => {
         router.push('/');   
@@ -156,7 +174,6 @@ export default function Home() {
   const handleGitHubLogin = (mode: 'login' | 'signup') => {
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
     const redirectUri = `http://localhost:5713/auth/github/callback`;
-    // Add mode as state parameter
     const state = encodeURIComponent(JSON.stringify({ mode }));
     const scope = 'read:user user:email';
     

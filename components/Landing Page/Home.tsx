@@ -15,15 +15,23 @@ function HeaderAndLandingHome() {
   const user=useSelector((state:RootState)=>state.user)
   const dispath=useDispatch<AppDispatch>()
   
-  useEffect(()=>{
-   const userData= localStorage.getItem('user')
-   if(userData)
-   {
-     dispath(setUser(JSON.parse(userData)))
-   }
-
-   
-  },[dispath])
+  useEffect(() => {
+    const userFetch = localStorage.getItem('user');
+    
+    if (userFetch) {
+      const userData = JSON.parse(userFetch);
+      if (userData) {
+        dispath(setUser({
+          id: userData.id,
+          fullname: userData.fullname,
+          email: userData.email,
+          workSpaces: userData.workSpaces,
+          isAuthenticated: true,
+        }));
+      }
+    }
+  }, [dispath]);
+  
 
   const logout=async()=>{
 

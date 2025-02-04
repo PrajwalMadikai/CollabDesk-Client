@@ -16,11 +16,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar";
-import { clearAdmin } from "@/store/slice/adminSlice";
+import { clearAdmin, setAdmin } from "@/store/slice/adminSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import axios from "axios";
 import { DollarSign, Home, LogOut, Plus, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -43,7 +44,14 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
   const dispatch=useDispatch<AppDispatch>()
    const router=useRouter()
    const admin=useSelector((state:RootState)=>state.admin)
-
+   useEffect(()=>{
+     const admin=localStorage.getItem('admin')
+     if(admin)
+     {
+       let data=JSON.parse(admin)
+       dispatch(setAdmin({id:data.id,email:data.email}))
+     }
+   },[])
   const Logout=async()=>{
     
     try {
@@ -108,15 +116,15 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
             <div className="w-10 h-10 rounded-[5px] overflow-hidden border-2 border-gray-500 flex items-center justify-center">
                 <img src="/admin.jpg" alt="User Avatar" className="w-full h-full object-cover" />
               </div>
-            <span className="text-md font-medium">{admin.email}</span>
+            <span className="text-md font-sm text-gray-200">{admin.email}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-gray-800 border-gray-700">
             <DropdownMenuSeparator />
             {/* <DropdownMenuItem className="text-white hover:bg-gray-700">Subscription</DropdownMenuItem> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={Logout} className="text-red-600 hover:bg-gray-700">
-              <LogOut className="mr-2"  /> Logout
+            <DropdownMenuItem onClick={Logout} className="text-red-600 text-md font-semibold">
+              <LogOut className="mr-2 "  /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

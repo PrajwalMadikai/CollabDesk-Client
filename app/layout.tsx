@@ -1,4 +1,5 @@
 import AppProviders from "@/components/Providers/AppProvider";
+import ProtectedRoute from "@/components/Providers/ProtectedRoute";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
            <AppProviders>
-           {children}
+           <ProtectedRoute>
+            {children}
+           </ProtectedRoute>
            </AppProviders>
       </body>
     </html>
