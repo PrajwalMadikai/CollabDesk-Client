@@ -113,9 +113,7 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-full flex items-center justify-center space-x-3 p-3">
-            <div className="w-10 h-10 rounded-[5px] overflow-hidden border-2 border-gray-500 flex items-center justify-center">
-                <img src="/admin.jpg" alt="User Avatar" className="w-full h-full object-cover" />
-              </div>
+            
             <span className="text-md font-sm text-gray-200">{admin.email}</span>
             </Button>
           </DropdownMenuTrigger>

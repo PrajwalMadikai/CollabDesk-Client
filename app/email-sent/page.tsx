@@ -1,5 +1,6 @@
 "use client";
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function EmailSent() {
   return (
@@ -32,10 +33,13 @@ export default function EmailSent() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link href="https://mail.google.com"> 
           <button className="group px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-2 min-w-[200px]">
             Open email app
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
+          </Link>
+         
           {/* <button className="px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors min-w-[200px]">
             Resend email
           </button> */}

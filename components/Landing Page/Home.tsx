@@ -83,23 +83,30 @@ console.log('user home:',user);
           <div className="flex-grow"></div>
           <div className="flex items-center space-x-3 md:mr-3">
           {user.isAuthenticated ? (
-            <>
+            <> 
+              <Link href="/logout">
               <button onClick={logout} className="text-white  h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
-                <Link href="/logout">Logout</Link>
+               Logout
               </button>
-            
+              </Link>
+              <Link href="/dashboard" prefetch={true}>
               <button className="bg-white text-black h-[32px] rounded w-24  font-extralight text-sm hover:bg-gray-200 transition duration-200">
-                <Link href="/dashboard" prefetch={true}>Dashboard</Link>
+                Dashboard
               </button>
+              </Link>
             </>
             ) : (
               <>
+              <Link href="/login" prefetch={true}>
               <button className="text-white h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
-                <Link href="/login" prefetch={true}>Login</Link>
+                 Login
               </button>
+              </Link>
+              <Link href="/signup" prefetch={true}> 
               <button className="bg-white text-black h-[32px] rounded w-20 font-extralight text-sm hover:bg-gray-200 transition duration-200">
-                <Link href="/signup" prefetch={true}>Signup</Link>
+                Signup
               </button>
+              </Link>
           </>
            )}
           </div>
