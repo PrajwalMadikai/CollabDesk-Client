@@ -293,7 +293,11 @@ export default function Home() {
               }}
             />
           </div>
-  
+           <div className="space-y-2 flex justify-end">
+            <Link href='email-verification'>
+            <p className="text-[14px] font-normal text-red-600">forgot password ?</p>
+            </Link>
+           </div>
           <button
             type="submit"
             className="w-full bg-[#1a1744] hover:bg-[#15123a] text-white font-semibold text-md py-2 rounded-sm h-12"

@@ -1,24 +1,49 @@
 'use client';
+import baseUrl from "@/api/urlconfig";
 import passwordSchema from "@/validations/password";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
- 
+import toast from "react-hot-toast";
 
 export default function ChangePassword() {
 
-  const [newPassword,setPassword]=useState('')  
-
+  const router=useRouter()
   const {register,handleSubmit,formState: { errors },} = useForm({
     resolver: zodResolver(passwordSchema),
   });
 
   const [loading, setLoading] = useState(false);
+  
+  const email=localStorage.getItem('resetEmail')
+ 
+  const resetPasswordForm = async(data:any) => {
+    console.log('shfj');
+    
+    try {
+      setLoading(true)
+      let response=await axios.post(`${baseUrl}/reset-password`,{email,password:data.newPassword})
+    if(response&&response.status==200)
+    {
+      toast.success('password updated successfully!', {
+        duration: 2000,
+        position: 'top-right',
+        style: { background: '#4caf50', color: '#fff' },
 
-  const handleChange=(event)=>{
-    setPassword(event.target.value)
-  }
-  const onSubmit = () => {
+      })
+      localStorage.removeItem('resetEmail')
+      setTimeout(()=>{
+         router.push('/login')
+      },2000)
+    }
+      
+    } catch (error:any) {
+      console.error("Error updating password:", error.response?.data || error.message);
+     toast.error(error.response?.data?.message || "Failed to update password.");;
+    }
+
   }
     
 
@@ -36,13 +61,22 @@ export default function ChangePassword() {
         {/* Right Section: Change Password Form */}
         <div className="flex flex-1 flex-col md:mt-[110px] space-y-6 p-6 rounded-lg">
           <h2 className="text-2xl font-bold text-white text-center md:text-left">Change Your Password</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(resetPasswordForm)} className="space-y-4">
+            {/* <div className="space-y-2">
+              <label className="text-white block">Email</label>
+              <input
+                type="text"
+                {...register("email")}
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                className="w-full bg-transparent border border-gray-400 text-white rounded-md px-4 py-2 focus:outline-none focus:border-white"
+              />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email.message?.toString()}</p>}
+            </div> */}
             <div className="space-y-2">
               <label className="text-white block">New Password</label>
               <input
                 type="text"
-                value={newPassword}
-                onChange={e=>setPassword(e.target.value)}
                 {...register("newPassword")}
                 className="w-full bg-transparent border border-gray-400 text-white rounded-md px-4 py-2 focus:outline-none focus:border-white"
               />
