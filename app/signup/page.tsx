@@ -78,30 +78,7 @@ export default function Signup() {
   };
   
 
-  // const handleGoogleLoginSuccess = async (credentialResponse:any) => {
-  //   const idToken = credentialResponse.credential; // Extract ID token
-  //   console.log('ID Token:', idToken);
-
-  //   try {
-  //      await axios.post('http://localhost:5713/google-signup', { idToken });
-
-  //     toast.success('User registered successfully!', {
-  //       duration: 2000,   
-  //       position: 'top-right',
-  //       style: {
-  //         background: '#4caf50',   
-  //         color: '#fff',  
-  //       },
-  //     });
-  //     setTimeout(()=>{
-  //       router.push('/login')
-  //     },2000)
-      
-  //   } catch (error) {
-  //     console.error('Error sending token to backend:', error);
-  //   }
-  // };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -201,14 +178,7 @@ export default function Signup() {
     }
   };
   
-  // const handleFailure = (error: any) => {
-  //   console.error('Login failed:', error);
-  //   toast.error('Google login failed. Please try again.', {
-  //     duration: 2000,
-  //     position: 'top-right',
-  //     style: { background: '#f44336', color: '#fff' },
-  //   });
-  // };   
+ 
    
 
   

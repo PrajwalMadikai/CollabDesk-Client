@@ -62,17 +62,7 @@ export default function ChangePassword() {
         <div className="flex flex-1 flex-col md:mt-[110px] space-y-6 p-6 rounded-lg">
           <h2 className="text-2xl font-bold text-white text-center md:text-left">Change Your Password</h2>
           <form onSubmit={handleSubmit(resetPasswordForm)} className="space-y-4">
-            {/* <div className="space-y-2">
-              <label className="text-white block">Email</label>
-              <input
-                type="text"
-                {...register("email")}
-                value={email}
-                onChange={(e)=>setEmail(e.target.value)}
-                className="w-full bg-transparent border border-gray-400 text-white rounded-md px-4 py-2 focus:outline-none focus:border-white"
-              />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email.message?.toString()}</p>}
-            </div> */}
+            
             <div className="space-y-2">
               <label className="text-white block">New Password</label>
               <input
