@@ -1,4 +1,5 @@
 "use client";
+import baseUrl from "@/api/urlconfig";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
@@ -55,7 +56,7 @@ export default function Home() {
     
     if (!newErrors.email && !newErrors.password) {
       try {
-        const response = await axios.post("http://localhost:5713/login", {
+        const response = await axios.post(`${baseUrl}/login`, {
           email,
           password,
         });
@@ -123,14 +124,13 @@ export default function Home() {
     const idToken = credentialResponse.credential; // google ID token
 
     try {
-      const response = await axios.post('http://localhost:5713/google-signup', { idToken });
+      const response = await axios.post(`${baseUrl}/google-login`, { idToken });
       
-      toast.success('User Login successfully!', {
+      toast.success(response.data.message, {
         duration: 2000,
-        position: 'top-right',
-        style: { background: '#4caf50', color: '#fff' },
-
-      });
+        position: "top-right",
+        style: { background: "#4caf50", color: "#fff" },
+    });
        if(response.data)
        {
          const userData=response.data.user
@@ -155,13 +155,13 @@ export default function Home() {
       setTimeout(() => {
         router.push('/');   
       }, 2000);
-    } catch (error) {
-      console.error('Error sending token to backend:', error);
-      
-      toast.error('Google signup failed. Please try again.', {
-        duration: 2000,
-        position: 'top-right',
-        style: { background: '#f44336', color: '#fff' },
+    } catch (error:any) {
+      console.error("Login error:", error.response?.data?.message || error.message);
+        
+      toast.error(error.response?.data?.message || "Google login failed.", {
+          duration: 3000,
+          position: "top-right",
+          style: { background: "#f44336", color: "#fff" },
       });
     }
   };

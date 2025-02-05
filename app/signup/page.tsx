@@ -1,5 +1,6 @@
 "use client";
 import { API } from "@/api/handle-token-expire";
+import baseUrl from "@/api/urlconfig";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
@@ -146,7 +147,7 @@ export default function Signup() {
     console.log('id token:', idToken);
 
     try {
-      const response = await API.post('http://localhost:5713/google-signup', { idToken });
+      const response = await API.post(`${baseUrl}/google-signup`, { idToken });
       
       toast.success('User registered successfully!', {
         duration: 2000,
@@ -184,7 +185,7 @@ export default function Signup() {
   
   const handleGitHubLogin = (mode: 'login' | 'signup') => {
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-    const redirectUri = `http://localhost:5713/auth/github/callback`;
+    const redirectUri = `${baseUrl}/auth/github/callback`;
     const state = encodeURIComponent(JSON.stringify({ mode }));
     const scope = 'read:user user:email';
     
