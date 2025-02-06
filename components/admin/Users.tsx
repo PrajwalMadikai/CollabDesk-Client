@@ -1,5 +1,6 @@
 "use client";
 import { ADMIN_API } from "@/api/handle-token-expire";
+import baseUrl from "@/api/urlconfig";
 import usersInterface from "@/interfaces/adminUsers";
 import axios from "axios";
 import { Search, Users as UsersIcon } from "lucide-react";
@@ -10,7 +11,7 @@ const Users = () => {
   
   const [users, setUsers] = useState<usersInterface[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
- const token=localStorage.getItem('adminAccessToken')
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -24,7 +25,6 @@ const Users = () => {
       } catch (error) {
         console.error("Failed to fetch users:", error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
-          // Let the interceptor handle the refresh
           setUsers([]);
         } else {
           setUsers([]);
@@ -36,7 +36,55 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  const filterUser=users.filter(user=>
+  
+
+  const blockUser=async(userId:string)=>{
+
+    try {
+      let response=await ADMIN_API.post(`${baseUrl}/admin/block`,{userId})
+      if(response.status==200)
+      {
+        setUsers((prevUsers) => 
+          prevUsers.map((user) => 
+            user.id === userId ? { ...user, isBlock: true } : user
+          )
+        );
+        toast.success("User blocked successfully",{
+          duration:2000,
+          position:'top-right'
+        })
+      }
+      
+    } catch (error:any) {
+      console.log(error.message);
+      
+    }
+
+  }
+  const unblockUser=async(userId:string)=>{
+
+    try {
+      let response=await ADMIN_API.post(`${baseUrl}/admin/unblock`,{userId})
+      if(response.status==200)
+      {
+        setUsers((prevUsers) => 
+          prevUsers.map((user) => 
+            user.id === userId ? { ...user, isBlock: false } : user
+          )
+        );
+        toast.success("User unblocked",{
+          duration:2000,
+          position:'top-right'
+        })
+      }
+      
+    } catch (error:any) {
+      console.log(error.message);
+      
+    }
+    
+  }
+  const filterUsers=users.filter(user=>
     user.email.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())
   )
 
@@ -68,7 +116,7 @@ const Users = () => {
           {/* Total Users Card */}
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
             <h3 className="text-gray-400 text-sm font-medium">Total Users</h3>
-            <p className="text-2xl font-bold mt-2">{filterUser.length}</p>
+            <p className="text-2xl font-bold mt-2">{filterUsers.length}</p>
           </div>
 
           {/* Active Users Card */}
@@ -94,11 +142,12 @@ const Users = () => {
               <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Profile</th>
               <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Email</th>
               <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Status</th>
+              <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
-            {filterUser.length > 0 ? (
-              filterUser.map((user) => (
+            {filterUsers.length > 0 ? (
+              filterUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-800 transition-colors">
                   {/* Profile Placeholder */}
                   <td className="px-6 py-4 hidden sm:table-cell">
@@ -120,6 +169,23 @@ const Users = () => {
                       {user.isBlock ? "Blocked" : "Active"}
                     </span>
                   </td>
+                  <td className="px-6 py-4">
+                  {user.isBlock ? (
+                    <button
+                    onClick={()=>unblockUser(user.id)}
+                      className="border border-gray-400 text-white px-4 py-1 rounded-[2px] hover:bg-gray-700 transition-colors"
+                    >
+                      Unblock
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => blockUser(user.id)}  
+                      className="border border-gray-400 text-white px-4 py-1 rounded-md hover:bg-gray-700 transition-colors"
+                    >
+                      Block
+                    </button>
+                  )}
+                </td>
                 </tr>
               ))
             ) : (
