@@ -44,7 +44,10 @@ function HeaderAndLandingHome() {
       
        dispath(clearUser())
 
-       toast.success('Logged out successfully');
+       toast.success('Logged out successfully',{
+        duration:2000,
+        position:'top-right'
+       });
        router.push('/');  
      } catch (error) {
        toast.error('Error logging out');
@@ -131,8 +134,8 @@ console.log('user home:',user);
           </div>
   
           {/* Button under Big Text */}
-          <div className="text-center mt-5">
-          <button onClick={handleDashboard} className="bg-transparent hover:bg-blue-600 hover:border-0 border border-gray w-[160px] rounded-[5px] text-[16px] text-white h-10">
+          <div className="text-center mt-3">
+          <button onClick={handleDashboard} className="bg-transparent font-medium hover:bg-gray-100 hover:text-black border border-gray-400 w-[140px] rounded-[8px] text-[16px] text-white h-9">
             Get Started
           </button>
           

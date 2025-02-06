@@ -1,8 +1,10 @@
 "use client";
 import { ADMIN_API } from "@/api/handle-token-expire";
 import usersInterface from "@/interfaces/adminUsers";
+import axios from "axios";
 import { Search, Users as UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const Users = () => {
   
@@ -12,16 +14,22 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await ADMIN_API.get("http://localhost:5713/admin/users",{
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-            });  
-        console.log("API Response:", response.data.users); 
+        const token = localStorage.getItem("adminAccessToken");
+        if (!token) {
+          throw new Error("No access token found");
+        }
+    
+        const response = await ADMIN_API.get("/users");
         setUsers(response.data.users);
       } catch (error) {
         console.error("Failed to fetch users:", error);
-        setUsers([]);
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          // Let the interceptor handle the refresh
+          setUsers([]);
+        } else {
+          setUsers([]);
+          toast.error("Failed to fetch users");
+        }
       }
     };
 
@@ -80,28 +88,50 @@ const Users = () => {
 
         {/* Users Table */}
         <div className="w-full overflow-x-auto rounded-lg border border-gray-700">
-          <table className="w-full text-left">
-            <thead className="bg-gray-800 border-b border-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Email</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
+        <table className="w-full text-left">
+          <thead className="bg-gray-800 border-b border-gray-700">
+            <tr>
+              <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Profile</th>
+              <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Email</th>
+              <th className="px-6 py-3 text-sm font-semibold hidden sm:table-cell">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-700">
             {filterUser.length > 0 ? (
-                filterUser.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-800 transition-colors">
-                    <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="px-6 py-4 text-center text-gray-500" colSpan={3}>
-                    No users found
+              filterUser.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-800 transition-colors">
+                  {/* Profile Placeholder */}
+                  <td className="px-6 py-4 hidden sm:table-cell">
+                    <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center text-white text-sm">
+                      {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                    </div>
+                  </td>
+
+                  {/* Email */}
+                  <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>
+
+                  {/* Status */}
+                  <td className="px-6 py-4 hidden sm:table-cell">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        user.isBlock ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                      }`}
+                    >
+                      {user.isBlock ? "Blocked" : "Active"}
+                    </span>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              ))
+            ) : (
+              <tr>
+                <td className="px-6 py-4 text-center text-gray-500" colSpan={3}>
+                  No users found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
         </div>
       </div>
     </div>

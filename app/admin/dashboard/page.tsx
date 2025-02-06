@@ -1,4 +1,5 @@
 "use client";
+import baseUrl from "@/api/urlconfig";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -56,7 +57,7 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
     
     try {
   
-      const response= await axios.post('http://localhost:5713/admin/logout')
+      const response= await axios.post(`${baseUrl}/admin/logout`, {}, { withCredentials: true })
        
   
         if (response.status === 200) {
@@ -73,7 +74,7 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
         }
     } catch (error) {
       console.log(error);
-      toast.success("Error during logout", {
+      toast.error("Error during logout", {
         duration: 2000,
         position: "top-right",
       });
