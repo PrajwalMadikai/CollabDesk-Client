@@ -143,42 +143,42 @@ export default function Signup() {
 
    
   const handleGoogleLoginSuccess = async (credentialResponse: any) => {
-    const idToken = credentialResponse.credential; // Extract the ID token
-    console.log('id token:', idToken);
-
+    const idToken = credentialResponse.credential;
+    
     try {
-      const response = await API.post(`${baseUrl}/google-signup`, { idToken });
-      
-      toast.success('User registered successfully!', {
-        duration: 2000,
-        position: 'top-right',
-        style: { background: '#4caf50', color: '#fff' },
-      });
-          const userData=response.data.user
-          const accessToken=response.data.accessToken
+        const response = await API.post(`${baseUrl}/google-signup`, { idToken });
+        const userData = response.data.user;
+        const accessToken = response.data.accessToken;
 
-          if(userData)
-          {
-            localStorage.setItem('user', JSON.stringify(userData));
-            localStorage.setItem('accessToken', accessToken); 
-          }
-          dispath(setUser(userData))
+        if (response.status === 201) {
+            if (userData) {
+                localStorage.setItem('user', JSON.stringify(userData));
+                localStorage.setItem('accessToken', accessToken);
+                dispath(setUser(userData));
+            }
+            
+            toast.success('User registered successfully!', {
+                duration: 2000,
+                position: 'top-right',
+                style: { background: '#4caf50', color: '#fff' },
+            });
 
-
-      setTimeout(() => {
-        router.push('/');   
-      }, 2000);
-    } catch (error) {
-      console.error('Error sending token to backend:', error);
-      
-      toast.error('Google signup failed. Please try again.', {
-        duration: 2000,
-        position: 'top-right',
-        style: { background: '#f44336', color: '#fff' },
-      });
+            setTimeout(() => {
+                router.push('/');
+            }, 2000);
+        }
+    } catch (error: any) {
+        const errorMessage = error.response?.status === 404 
+            ? 'Account already exists'
+            : 'Google signup failed. Please try again.';
+            
+        toast.error(errorMessage, {
+            duration: 2000,
+            position: 'top-right',
+            style: { background: '#f44336', color: '#fff' },
+        });
     }
-  };
-  
+};
  
    
 

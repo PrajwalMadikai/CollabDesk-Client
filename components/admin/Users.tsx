@@ -7,12 +7,16 @@ import { useEffect, useState } from "react";
 const Users = () => {
   
   const [users, setUsers] = useState<usersInterface[]>([]);
-
-
+  const [searchQuery, setSearchQuery] = useState("");
+ const token=localStorage.getItem('adminAccessToken')
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await ADMIN_API.get("http://localhost:5713/admin/users");  
+        const response = await ADMIN_API.get("http://localhost:5713/admin/users",{
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+            });  
         console.log("API Response:", response.data.users); 
         setUsers(response.data.users);
       } catch (error) {
@@ -23,8 +27,10 @@ const Users = () => {
 
     fetchUsers();
   }, []);
-  console.log('users[]:',users);
-  
+
+  const filterUser=users.filter(user=>
+    user.email.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())
+  )
 
   return (
     <div className=" md:w-[1250px] min-h-screen  bg-black text-white p-4 sm:p-6 md:p-8 border-gray-400 rounded-[5px] px-10">
@@ -40,6 +46,8 @@ const Users = () => {
           <div className="relative w-full sm:w-64">
             <input
               type="text"
+              value={searchQuery}
+              onChange={e=>setSearchQuery(e.target.value)}
               placeholder="Search users..."
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 text-white placeholder-gray-400"
             />
@@ -52,7 +60,7 @@ const Users = () => {
           {/* Total Users Card */}
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
             <h3 className="text-gray-400 text-sm font-medium">Total Users</h3>
-            <p className="text-2xl font-bold mt-2">{users.length}</p>
+            <p className="text-2xl font-bold mt-2">{filterUser.length}</p>
           </div>
 
           {/* Active Users Card */}
@@ -79,21 +87,19 @@ const Users = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
-              {Array.isArray(users) && users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-800 transition-colors">
-                  
-                  <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>
-                  {/* <td className="px-6 py-4 hidden sm:table-cell">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      user.status === "Active" 
-                        ? "bg-green-500/20 text-green-500" 
-                        : "bg-red-500/20 text-red-500"
-                    }`}>
-                      {user.status}
-                    </span>
-                  </td> */}
+            {filterUser.length > 0 ? (
+                filterUser.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-800 transition-colors">
+                    <td className="px-6 py-4 hidden sm:table-cell">{user.email}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="px-6 py-4 text-center text-gray-500" colSpan={3}>
+                    No users found
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

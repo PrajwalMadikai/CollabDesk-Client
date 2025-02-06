@@ -112,7 +112,7 @@ const EmailCheckForm = () => {
                   "&:hover": { backgroundColor: "#006400" },
                   height: "48px",
                 }}
-                onClick={() => window.open("https://mail.google.com", "_blank")} // Open email client
+                onClick={() => window.open("https://mail.google.com",)} // Open email client
               >
                 Open Email
               </Button>
