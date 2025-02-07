@@ -1,13 +1,15 @@
-    import axios from "axios";
-import baseUrl from "./urlconfig";
+import { clearUser } from "@/store/slice/userSlice";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { baseUrl } from "./urlconfig";
 
     const API = axios.create({
-      baseURL: "http://localhost:5713",
+      baseURL: `http://localhost:5713`,
       withCredentials: true,
     });
 
     const ADMIN_API=axios.create({
-      baseURL:'http://localhost:5713/admin',
+      baseURL:`http://localhost:5713/admin`,
       withCredentials:true
     })
     const refreshAccess = async (isAdmin = false) => {
@@ -60,6 +62,13 @@ import baseUrl from "./urlconfig";
             error.config.headers.Authorization = `Bearer ${newAccessToken}`;
             return API.request(error.config); // Retry the failed request
           }
+        }
+        if (error.response?.status === 403 && error.response?.data?.message === "Your account is blocked") {
+          
+          const dispatch = useDispatch();
+          dispatch(clearUser());
+          localStorage.removeItem('user')
+          window.location.href = "/blocked";
         }
         return Promise.reject(error);  
       }

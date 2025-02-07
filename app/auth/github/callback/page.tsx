@@ -33,6 +33,10 @@ export default function GitHubCallback() {
         // Simulate loading delay
         setTimeout(() => {
           const userData = JSON.parse(decodeURIComponent(data));
+          if (!userData.workSpaces||!userData.isAuthenticated) {
+            userData.workSpaces = [];
+            userData.isAuthenticated=true
+          }
           dispatch(setUser(userData));
 
           setStatus('success');
@@ -43,9 +47,22 @@ export default function GitHubCallback() {
         }, 1500); 
 
       } catch (err: any) {
+       
         setStatus('error');
         setErrorMessage(err.message);
         toast.error("Authentication Failed!");
+        if(err.response?.status==403 && err.response?.data?.message === "Your account is blocked")
+          {
+            router.push('/')
+            toast.error("Your account has been blocked", {
+              duration: 2000,
+              position: 'top-right',
+              style: {
+                  background: '#e74c3c',
+                  color: '#fff',
+              },
+          });
+          } 
         setTimeout(() => {
           router.push(mode === 'login' ? '/signup' : '/signup');
         }, 4000);

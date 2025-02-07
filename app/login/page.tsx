@@ -1,5 +1,5 @@
 "use client";
-import baseUrl from "@/api/urlconfig";
+import { baseUrl } from "@/api/urlconfig";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
@@ -92,6 +92,7 @@ export default function Home() {
         
           
         } else {
+          
           console.error("Login failed:", response.data.message );
           toast.error(response.data.message || "Unknown error", {
             position:'top-right',
@@ -99,6 +100,18 @@ export default function Home() {
           });
         }
       } catch (error:any) {
+         if(error.response?.status==403 && error.response?.data?.message === "Your account is blocked")
+          {
+            router.push('/')
+            toast.error("Your account has been blocked", {
+              duration: 2000,
+              position: 'top-right',
+              style: {
+                  background: '#e74c3c',
+                  color: '#fff',
+              },
+          });
+          } 
         console.error("Error during login:", error);
         if (error.response && error.response.status === 404 && error.response.data.message === "No User Found!") {
           toast.error("!", {
@@ -157,7 +170,18 @@ export default function Home() {
       }, 2000);
     } catch (error:any) {
       console.error("Login error:", error.response?.data?.message || error.message);
-        
+      if(error.response?.status==403 && error.response?.data?.message === "Your account is blocked")
+        {
+          router.push('/')
+          toast.error("Your account has been blocked", {
+            duration: 2000,
+            position: 'top-right',
+            style: {
+                background: '#e74c3c',
+                color: '#fff',
+            },
+        });
+        } 
       toast.error(error.response?.data?.message || "Google login failed.", {
           duration: 3000,
           position: "top-right",

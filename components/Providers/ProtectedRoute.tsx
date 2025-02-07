@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const AUTH_ROUTES = ["/login", "/signup", "/verify-email", "/email-sent",'/reset-password','/email-verification','/email-check'];
-const PROTECTED_ROUTES = ["/workspace", "/dashboard"];
+const PROTECTED_ROUTES = ["/workspace","/dashboard"];
 
 const LoadingSpinner = () => {
   return (

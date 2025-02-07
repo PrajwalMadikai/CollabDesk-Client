@@ -1,9 +1,11 @@
 import ProtectedRoute from "@/components/Providers/ProtectedRoute"
-
+import SidebarLayout from "@/components/dashboard/sidebar"
 const dashboardComponent=()=>{
     return<>
     <ProtectedRoute>
-    <h2>Dashboard</h2>
+    <SidebarLayout>
+        <h2>Hello this </h2>
+    </SidebarLayout>
     </ProtectedRoute>
     </>
 }

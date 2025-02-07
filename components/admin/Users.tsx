@@ -1,6 +1,6 @@
 "use client";
 import { ADMIN_API } from "@/api/handle-token-expire";
-import baseUrl from "@/api/urlconfig";
+import { baseUrl } from '@/api/urlconfig';
 import usersInterface from "@/interfaces/adminUsers";
 import axios from "axios";
 import { Search, Users as UsersIcon } from "lucide-react";
@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const Users = () => {
+
+  
   
   const [users, setUsers] = useState<usersInterface[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,7 +22,7 @@ const Users = () => {
           throw new Error("No access token found");
         }
     
-        const response = await ADMIN_API.get("/users");
+        const response = await ADMIN_API.get(`/users`);
         setUsers(response.data.users);
       } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -72,7 +74,7 @@ const Users = () => {
             user.id === userId ? { ...user, isBlock: false } : user
           )
         );
-        toast.success("User unblocked",{
+        toast.success("User unblocked successfully",{
           duration:2000,
           position:'top-right'
         })

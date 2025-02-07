@@ -18,18 +18,18 @@ export default function CreateWorkspace() {
   const [loading, setLoading] = useState(false);
    const route=useRouter()
   const user=useSelector((state:RootState)=>state.user)
-  const dispath=useDispatch<AppDispatch>()
+  const dispatch=useDispatch<AppDispatch>()
   const userId=user.id
   
   useEffect(()=>{
    const userData= localStorage.getItem('user')
    if(userData)
    {
-     dispath(setUser(JSON.parse(userData)))
+     dispatch(setUser(JSON.parse(userData)))
    }
 
    
-  },[dispath])
+  },[dispatch])
   
   const {
     register,
@@ -64,6 +64,7 @@ export default function CreateWorkspace() {
             });
             route.push('/dashboard');
         } else {
+             
             toast.error(response.data.message, {
                 duration: 2000,
                 position: 'top-right',
@@ -83,7 +84,8 @@ export default function CreateWorkspace() {
                     color: '#fff',
                 },
             });
-        } else {
+        }
+       else {
             toast.error("An error occurred", {
                 duration: 2000,
                 position: 'top-right',

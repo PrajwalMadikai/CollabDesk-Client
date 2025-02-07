@@ -1,2 +1,4 @@
 const baseUrl='http://localhost:5713'
-export default baseUrl
+const baseFrontUrl='http://localhost:3000'
+
+export { baseFrontUrl, baseUrl }
