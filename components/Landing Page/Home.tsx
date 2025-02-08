@@ -41,6 +41,7 @@ function HeaderAndLandingHome() {
     
       localStorage.removeItem('user');
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       
        dispath(clearUser())
 
@@ -87,16 +88,12 @@ console.log('user home:',user);
           <div className="flex items-center space-x-3 md:mr-3">
           {user.isAuthenticated ? (
             <> 
-              <Link href="/logout">
               <button onClick={logout} className="text-white  h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
                Logout
               </button>
-              </Link>
-              <Link href="/dashboard" prefetch={true}>
-              <button className="bg-white text-black h-[32px] rounded w-24  font-extralight text-sm hover:bg-gray-200 transition duration-200">
+              <button onClick={handleDashboard} className="bg-white text-black h-[32px] rounded w-24  font-extralight text-sm hover:bg-gray-200 transition duration-200">
                 Dashboard
               </button>
-              </Link>
             </>
             ) : (
               <>

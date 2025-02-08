@@ -38,19 +38,35 @@ export default function CreateWorkspace() {
   } = useForm({
     resolver: zodResolver(workspaceSchema),
   });
-  const token = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    const userFetch = localStorage.getItem('user');
+    
+    if (userFetch) {
+      const userData = JSON.parse(userFetch);
+      if (userData) {
+        dispatch(setUser({
+          id: userData.id,
+          fullname: userData.fullname,
+          email: userData.email,
+          workSpaces: userData.workSpaces,
+          isAuthenticated: true,
+        }));
+      }
+    }
+  }, [dispatch]);
+
+
+
+ 
   const onSubmit = async () => {
     try {
         setLoading(true);
 
         const response = await API.post(
-            "http://localhost:5713/workspace/create",
-            { spaceName, userId },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+            "/workspace/create",
+            { spaceName, userId }
+            , { withCredentials: true }
         );
 
         if (response.status === 201) {
@@ -63,17 +79,18 @@ export default function CreateWorkspace() {
                 },
             });
             route.push('/dashboard');
-        } else {
+        } 
+      //   else {
              
-            toast.error(response.data.message, {
-                duration: 2000,
-                position: 'top-right',
-                style: {
-                    background: '#e74c3c',
-                    color: '#fff',
-                },
-            });
-        }
+      //     toast.error(response.data.message, {
+      //         duration: 2000,
+      //         position: 'top-right',
+      //         style: {
+      //             background: '#e74c3c',
+      //             color: '#fff',
+      //         },
+      //     });
+      // }
     } catch (error: any) {
         if (error.response?.status === 409) {   
             toast.error(error.response.data.message, {

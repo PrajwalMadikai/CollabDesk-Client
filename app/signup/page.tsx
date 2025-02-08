@@ -1,10 +1,11 @@
 "use client";
 import { API } from "@/api/handle-token-expire";
-import baseUrl from "@/api/urlconfig";
+import { baseUrl } from "@/api/urlconfig";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -99,7 +100,7 @@ export default function Signup() {
     try {
       
       const isAdmin=false
-      await API.post("http://localhost:5713/signup", {
+      await axios.post("http://localhost:5713/signup", {
         fullName,
         email,
         password,
@@ -146,7 +147,7 @@ export default function Signup() {
     const idToken = credentialResponse.credential;
     
     try {
-        const response = await API.post(`${baseUrl}/google-signup`, { idToken });
+        const response = await API.post(`/google-signup`, { idToken }, { withCredentials: true });
         const userData = response.data.user;
         const accessToken = response.data.accessToken;
 

@@ -1,13 +1,12 @@
-import ProtectedRoute from "@/components/Providers/ProtectedRoute"
-import SidebarLayout from "@/components/dashboard/sidebar"
-const dashboardComponent=()=>{
-    return<>
-    <ProtectedRoute>
-    <SidebarLayout>
-        <h2>Hello this </h2>
-    </SidebarLayout>
-    </ProtectedRoute>
-    </>
-}
-
-export default dashboardComponent
+export default function DashboardPage() {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <img
+          src="/collabdesk white logo.png"
+          alt="Dashboard Placeholder"
+          className="h-[200px] shadow-lg"
+        />
+      </div>
+    );
+  }
+  

@@ -1,10 +1,9 @@
 "use client";
-import { baseUrl } from "@/api/urlconfig";
+import { API } from "@/api/handle-token-expire";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
-import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -56,18 +55,19 @@ export default function Home() {
     
     if (!newErrors.email && !newErrors.password) {
       try {
-        const response = await axios.post(`${baseUrl}/login`, {
+        const response = await API.post(`/login`, {
           email,
           password,
-        });
+        }, { withCredentials: true });
 
         if (response.status === 200) {
                     
           const userData = response.data.user;
           const accessToken = response.data.accessToken;
-          
+          const refreshToken=response.data.refreshToken
           localStorage.setItem('user', JSON.stringify(userData));
           localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
           
           dispatch(setUser({
             id: userData.id,
@@ -137,7 +137,7 @@ export default function Home() {
     const idToken = credentialResponse.credential; // google ID token
 
     try {
-      const response = await axios.post(`${baseUrl}/google-login`, { idToken });
+      const response = await API.post(`/google-login`, { idToken }, { withCredentials: true });
       
       toast.success(response.data.message, {
         duration: 2000,
