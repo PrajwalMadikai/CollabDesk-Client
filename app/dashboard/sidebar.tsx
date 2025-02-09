@@ -50,6 +50,7 @@ const Sidebar: React.FC = () => {
     try {
       const response = await API.post("/workspace/fetch", { userId }, { withCredentials: true });
       const fetchedWorkspaces = response.data.workspace;
+
       setWorkspaces(fetchedWorkspaces);
       if (fetchedWorkspaces.length > 0) {
         setSelectedWorkspace(fetchedWorkspaces[0]);
@@ -61,18 +62,31 @@ const Sidebar: React.FC = () => {
 
   const fetchFolders = async () => {
     try {
-      const response = await API.post(
-        "/folder/fetch",
-        { workspaceId: selectedWorkspace?.workspaceId },
-        { withCredentials: true }
-      );
-      if (response.data.folders) {
-        setFolders(response.data.folders);
-      }
+        const response = await API.post(
+            "/folder/fetch",
+            { workspaceId: selectedWorkspace?.workspaceId },
+            { withCredentials: true }
+        );
+        console.log("folder fetch:", response.data.folders);
+
+        if (response.data.folders) {
+            setFolders(
+                response.data.folders.map((folder: any) => ({
+                    id: folder.id,
+                    name: folder.name,
+                    files: folder.files?.map((file: any) => ({
+                        fileId: file.fileId,   
+                        fileName: file.fileName  
+                    })) || []
+                }))
+            );
+        }
     } catch (error) {
-      console.error("Error fetching folders:", error);
+        console.error("Error fetching folders:", error);
     }
-  };
+};
+
+
 
   const createFolder = async () => {
     if (!selectedWorkspace) return;
@@ -82,11 +96,12 @@ const Sidebar: React.FC = () => {
         "/folder/create",
         {
           workspaceId: selectedWorkspace.workspaceId,
-          name: "New Folder"
+          name: "Untitled"
         },
         { withCredentials: true }
       );
-
+      console.log('create folder:',response.data);
+      
       if (response.data.folder) {
         setFolders(prevFolders => [...prevFolders, { 
           id: response.data.folder.id,
@@ -132,32 +147,37 @@ const Sidebar: React.FC = () => {
 
   const addFileToFolder = async (folderId: string) => {
     try {
-      const response = await API.post(
-        "/file/create",
-        { folderId, name: "New File" },
-        { withCredentials: true }
-      );
-
-      if (response.data.file) {
-        setFolders(prevFolders =>
-          prevFolders.map(folder =>
-            folder.id === folderId
-              ? {
-                  ...folder,
-                  files: [...folder.files, {
-                    fileId: response.data.file.id,
-                    fileName: response.data.file.name
-                  }]
-                }
-              : folder
-          )
+        const response = await API.post(
+            "/file/create",
+            { folderId },
+            { withCredentials: true }
         );
+
+        console.log("create file response:", response.data);
+
+        if (response.data.file) {  
+            setFolders(prevFolders =>
+                prevFolders.map(folder =>
+                    folder.id === folderId
+                        ? {
+                            ...folder,
+                            files: response.data.file.files.map((file: any) => ({  
+                                fileId: file.fileId,   
+                                fileName: file.fileName  
+                            }))
+                        }
+                        : folder
+                )
+            );
+        }
+
         setExpandedFolders(prev => ({ ...prev, [folderId]: true }));
-      }
     } catch (err) {
-      console.error("Failed to add file:", err);
+        console.error("Failed to add file:", err);
     }
-  };
+};
+
+
 
   const deleteFile = async (folderId: string, fileId: string) => {
     try {
