@@ -1,7 +1,7 @@
 "use client";
 import { API } from "@/api/handle-token-expire";
 import { RootState } from "@/store/store";
-import { ChevronDown, ChevronRight, Folder, Menu, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileTextIcon, Folder, Menu, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -181,7 +181,9 @@ const Sidebar: React.FC = () => {
 
   const deleteFile = async (folderId: string, fileId: string) => {
     try {
-      await API.delete(`/file/delete/${fileId}`, { withCredentials: true });
+      await API.post(`/file/delete/${fileId}`, { folderId  }, { withCredentials: true  });
+
+
       setFolders(prevFolders =>
         prevFolders.map(folder =>
           folder.id === folderId
@@ -196,7 +198,7 @@ const Sidebar: React.FC = () => {
 
   const deleteFolder = async (folderId: string) => {
     try {
-      await API.delete(`/folder/delete/${folderId}`, { withCredentials: true });
+      await API.post(`/folder/delete/${folderId}`, { withCredentials: true });
       setFolders(prevFolders => prevFolders.filter(folder => folder.id !== folderId));
     } catch (err) {
       console.error("Failed to delete folder:", err);
@@ -315,9 +317,12 @@ const Sidebar: React.FC = () => {
                       {folder.files.map(file => (
                         <div
                           key={file.fileId}
-                          className="flex items-center justify-between px-4 py-2 text-gray-300 hover:bg-gray-800 rounded group"
+                          className="flex items-center justify-between px-4  py-1 text-gray-300 hover:bg-gray-800 rounded group"
                         >
-                          <span className="text-[13px]">{file.fileName}</span>
+                           <div className="flex items-center gap-2">
+                              <FileTextIcon className="h-4 w-4" /> {/* File icon added */}
+                              <span className="text-[13px]">{file.fileName}</span>
+                          </div>
                           <button
                             onClick={() => deleteFile(folder.id, file.fileId)}
                             className="opacity-0 group-hover:opacity-100"
