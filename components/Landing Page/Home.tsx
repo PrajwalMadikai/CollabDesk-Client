@@ -56,21 +56,32 @@ function HeaderAndLandingHome() {
   }
   
 console.log('user home:',user);
-
-  const handleDashboard=()=>{
-
-    if (!user.isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-    
-        if(user.workSpaces.length==0)
-        {
-          router.push('/workspace')
-        }else{
-          router.push('/dashboard')
-        }
+const handleDashboard = async () => {
+  if (!user.isAuthenticated) {
+    router.push('/login');
+    return;
   }
+
+  if (user.workSpaces.length === 0) {
+    router.push('/workspace');
+    return;
+  }
+
+
+  try {
+    const response = await API.post("/workspace/fetch", { userId: user.id }, { withCredentials: true });
+
+    if (response.data.workspace.length > 0) {
+      router.push(`/dashboard/${response.data.workspace[0].workspaceId}`); 
+    } else {
+      router.push('/workspace');  
+    }
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    toast.error("Failed to fetch workspaces.");
+  }
+};
+
 
     return (
       <>
@@ -250,9 +261,6 @@ console.log('user home:',user);
     </div>
     </div>
     </div>
-
-
-
       </>
     );
   }

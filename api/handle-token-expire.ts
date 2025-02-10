@@ -1,8 +1,6 @@
 import { clearUser } from "@/store/slice/userSlice";
 import { store } from "@/store/store";
 import axios from "axios";
- 
-    
     const API = axios.create({
       baseURL: `http://localhost:5713`,
       withCredentials: true
@@ -40,7 +38,7 @@ import axios from "axios";
           });
           
           // Only clear tokens and redirect if it's a true auth failure
-          if (error.response?.status === 401 || error.response?.status === 403) {
+          if ( error.response?.status === 403) {
               localStorage.removeItem(isAdmin ? "adminAccessToken" : "accessToken");
               window.location.href = isAdmin ? "/admin/login" : "/login";
           }
