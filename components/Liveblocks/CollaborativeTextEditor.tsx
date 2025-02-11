@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BlockNoteEditor } from "@blocknote/core";
@@ -6,17 +5,20 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useRoom, useSelf } from "@liveblocks/react/suspense";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
+import { Button } from "@mantine/core";
+import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useCallback, useEffect, useState } from "react";
 import * as Y from "yjs";
-import styles from "./CollaborativeEditor.module.css";
+import styles from "./CollaborativeTextEditor.module.css";
+import { Avatars } from "./avatar/Avatar";
 
-// Collaborative text editor with simple rich text, live cursors, and live avatars
+const Loader = () => <div className={styles.loader}>Loading...</div>;
+
 export function CollaborativeEditor() {
   const room = useRoom();
   const [doc, setDoc] = useState<Y.Doc>();
   const [provider, setProvider] = useState<any>();
 
-  // Set up Liveblocks Yjs provider
   useEffect(() => {
     const yDoc = new Y.Doc();
     const yProvider = new LiveblocksYjsProvider(room, yDoc);
@@ -30,7 +32,7 @@ export function CollaborativeEditor() {
   }, [room]);
 
   if (!doc || !provider) {
-    return null;
+    return <Loader />;
   }
 
   return <BlockNote doc={doc} provider={provider} />;
@@ -42,26 +44,21 @@ type EditorProps = {
 };
 
 function BlockNote({ doc, provider }: EditorProps) {
-  // Get user info from Liveblocks authentication endpoint
   const userInfo = useSelf((me) => me.info);
-  if(!userInfo) return null
+  if (!userInfo) return <Loader />;
 
   const editor: BlockNoteEditor = useCreateBlockNote({
     collaboration: {
       provider,
-
-      // Where to store BlockNote data in the Y.Doc:
       fragment: doc.getXmlFragment("document-store"),
-
-      // Information for this user:
       user: {
-        name: userInfo?.name,
+        name: userInfo?.name ?? "Unknown",
+        color:typeof userInfo?.color === "string" ? userInfo.color : "#000000"
       },
     },
   });
 
   const [theme, setTheme] = useState<"light" | "dark">("light");
-
   const changeTheme = useCallback(() => {
     const newTheme = theme === "light" ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", newTheme);

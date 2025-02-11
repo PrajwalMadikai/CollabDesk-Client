@@ -70,6 +70,13 @@ export default function CreateWorkspace() {
         );
 
         if (response.status === 201) {
+          const workspaceId = response.data.workspace.id;
+          await API.post("/api/room-create", {
+            roomId: workspaceId,
+            userId,
+            email: user.email,
+            title: spaceName
+          });
             toast.success("Workspace created successfully!", {
                 duration: 2000,
                 position: 'top-right',
@@ -78,7 +85,7 @@ export default function CreateWorkspace() {
                     color: '#fff',
                 },
             });
-            route.push('/dashboard');
+            route.push(`/dashboard/${workspaceId}`);
         } 
       //   else {
              

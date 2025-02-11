@@ -1,48 +1,63 @@
-// import { Liveblocks } from "@liveblocks/node";
-// import { NextRequest } from "next/server";
+import { getUserColor } from "@/lib/utils";
+import { Liveblocks } from "@liveblocks/node";
+import { NextRequest, NextResponse } from "next/server";
+import { baseUrl } from "../urlconfig";
 
-// const liveblocks = new Liveblocks({
-//   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
-// });
+const secretKey = process.env.LIVEBLOCKS_SECRET_KEY;
+if (!secretKey) {
+  throw new Error("LIVEBLOCKS_SECRET_KEY is not set");
+}
 
-// export async function POST(request: NextRequest) {
- 
-//  const user=localStorage.getItem('user')
-//  let userId=null
-//  if(user)
-//  {
-//     let userData=JSON.parse(user)
-//      userId=userData.id
-//  }
+const liveblocks = new Liveblocks({ secret: secretKey });
 
-//   try {
-//     // Make API call to your backend to verify the token and get user info
-//     const userResponse = await fetch('http://your-backend-url/api/auth/verify', {
-      
-//     });
+export async function POST(req: NextRequest) {
+  try {
+    // Extract JWT token from headers
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized: Missing token" }, { status: 401 });
+    }
 
-//     if (!userResponse.ok) {
-//       return new Response("Unauthorized", { status: 401 });
-//     }
+    const token = authHeader.split(" ")[1];
 
-//     const userData = await userResponse.json();
-    
-//     const session = liveblocks.prepareSession(userId, {
-//         userInfo: {
-//           name: userData.fullname,
-//         },
-//       });
-      
-//       // Grant access to the room
-//       session.allow(fileId, session.FULL_ACCESS);
-      
-//       // Authorize session and return token
-//       const { token } = await session.authorize();
-//       return new Response(JSON.stringify({ token }), { status: 200 });
-      
-      
-//   } catch (error) {
-//     console.error("Auth error:", error);
-//     return new Response("Internal Server Error", { status: 500 });
-//   }
-// }
+    // Verify user with backend
+    const backendResponse = await fetch(`${baseUrl}/verify-user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!backendResponse.ok) {
+      return NextResponse.json({ error: "Invalid or expired token" }, { status: backendResponse.status });
+    }
+
+    const user = await backendResponse.json();
+
+    // Create user info object
+    const userInfo = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar || "",
+      color: getUserColor(user.id),
+    };
+
+    // Identify user with Liveblocks
+    const { status, body } = await liveblocks.identifyUser(
+      {
+        userId: userInfo.email,
+        groupIds: [],  
+      },
+      { userInfo }
+    );
+
+    // Return the response
+    return new Response(body, { status });
+
+  } catch (error) {
+    console.error("Liveblocks auth error:", error);
+    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+  }
+}
