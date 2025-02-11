@@ -1,9 +1,9 @@
 import { ClientSideSuspense, LiveblocksProvider } from "@liveblocks/react/suspense";
 import { ReactNode } from "react";
 
-const LiveblocksProviderWrapper = ({ children, token }: { children: ReactNode; token: string | null }) => {
+const LiveblocksProviderWrapper = ({ children }: { children: ReactNode;}) => {
   return (
-    <LiveblocksProvider authEndpoint="/api/liveblocks-auth" initialAuth={{ token }}>
+    <LiveblocksProvider authEndpoint="/api/liveblocks-auth" throttle={500} >
       <ClientSideSuspense fallback={<div>Loading...in client suspense liveblocks provider</div>}>
         {children}
       </ClientSideSuspense>

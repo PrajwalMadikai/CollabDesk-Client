@@ -1,6 +1,5 @@
 "use client";
-import { API } from "@/api/handle-token-expire";
-import CollaborativeRoom from "@/components/Liveblocks/CollaborativeRoom";
+import { API } from "@/app/api/handle-token-expire";
 import LiveblocksProviderWrapper from "@/components/Providers/LiveblocksProvider";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,8 +13,7 @@ interface Workspace {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
-  const [liveblocksToken,setLiveblocksToken]=useState(null)
+  const [liveblocksToken, setLiveblocksToken] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -24,66 +22,67 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (!userFetch) return;
 
         const userData = JSON.parse(userFetch);
-        const response = await API.post("/workspace/fetch", { userId: userData.id }, { withCredentials: true });
+        const response = await API.post(
+          "/workspace/fetch", 
+          { userId: userData.id }, 
+          { withCredentials: true }
+        );
 
-        if (response.data.workspace && response.data.workspace.length > 0) {
+        if (response.data.workspace?.length > 0) {
           setWorkspaces(response.data.workspace);
-          setSelectedWorkspace(response.data.workspace[0]); // Fix here
-          router.replace(`/dashboard/${response.data.workspace[0].workspaceId}`);
         }
       } catch (error) {
         console.error("Error fetching workspaces:", error);
       }
     };
-    
-    const fetchLiveblocksToken = async () => {
+
+    const initializeLiveblocks = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        if (!token) return;
-
+        console.log("Retrieved token:", token ? "Token exists" : "No token"); // Debug log
+    
+        if (!token) {
+          console.error("No access token found in localStorage");
+          // Redirect to login or handle the missing token case
+          router.push("/login");
+          return;
+        }
+    
         const response = await fetch("/api/liveblocks-auth", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          credentials: "include",
         });
-
-        if (!response.ok) throw new Error("Failed to authenticate with Liveblocks");
-
+    
+        console.log("Liveblocks auth response status:", response.status);
+    
+        if (!response.ok) {
+          throw new Error("Failed to authenticate with Liveblocks");
+        }
+    
         const data = await response.json();
         setLiveblocksToken(data.token);
       } catch (error) {
-        console.error("Error fetching Liveblocks token:", error);
+        console.error("Error initializing Liveblocks:", error);
+        // Handle the error (e.g., redirect to login or show a message)
+        router.push("/login");
       }
     };
-   
 
-    fetchWorkspaces().then(()=>{fetchLiveblocksToken()})
+    fetchWorkspaces().then(()=>{ initializeLiveblocks()})
+   
   }, [router]);
 
   return (
-    <LiveblocksProviderWrapper token={liveblocksToken}>
+    <LiveblocksProviderWrapper>
       <div className="flex h-screen bg-black">
         <Sidebar workspaces={workspaces} />
-        <div className="flex-1 p-6 w-full sm:ml-64 overflow-auto">
-          {selectedWorkspace ? (
-            <CollaborativeRoom
-              roomId={selectedWorkspace.workspaceId}
-              roomMetadata={{
-                title: selectedWorkspace.workspaceName,
-                workspaceId: selectedWorkspace.workspaceId
-              }}
-              users={[]} // Add your users here
-              currentUserType="editor" // Or whatever type is appropriate
-              
-            >
-              {children}
-            </CollaborativeRoom>
-          ) : (
-            children
-          )}
-        </div>
+        <main className="flex-1 p-6 w-full sm:ml-64 overflow-auto">
+          {children}
+        </main>
       </div>
     </LiveblocksProviderWrapper>
   );

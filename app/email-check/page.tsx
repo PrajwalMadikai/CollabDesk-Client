@@ -1,5 +1,5 @@
 "use client";
-import { baseUrl } from '@/api/urlconfig';
+import { baseUrl } from '@/app/api/urlconfig';
 import axios from 'axios';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';

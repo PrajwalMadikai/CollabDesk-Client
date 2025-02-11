@@ -1,13 +1,21 @@
+"use client";
+import CollaborativeRoom from "@/components/Liveblocks/CollaborativeRoom";
+import { useParams } from "next/navigation";
 
-export default function WorkspacePage() {
+export default function WorkspaceDashboard() {
+  const { workspaceId } = useParams();
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4">
-    <img
-      src="/collabdesk white logo.png"
-      alt="Dashboard Placeholder"
-      className="w-[300px] max-w-xs sm:max-w-md md:max-w-lg h-auto shadow-lg"
-    />
-  </div>
+    <CollaborativeRoom
+      roomId={workspaceId as string}
+      roomMetadata={{
+        title: "Workspace Dashboard",
+        workspaceId: workspaceId as string
+      }}
+      users={[]}
+      currentUserType="editor"
+    >
+      <div>Workspace Dashboard Content</div>
+    </CollaborativeRoom>
   );
 }

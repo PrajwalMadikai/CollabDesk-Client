@@ -1,6 +1,6 @@
 "use client";
-import { ADMIN_API } from "@/api/handle-token-expire";
-import { baseUrl } from '@/api/urlconfig';
+import { ADMIN_API } from "@/app/api/handle-token-expire";
+import { baseUrl } from '@/app/api/urlconfig';
 import usersInterface from "@/interfaces/adminUsers";
 import axios from "axios";
 import { Search, Users as UsersIcon } from "lucide-react";

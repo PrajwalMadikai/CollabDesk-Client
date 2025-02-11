@@ -6,7 +6,7 @@ declare type SearchParamProps = {
   
   declare type AccessType = ["room:write"] | ["room:read", "room:presence:write"];
   
-  declare type RoomAccesses = Record<string, AccessType>;
+  // declare type RoomAccesses = Record<string, AccessType>;
   
   declare type UserType = "creator" | "editor" | "viewer";
   

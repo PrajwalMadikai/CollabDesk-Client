@@ -1,5 +1,5 @@
 'use client';
-import { baseUrl } from "@/api/urlconfig";
+import { baseUrl } from "@/app/api/urlconfig";
 import { emailSchema } from "@/validations/all validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, CircularProgress, TextField } from "@mui/material";
