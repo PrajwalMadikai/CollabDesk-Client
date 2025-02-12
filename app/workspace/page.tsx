@@ -74,39 +74,7 @@ export default function CreateWorkspace() {
         { withCredentials: true }
       );
 
-       
-
       const workspaceId = workspaceResponse.data.workspace.id;
-      
-
-      const roomResponse = await fetch(`/api/create-room`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          roomId: workspaceId,
-          userId,
-          email: user.email,
-          title: formData.workspaceName,
-        }),
-      });
-      
-      const roomData = await roomResponse.json();
-      
-      if (!roomResponse.ok) {
-        throw new Error(roomData.message || "Failed to create room");
-      }else{
-        toast.success("Workspace created successfully!", {
-          duration: 2000,
-          position: 'top-left',
-          style: {
-            background: '#28a745',
-            color: '#fff',
-          },
-        });
-      }
-      
 
       toast.success("Workspace created successfully!", {
         duration: 2000,

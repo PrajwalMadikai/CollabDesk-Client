@@ -15,7 +15,13 @@ export default function WorkspaceDashboard() {
       users={[]}
       currentUserType="editor"
     >
-      <div>Workspace Dashboard Content</div>
+      <div className="flex items-center justify-center h-screen">
+        <img 
+          src="/collabdesk white logo.png" 
+          alt="Workspace Dashboard" 
+          className="max-w-full h-auto w-[80%] md:w-[50%] lg:w-[40%]"
+        />
+      </div>
     </CollaborativeRoom>
   );
 }

@@ -1,10 +1,18 @@
 "use client";
 
+import { createClient } from "@liveblocks/client";
 import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense";
 import { ReactNode } from "react";
 import { CollaborativeEditor } from "./CollaborativeTextEditor";
 
-// ✅ Define metadata & user types
+if (!process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY) {
+  throw new Error("LIVEBLOCKS_SECRET_KEY is missing");
+}
+
+export const liveblocks = createClient({
+  publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY,
+});
+
 interface RoomMetadata {
   title: string;
   workspaceId: string;
@@ -17,7 +25,6 @@ interface User {
 
 type UserType = "editor" | "viewer";  
 
-// ✅ Ensure `roomId` is part of props
 interface CollaborativeRoomProps {
   roomId: string;
   roomMetadata: RoomMetadata;
@@ -26,7 +33,6 @@ interface CollaborativeRoomProps {
   children?: ReactNode;
 }
 
-// ✅ Define the component correctly with React.FC<Props>
 const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
   roomId,
   roomMetadata,
@@ -37,7 +43,13 @@ const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
   if (!roomId) return <div>Loading Liveblocks Room...</div>;
 
   return (
-    <RoomProvider id={roomId}>
+    <RoomProvider id={roomId} 
+    initialPresence={{
+      cursor: null,
+      selection: null,
+    }}
+    initialStorage={{}}
+    >
       <ClientSideSuspense fallback={<h1>Loading..........Room</h1>}>
         <div className="collaborative-room">
           <CollaborativeEditor  />

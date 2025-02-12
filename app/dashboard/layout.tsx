@@ -12,8 +12,7 @@ interface Workspace {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [liveblocksToken, setLiveblocksToken] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState([]);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -36,53 +35,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
     };
 
-    const initializeLiveblocks = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        console.log("Retrieved token:", token ? "Token exists" : "No token"); // Debug log
-    
-        if (!token) {
-          console.error("No access token found in localStorage");
-          // Redirect to login or handle the missing token case
-          router.push("/login");
-          return;
-        }
-    
-        const response = await fetch("/api/liveblocks-auth", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-    
-        console.log("Liveblocks auth response status:", response.status);
-    
-        if (!response.ok) {
-          throw new Error("Failed to authenticate with Liveblocks");
-        }
-    
-        const data = await response.json();
-        setLiveblocksToken(data.token);
-      } catch (error) {
-        console.error("Error initializing Liveblocks:", error);
-        // Handle the error (e.g., redirect to login or show a message)
-        router.push("/login");
-      }
-    };
-
-    fetchWorkspaces().then(()=>{ initializeLiveblocks()})
-   
+    fetchWorkspaces();
   }, [router]);
 
   return (
     <LiveblocksProviderWrapper>
-      <div className="flex h-screen bg-black">
-        <Sidebar workspaces={workspaces} />
-        <main className="flex-1 p-6 w-full sm:ml-64 overflow-auto">
+      <div className="flex h-screen bg-gray-900">
+        <Sidebar />
+        <div className="flex-1 ml-64">
           {children}
-        </main>
+        </div>
       </div>
     </LiveblocksProviderWrapper>
   );
