@@ -52,8 +52,8 @@ function BlockNote({ doc, provider }: EditorProps) {
       provider,
       fragment: doc.getXmlFragment("document-store"),
       user: {
-        name: userInfo?.name ?? "Unknown",
-        color:typeof userInfo?.color === "string" ? userInfo.color : "#000000"
+        name: userInfo?.name ,
+        color: userInfo.color || "#000000"
       },
     },
   });

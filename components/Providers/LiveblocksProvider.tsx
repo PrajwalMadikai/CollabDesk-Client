@@ -12,7 +12,7 @@ const LiveblocksProviderWrapper = ({ children }: { children: ReactNode }) => {
   }, []);
 
   if (!authToken) {
-    return <div>Loading... waiting for authentication</div>;
+    return <div className="text-white">Loading... waiting for authentication</div>;
   }
 
   return (

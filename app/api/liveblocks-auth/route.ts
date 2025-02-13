@@ -1,3 +1,4 @@
+// /api/liveblocks-auth/route.ts
 import { liveblocks } from "@/lib/liveblocks-server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,38 +22,30 @@ export async function POST(request: NextRequest) {
     });
 
     if (!backendResponse.ok) {
-      const errorData = await backendResponse.json();
-      return NextResponse.json(
-        { error: errorData.message || "Invalid or expired token" },
-        { status: backendResponse.status }
-      );
+      throw new Error("Failed to verify user");
     }
 
     const user = await backendResponse.json();
-    const userInfo = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      avatar: user.avatar || "",
-      color: "#ff0000",
-    };
-
+    
+    // Make sure to include room access in the identity
     const authResponse = await liveblocks.identifyUser(
       {
-        userId: userInfo.id,
-        groupIds: [], 
+        userId: user.id,
+        groupIds: [],
       },
-      { userInfo }
+      {
+        userInfo: {
+          id:user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar || "",
+          color:'#00000'        
+        },
+      }
     );
-    
+
     const parsedBody = JSON.parse(authResponse.body);
-    console.log('parsed body:',parsedBody);
-    
-    
-    // The key changes are here - return the exact format expected
-    return NextResponse.json({
-      token: parsedBody.token
-    });
+    return NextResponse.json({ token: parsedBody.token });
   } catch (error) {
     console.error("Liveblocks auth error:", error);
     return NextResponse.json(

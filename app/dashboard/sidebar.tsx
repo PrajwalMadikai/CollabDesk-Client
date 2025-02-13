@@ -18,6 +18,8 @@ const Sidebar: React.FC = () => {
   const userId: string | null = user.id;
 
   useEffect(() => {
+    console.log('redux:',user);
+    
     const fetchSpace = async () => {
       try {
         let response = await API.post("/workspace/fetch", { userId }, { withCredentials: true });
@@ -77,63 +79,56 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const fileFetch = async (folderId: string) => {
-    try {
-      const response = await API.post('/file/fetch', { folderId }, { withCredentials: true });
-      if (response.status === 200) {
-        setFolders((prevFolders) =>
-          prevFolders.map((folder) =>
-            folder.id === folderId
-              ? { ...folder, files: response.data.files }
-              : folder
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching files:", error);
-    }
-  };
-
+  // const fileFetch = async (folderId: string) => {
+  //   try {
+  //     const response = await API.post('/file/fetch', { folderId }, { withCredentials: true });
+  //     if (response.status === 200) {
+  //       setFolders((prevFolders) =>
+  //         prevFolders.map((folder) =>
+  //           folder.id === folderId
+  //             ? { ...folder, files: response.data.files }
+  //             : folder
+  //         )
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching files:", error);
+  //   }
+  // };
   const handleAddFile = async (folderId: string) => {
     try {
-      console.log('front end:',folderId);
-      
       if (!folderId) {
         console.error("Missing folderId");
         return;
       }
-
+  
+      // First create the file in your database
       const response = await API.post("/file/create", { 
-         folderId 
+        folderId 
       }, { withCredentials: true });
-
+  
       if (response.status === 201) {
         const newFile = response.data.file;
-
-        if (!userId || !user.email) {
-          console.error("Missing user information");
-          return;
-        }
-
-        const roomResponse = await fetch(`/api/create-room`, {
+        
+        const roomResponse = await fetch("/api/create-room", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`  
           },
           body: JSON.stringify({
             roomId: newFile.id,
-            userId,
+            userId: user.id,
             email: user.email,
-            title: newFile.name || 'Untitled',
+            title: newFile.name || "Untitled",
           }),
         });
-
+  
         if (!roomResponse.ok) {
-          const errorData = await roomResponse.json();
-          throw new Error(`Failed to create room: ${errorData.message}`);
+          throw new Error("Failed to create room");
         }
-
-        // Update the folders state with the new file
+  
+        // Update folders state
         setFolders((prevFolders) =>
           prevFolders.map((folder) =>
             folder.id === folderId 
@@ -147,21 +142,49 @@ const Sidebar: React.FC = () => {
               : folder
           )
         );
-
-        // Optionally refresh the folder to ensure consistency
-        fetchFolders();
+  
+        await fetchFolders();
       }
     } catch (error) {
       console.error("Error creating file and room:", error);
     }
   };
+  
 
-  const handleFileClick = (fileId: string) => {
-    if (selectedWorkspace?.workspaceId) {
+  const handleFileClick = async (fileId: string) => {
+    if (!selectedWorkspace?.workspaceId || !user.email) {
+      console.error("Missing workspace or user information");
+      return;
+    }
+    
+    try {
+      const response = await fetch("/api/room-access", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          roomId: fileId,
+          userId: user.id,
+          email: user.email
+        })
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to access room');
+      }
+  
+      await response.json(); // Wait for the response to complete
+      
+      // Only navigate if room access was successful
       router.push(`/dashboard/${selectedWorkspace.workspaceId}/${fileId}`);
+    } catch (error) {
+      console.error("Error accessing room:", error);
+      // You might want to show an error notification to the user here
     }
   };
-
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
@@ -199,7 +222,7 @@ const Sidebar: React.FC = () => {
 
         <div className="flex flex-col gap-2">
         {folders.map((folder) => (
-          <div key={folder.id} className="group flex flex-col" onClick={() => fileFetch(folder.id)}>
+          <div key={folder.id} className="group flex flex-col" >
             <div className="flex items-center justify-between px-4 py-2 text-white hover:bg-gray-800 cursor-pointer transition duration-200">
               <div className="flex items-center gap-2">
                 <Folder className="h-5 w-5 text-gray-400" />
