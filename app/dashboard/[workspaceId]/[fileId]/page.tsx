@@ -36,8 +36,6 @@ export default function FileEditor() {
     return <div className="flex items-center justify-center h-screen">Loading file...</div>;
   }
 
-  
-
   return (
     <CollaborativeRoom
       roomId={fileId}
@@ -48,7 +46,7 @@ export default function FileEditor() {
       users={[]} // You'll need to implement user management
       currentUserType="editor"
     >
-      <div className="h-screen bg-white">
+      <div className="h-full bg-white">
         <CollaborativeEditor />
       </div>
     </CollaborativeRoom>

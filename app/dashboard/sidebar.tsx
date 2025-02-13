@@ -1,7 +1,8 @@
 import { RootState } from "@/store/store";
-import { FileText, Folder, Menu, Plus } from "lucide-react";
+import { ChevronRight, FileText, Folder, Menu, Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { API } from "../api/handle-token-expire";
 
@@ -9,34 +10,63 @@ const Sidebar: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [folders, setFolders] = useState<{ id: string; name: string; files: { fileId: string; fileName: string }[] }[]>([]);
+  const [folders, setFolders] = useState<{ id: string; name: string; files: { fileId: string; fileName: string }[]; isExpanded?: boolean }[]>([]);
   const [workspaces, setWorkspaces] = useState<{ workspaceId: string; workspaceName: string }[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<{ workspaceId: string; workspaceName: string } | null>(null);
   const [showWorkspaceList, setShowWorkspaceList] = useState<boolean>(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState<string>("");
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState<string>("");
   const user = useSelector((state: RootState) => state.user);
   const token = localStorage.getItem("accessToken");
   const userId: string | null = user.id;
 
   useEffect(() => {
-    console.log('redux:',user);
     
-    const fetchSpace = async () => {
-      try {
-        let response = await API.post("/workspace/fetch", { userId }, { withCredentials: true });
-        const fetchedWorkspaces = response.data.workspace;
-        setWorkspaces(fetchedWorkspaces);
-
-        if (fetchedWorkspaces.length > 0) {
-          const initialWorkspace = fetchedWorkspaces.find((w: { workspaceId: string | string[] | undefined }) => w.workspaceId === params.workspaceId) || fetchedWorkspaces[0];
-          setSelectedWorkspace(initialWorkspace);
-        }
-      } catch (error) {
-        console.error("Error fetching workspaces:", error);
-      }
-    };
+    
     fetchSpace();
   }, [userId, token, params.workspaceId]);
 
+  const fetchSpace = async () => {
+    try {
+      let response = await API.post("/workspace/fetch", { userId }, { withCredentials: true });
+      const fetchedWorkspaces = response.data.workspace;
+      setWorkspaces(fetchedWorkspaces);
+
+      if (fetchedWorkspaces.length > 0) {
+        const initialWorkspace = fetchedWorkspaces.find((w: { workspaceId: string | string[] | undefined }) => w.workspaceId === params.workspaceId) || fetchedWorkspaces[0];
+        setSelectedWorkspace(initialWorkspace);
+      }
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+    }
+  };
+
+  const handleCreateWorkspace = async (e : React.KeyboardEvent<HTMLInputElement>) => {
+    if(newWorkspaceName.trim().length<3)
+    {
+      toast.error("workspace name must be at least 3 characters",{
+        position:'top-right',
+        duration:2000
+      })
+    }
+    if (e.key === 'Enter' && newWorkspaceName.trim()) {
+      try {
+        const response = await API.post("/workspace/create", {
+          spaceName: newWorkspaceName,
+          userId
+        }, { withCredentials: true });
+        
+        if (response.status === 201) {
+          const newWorkspace = response.data.workspace;
+        setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
+          setNewWorkspaceName("");
+        }
+      } catch (error) {
+        console.error("Error creating workspace:", error);
+      }
+    }
+  };
   const fetchFolders = async () => {
     try {
       let response = await API.post("/folder/fetch", { workspaceId: selectedWorkspace?.workspaceId }, { withCredentials: true });
@@ -60,7 +90,42 @@ const Sidebar: React.FC = () => {
 
   const handleWorkspaceSelect = (workspace: { workspaceId: string; workspaceName: string }) => {
     setSelectedWorkspace(workspace);
+    setShowWorkspaceList(false);
     router.push(`/dashboard/${workspace.workspaceId}`);
+  };
+
+   
+  const toggleFolderExpansion = (folderId: string) => {
+    setFolders(folders.map(folder => 
+      folder.id === folderId 
+        ? { ...folder, isExpanded: !folder.isExpanded }
+        : folder
+    ));
+  };
+  const handleFolderNameEdit = (folderId: string, currentName: string) => {
+    setEditingFolderId(folderId);
+    setEditingFolderName(currentName);
+  };
+  const handleFolderNameSave = async (folderId: string) => {
+    if (editingFolderName.trim()) {
+      try {
+        const response = await API.post("/folder/update", {
+          folderId,
+          name: editingFolderName
+        }, { withCredentials: true });
+
+        if (response.status === 200) {
+          setFolders(folders.map(folder =>
+            folder.id === folderId
+              ? { ...folder, name: editingFolderName }
+              : folder
+          ));
+        }
+      } catch (error) {
+        console.error("Error updating folder name:", error);
+      }
+    }
+    setEditingFolderId(null);
   };
 
   const handleAddFolder = async () => {
@@ -79,22 +144,7 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  // const fileFetch = async (folderId: string) => {
-  //   try {
-  //     const response = await API.post('/file/fetch', { folderId }, { withCredentials: true });
-  //     if (response.status === 200) {
-  //       setFolders((prevFolders) =>
-  //         prevFolders.map((folder) =>
-  //           folder.id === folderId
-  //             ? { ...folder, files: response.data.files }
-  //             : folder
-  //         )
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching files:", error);
-  //   }
-  // };
+ 
   const handleAddFile = async (folderId: string) => {
     try {
       if (!folderId) {
@@ -102,7 +152,6 @@ const Sidebar: React.FC = () => {
         return;
       }
   
-      // First create the file in your database
       const response = await API.post("/file/create", { 
         folderId 
       }, { withCredentials: true });
@@ -128,7 +177,6 @@ const Sidebar: React.FC = () => {
           throw new Error("Failed to create room");
         }
   
-        // Update folders state
         setFolders((prevFolders) =>
           prevFolders.map((folder) =>
             folder.id === folderId 
@@ -176,13 +224,11 @@ const Sidebar: React.FC = () => {
         throw new Error(errorData.error || 'Failed to access room');
       }
   
-      await response.json(); // Wait for the response to complete
+      await response.json();  
       
-      // Only navigate if room access was successful
       router.push(`/dashboard/${selectedWorkspace.workspaceId}/${fileId}`);
     } catch (error) {
       console.error("Error accessing room:", error);
-      // You might want to show an error notification to the user here
     }
   };
   return (
@@ -190,8 +236,14 @@ const Sidebar: React.FC = () => {
       <div className="p-4 flex flex-col h-full">
         <div className="flex justify-between items-center mb-4">
           {isOpen && (
-            <div className="text-white text-lg font-semibold cursor-pointer" onClick={() => setShowWorkspaceList(!showWorkspaceList)}>
-              {selectedWorkspace?.workspaceName}
+            <div 
+              className="flex items-center gap-2 text-white text-lg font-semibold cursor-pointer" 
+              onClick={() => setShowWorkspaceList(!showWorkspaceList)}
+            >
+              <span>{selectedWorkspace?.workspaceName}</span>
+              <ChevronRight 
+                className={`h-4 w-4 transition-transform ${showWorkspaceList ? 'rotate-90' : ''}`}
+              />
             </div>
           )}
           <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg text-white hover:bg-gray-800">
@@ -200,7 +252,7 @@ const Sidebar: React.FC = () => {
         </div>
 
         {showWorkspaceList && isOpen && (
-          <div className="bg-gray-900 p-2 rounded-lg text-white">
+          <div className="bg-gray-900 rounded-lg text-white mb-4">
             {workspaces.map((workspace) => (
               <div
                 key={workspace.workspaceId}
@@ -210,6 +262,18 @@ const Sidebar: React.FC = () => {
                 {workspace.workspaceName}
               </div>
             ))}
+            <div className="px-3 py-2 border-t border-gray-800">
+              <input
+                type="text"
+                placeholder="New workspace..."
+                className="w-full bg-transparent border-none focus:outline-none text-sm text-gray-300"
+                value={newWorkspaceName}
+                onChange={(e) => setNewWorkspaceName(e.target.value)}
+                onKeyPress={(e)=>{
+                  if(e.key==="Enter") handleCreateWorkspace(e)
+                }}
+              />
+            </div>
           </div>
         )}
 
@@ -221,37 +285,59 @@ const Sidebar: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-        {folders.map((folder) => (
-          <div key={folder.id} className="group flex flex-col" >
-            <div className="flex items-center justify-between px-4 py-2 text-white hover:bg-gray-800 cursor-pointer transition duration-200">
-              <div className="flex items-center gap-2">
-                <Folder className="h-5 w-5 text-gray-400" />
-                <span className="text-[14px] text-gray-300">{folder.name}</span>
-              </div>
-              <button onClick={() => handleAddFile(folder.id)} className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200">
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="ml-8">
-              {(folder.files || []).map((file) => (  
-                <div 
-                  key={file.fileId} 
-                  className={`flex items-center gap-2 px-4 py-1 text-gray-300 hover:bg-gray-700 cursor-pointer transition duration-200 ${
-                    params.fileId === file.fileId ? 'bg-gray-700' : ''
-                  }`}
-                  onClick={() => handleFileClick(file.fileId)}
-                >
-                  <FileText className="h-4 w-4 text-gray-500" />
-                  <span className="text-[14px]">{file.fileName}</span>
+          {folders.map((folder) => (
+            <div key={folder.id} className="group flex flex-col">
+              <div className="flex items-center justify-between px-4 py-2 text-white hover:bg-gray-800 cursor-pointer transition duration-200">
+                <div className="flex items-center gap-2 flex-1">
+                  <ChevronRight 
+                    className={`h-4 w-4 transition-transform ${folder.isExpanded ? 'rotate-90' : ''}`}
+                    onClick={() => toggleFolderExpansion(folder.id)}
+                  />
+                  <Folder className="h-5 w-5 text-gray-400" />
+                  {editingFolderId === folder.id ? (
+                    <input
+                      type="text"
+                      className="bg-transparent border-none focus:outline-none text-sm text-gray-300"
+                      value={editingFolderName}
+                      onChange={(e) => setEditingFolderName(e.target.value)}
+                      onBlur={() => handleFolderNameSave(folder.id)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleFolderNameSave(folder.id)}
+                      autoFocus
+                    />
+                  ) : (
+                    <span 
+                      className="text-[14px] text-gray-300"
+                      onDoubleClick={() => handleFolderNameEdit(folder.id, folder.name)}
+                    >
+                      {folder.name}
+                    </span>
+                  )}
                 </div>
-              ))}
+                <button onClick={() => handleAddFile(folder.id)} className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200">
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              {folder.isExpanded && (
+                <div className="ml-8">
+                  {(folder.files || []).map((file) => (  
+                    <div 
+                      key={file.fileId} 
+                      className={`flex items-center gap-2 px-4 py-1 text-gray-300 hover:bg-gray-700 cursor-pointer transition duration-200 ${
+                        params.fileId === file.fileId ? 'bg-gray-700' : ''
+                      }`}
+                      onClick={() => handleFileClick(file.fileId)}
+                    >
+                      <FileText className="h-4 w-4 text-gray-500" />
+                      <span className="text-[14px]">{file.fileName}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
-
 export default Sidebar;

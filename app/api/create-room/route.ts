@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
         [email]: ["room:write"]
       },
     });
+console.log('room create SUCCESS');
 
     return NextResponse.json({ room }, { status: 200 });
   } catch (error) {

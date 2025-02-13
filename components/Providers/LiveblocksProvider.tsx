@@ -1,5 +1,6 @@
 import { ClientSideSuspense, LiveblocksProvider } from "@liveblocks/react/suspense";
 import { ReactNode, useEffect, useState } from "react";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 const LiveblocksProviderWrapper = ({ children }: { children: ReactNode }) => {
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -12,7 +13,7 @@ const LiveblocksProviderWrapper = ({ children }: { children: ReactNode }) => {
   }, []);
 
   if (!authToken) {
-    return <div className="text-white">Loading... waiting for authentication</div>;
+    return  <LoadingSpinner/>
   }
 
   return (

@@ -1,9 +1,13 @@
-"use client";
-
 import { createClient } from "@liveblocks/client";
 import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense";
 import { ReactNode } from "react";
 import { CollaborativeEditor } from "./CollaborativeTextEditor";
+import { LiveCursors } from "./LiveCursor";
+
+// interface Presence {
+//   cursor: { x: number; y: number } | null;
+//   selection: any | null;
+// }
 
 if (!process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY) {
   throw new Error("LIVEBLOCKS_SECRET_KEY is missing");
@@ -40,21 +44,25 @@ const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
   currentUserType,
   children
 }) => {
-  if (!roomId) return <div>Loading Liveblocks Room...</div>;
+  if (!roomId) return <div className="text-white text-2xl">Loading Liveblocks no Room id...</div>;
 
   return (
-    <RoomProvider id={roomId} 
-    initialPresence={{
-      cursor: null,
-      selection: null,
-    }}
-    initialStorage={{}}
+    <RoomProvider 
+      id={roomId} 
+      initialPresence={{
+        cursor: null,
+        selection: null,
+      }}
+      initialStorage={{}}
     >
       <ClientSideSuspense fallback={<h1>Loading..........Room</h1>}>
-        <div className="collaborative-room">
-          <CollaborativeEditor  />
-          {children}
-        </div>
+        {() => (
+          <div className="collaborative-room relative">
+            <LiveCursors />
+            <CollaborativeEditor />
+            {children}
+          </div>
+        )}
       </ClientSideSuspense>
     </RoomProvider>
   );

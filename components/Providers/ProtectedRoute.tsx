@@ -3,17 +3,11 @@ import { RootState } from "@/store/store";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
+import { LoadingSpinner } from "../LoadingSpinner";
 const AUTH_ROUTES = ["/login", "/signup", "/verify-email", "/email-sent",'/reset-password','/email-verification','/email-check'];
 const PROTECTED_ROUTES = ["/workspace","/dashboard"];
 
-const LoadingSpinner = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-    </div>
-  );
-};
+ 
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useSelector((state: RootState) => state.user);

@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
           [email]: ["room:write"],
         },
       });
-
+      console.log('room access SUCCESS');
       return NextResponse.json({ success: true, room: newRoom }, { status: 200 });
     }
   } catch (error) {

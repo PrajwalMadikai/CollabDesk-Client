@@ -25,7 +25,7 @@ export function Avatars() {
 export function Avatar({ picture, name }: { picture: string; name: string }) {
   return (
     <div className={styles.avatar} data-tooltip={name}>
-      <img src={picture} className={styles.avatar_picture} alt={name} />
+      <img src={picture || "/default_avatar.jpg"} className={styles.avatar_picture} alt={name} />
     </div>
   );
 }

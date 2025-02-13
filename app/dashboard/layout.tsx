@@ -42,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <LiveblocksProviderWrapper>
       <div className="flex h-screen bg-gray-900">
         <Sidebar />
-        <div className="flex-1 ml-64">
+        <div className="flex-1 ml-[270px]">
           {children}
         </div>
       </div>

@@ -1,4 +1,3 @@
-// /api/liveblocks-auth/route.ts
 import { liveblocks } from "@/lib/liveblocks-server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -27,7 +26,6 @@ export async function POST(request: NextRequest) {
 
     const user = await backendResponse.json();
     
-    // Make sure to include room access in the identity
     const authResponse = await liveblocks.identifyUser(
       {
         userId: user.id,
@@ -43,7 +41,7 @@ export async function POST(request: NextRequest) {
         },
       }
     );
-
+    console.log('room auth SUCCESS');
     const parsedBody = JSON.parse(authResponse.body);
     return NextResponse.json({ token: parsedBody.token });
   } catch (error) {
