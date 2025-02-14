@@ -1,13 +1,9 @@
 "use client";
+
 import { BlockNoteEditor } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
-import { LiveObject } from "@liveblocks/client";
-import {
-  useOthers,
-  useRoom,
-  useSelf
-} from "@liveblocks/react/suspense";
+import { useOthers, useRoom, useSelf } from "@liveblocks/react/suspense";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { useCallback, useEffect, useState } from "react";
 import * as Y from "yjs";
@@ -22,59 +18,67 @@ type Presence = {
   lastActive: number;
 };
 
-declare type Storage = {
-  document: LiveObject<{ content: any[] }>;
-};
-
-export function CollaborativeEditor() {
-  const room = useRoom();
-  const [isStorageReady, setIsStorageReady] = useState(false);
-  const [doc, setDoc] = useState<Y.Doc>();
-  const [provider, setProvider] = useState<any>();
-
-  useEffect(() => {
-    const yDoc = new Y.Doc();
-    const yProvider = new LiveblocksYjsProvider(room, yDoc);
-
-    // Initialize the Yjs document with default content if empty
-    const fragment = yDoc.getXmlFragment("document-store");
-    if (fragment.length === 0) {
-      fragment.insert(0, [new Y.XmlText()]);
-    }
-
-    setDoc(yDoc);
-    setProvider(yProvider);
-
-    return () => {
-      yDoc?.destroy();
-      yProvider?.destroy();
-    };
-  }, [room]);
-
-  if (!doc || !provider) return <LoadingSpinner />;
-
-  return <BlockNote doc={doc} provider={provider} />;
-}
-
 type EditorProps = {
   doc: Y.Doc;
   provider: any;
+  room: any;
 };
+interface CollaborativeEditorProps {
+  roomId: string;
+}
+export const CollaborativeEditor: React.FC<CollaborativeEditorProps> =()=> {
+  const room = useRoom();
+  const [doc, setDoc] = useState<Y.Doc>();
+  const [provider, setProvider] = useState<any>();
+  const [isStorageReady, setIsStorageReady] = useState(false);
 
-function BlockNote({ doc, provider }: EditorProps) {
+  useEffect(() => {
+    const setupDocument = async () => {
+      const yDoc = new Y.Doc();
+      const yProvider = new LiveblocksYjsProvider(room, yDoc);
+      try {
+        // Retrieve the room storage
+        const { root } = await room.getStorage();
+  
+        // Initialize the document store if it doesn't exist
+        const rootMap = yDoc.getMap("document-store");
+        if (!rootMap.get("content")) {
+          const initialContent = new Y.XmlFragment();
+          rootMap.set("content", initialContent);
+        }
+  
+        setDoc(yDoc);
+        setProvider(yProvider);
+        setIsStorageReady(true);
+      } catch (error) {
+        console.error("Error setting up document:", error);
+      }
+    };
+  
+    setupDocument();
+  
+    return () => {
+      doc?.destroy();
+      provider?.destroy();
+    };
+  }, [room]);
+  if (!doc || !provider || !isStorageReady) {
+    return <LoadingSpinner />;
+  }
+
+  return <BlockNote doc={doc} provider={provider} room={room} />;
+}
+
+function BlockNote({ doc, provider, room }: EditorProps) {
   const userInfo = useSelf((me) => me.info);
   const others = useOthers();
 
   if (!userInfo) return <LoadingSpinner />;
 
-  // Access the document content from Yjs
-  const fragment = doc.getXmlFragment("document-store");
-
-  // Initialize the BlockNote editor with the stored content
   const editor: BlockNoteEditor = useCreateBlockNote({
     collaboration: {
       provider,
-      fragment,
+      fragment: doc.getMap("document-store").get("content") as Y.XmlFragment,
       user: {
         name: userInfo?.name,
         color: userInfo.color || "#000000",
@@ -82,15 +86,15 @@ function BlockNote({ doc, provider }: EditorProps) {
     },
     domAttributes: {
       editor: {
-        class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
+        class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
       },
     },
   });
 
-  // Update presence when typing
   useEffect(() => {
-    if (!provider?.awareness) return;
+    if (!editor || !provider?.awareness) {
+      return;
+    }
 
     let typingTimeout: NodeJS.Timeout;
 
@@ -111,6 +115,10 @@ function BlockNote({ doc, provider }: EditorProps) {
 
     const handleUpdate = () => {
       updatePresence();
+      
+      // Sync the content with room storage
+      const content = editor.topLevelBlocks;
+      doc.getMap("document-store").set("content", content);
     };
 
     editor.onEditorContentChange(handleUpdate);
@@ -118,9 +126,8 @@ function BlockNote({ doc, provider }: EditorProps) {
     return () => {
       clearTimeout(typingTimeout);
     };
-  }, [editor, provider]);
+  }, [editor, provider, doc, room]);
 
-  // Theme toggling logic
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const changeTheme = useCallback(() => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -128,7 +135,6 @@ function BlockNote({ doc, provider }: EditorProps) {
     setTheme(newTheme);
   }, [theme]);
 
-  // Display active users
   const activeUsers = others
     .filter((other) => other.presence?.isTyping)
     .map((user) => user.info?.name)
@@ -147,9 +153,12 @@ function BlockNote({ doc, provider }: EditorProps) {
       </div>
       <div className="flex-grow p-4 relative">
         <LiveCursors />
-        <div className="relative">
-          <BlockNoteView editor={editor} theme={theme} />
-        </div>
+        <BlockNoteView
+          editor={editor}
+          theme={theme}
+          slashMenu={true}
+          className="slash-menu-container" // Add this class for custom styling
+        />
       </div>
     </div>
   );

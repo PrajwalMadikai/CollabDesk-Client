@@ -8,7 +8,6 @@ declare global {
       cursor: { x: number ; y: number } |null;
       selection?: any | null; 
       isTyping: boolean;
-      lastActive: number|null;
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.

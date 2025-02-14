@@ -1,23 +1,20 @@
-import { createClient, LiveObject } from "@liveblocks/client";
+import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import { ClientSideSuspense, } from "@liveblocks/react/suspense";
+import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense";
 import { ReactNode } from "react";
-import { LoadingSpinner } from "../LoadingSpinner";
+import { LoadingSpinner } from "../LoadingSpinner"; // Ensure this import is correct
 import { CollaborativeEditor } from "./CollaborativeTextEditor";
 import { LiveCursors } from "./LiveCursor";
-
 if (!process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY) {
-  throw new Error("LIVEBLOCKS_SECRET_KEY is missing");
+  throw new Error("NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY is missing");
 }
 
 export const liveblocks = createClient({
   publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY,
 });
-
 declare type Storage = {
-  document: LiveObject<{ [key: string]: any }>; 
+  document: Record<string, any>; // Serialized representation of Y.XmlFragment
 };
-
 declare type Presence = {
   cursor: { x: number; y: number } | null;
   selection: any;
@@ -37,13 +34,13 @@ declare type UserMeta = {
 };
 
 export const {
-  RoomProvider,
   useStorage,
   useOthers,
   useSelf,
   useRoom,
   useMutation,
 } = createRoomContext<Presence, Storage, UserMeta>(liveblocks);
+// Define types
 interface RoomMetadata {
   title: string;
   workspaceId: string;
@@ -66,26 +63,31 @@ const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
   roomId,
   roomMetadata,
   users,
+  children,
 }) => {
-  if (!roomId) return <LoadingSpinner/>
+  if (!roomId) {
+    return <div className="text-white text-2xl">Loading... (No Room ID)</div>;
+  }
+
   return (
-    <RoomProvider 
-      id={roomId} 
+    <RoomProvider
+      id={roomId}
       initialPresence={{
         cursor: null,
         selection: null,
-        isTyping:false,
-        lastActive:null
+        isTyping: false,
       }}
       initialStorage={{
-        document: new LiveObject({ title: "Untitled Document", content: "" }),
+        // Define initial storage if needed
+        document: {},
       }}
     >
-      <ClientSideSuspense fallback={<h1><LoadingSpinner/></h1>}>
+      <ClientSideSuspense fallback={<LoadingSpinner />}>
         {() => (
           <div className="collaborative-room relative">
-            <LiveCursors  />
-            <CollaborativeEditor />
+            <LiveCursors />
+            <CollaborativeEditor roomId={roomId} />
+            {children}
           </div>
         )}
       </ClientSideSuspense>
