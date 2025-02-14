@@ -1,5 +1,6 @@
+import SettingsModal from "@/components/Settings";
 import { RootState } from "@/store/store";
-import { ChevronRight, FileText, Folder, Menu, Plus } from "lucide-react";
+import { ChevronRight, FileText, Folder, Menu, Plus, Settings } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -17,14 +18,15 @@ const Sidebar: React.FC = () => {
   const [newWorkspaceName, setNewWorkspaceName] = useState<string>("");
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
   const [editingFolderName, setEditingFolderName] = useState<string>("");
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user);
   const token = localStorage.getItem("accessToken");
   const userId: string | null = user.id;
 
   useEffect(() => {
     
-    
     fetchSpace();
+
   }, [userId, token, params.workspaceId]);
 
   const fetchSpace = async () => {
@@ -49,8 +51,8 @@ const Sidebar: React.FC = () => {
         position:'top-right',
         duration:2000
       })
+      return
     }
-    if (e.key === 'Enter' && newWorkspaceName.trim()) {
       try {
         const response = await API.post("/workspace/create", {
           spaceName: newWorkspaceName,
@@ -61,11 +63,11 @@ const Sidebar: React.FC = () => {
           const newWorkspace = response.data.workspace;
         setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
           setNewWorkspaceName("");
+          fetchSpace()
         }
       } catch (error) {
         console.error("Error creating workspace:", error);
       }
-    }
   };
   const fetchFolders = async () => {
     try {
@@ -190,7 +192,7 @@ const Sidebar: React.FC = () => {
               : folder
           )
         );
-  
+        toggleFolderExpansion(folderId)
         await fetchFolders();
       }
     } catch (error) {
@@ -198,7 +200,7 @@ const Sidebar: React.FC = () => {
     }
   };
   
-
+  
   const handleFileClick = async (fileId: string) => {
     if (!selectedWorkspace?.workspaceId || !user.email) {
       console.error("Missing workspace or user information");
@@ -276,13 +278,28 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         )}
+        {isOpen&&(
 
+       <div className="flex items-center justify-start my-4  text-[13px] uppercase font-semibold py-0">
+        <button 
+          onClick={() => setIsSettingsModalOpen(true)} 
+          className="flex items-center text-white hover:text-white transition duration-200"
+        >
+          <Settings className="h-6 w-5" />
+          <h5 className="text-sm ml-2">Settings</h5>
+        </button>
+      </div>
+        )}
+        {isOpen&&(
+          
         <div className="flex items-center justify-between text-gray-400 text-[13px] uppercase font-semibold text-start px-2 py-2">
           <span className="text-white">Folders</span>
           <button onClick={handleAddFolder} className="text-gray-400 hover:text-white transition duration-200">
             <Plus className="h-4 w-4" />
           </button>
         </div>
+        )}
+       {isOpen&&(
 
         <div className="flex flex-col gap-2">
           {folders.map((folder) => (
@@ -336,7 +353,14 @@ const Sidebar: React.FC = () => {
             </div>
           ))}
         </div>
+       )}
       </div>
+      {/* setting section  */}
+      {isSettingsModalOpen && (
+        <SettingsModal isOpen={isSettingsModalOpen} onClose={()=>setIsSettingsModalOpen(!isSettingsModalOpen)}
+         workspaceId={selectedWorkspace?.workspaceId || ""} workspaceName={selectedWorkspace?.workspaceName||""}/>
+      )}
+
     </div>
   );
 };

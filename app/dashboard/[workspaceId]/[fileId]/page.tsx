@@ -1,7 +1,6 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
 import CollaborativeRoom from "@/components/Liveblocks/CollaborativeRoom";
-import { CollaborativeEditor } from "@/components/Liveblocks/CollaborativeTextEditor";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -37,18 +36,18 @@ export default function FileEditor() {
   }
 
   return (
-    <CollaborativeRoom
-      roomId={fileId}
-      roomMetadata={{
-        title: "untitled",
-        workspaceId: workspaceId
-      }}
-      users={[]} // You'll need to implement user management
-      currentUserType="editor"
-    >
-      <div className="h-full bg-white">
-        <CollaborativeEditor />
+    <div className="h-full flex flex-col bg-gray-900 overflow-x-hidden overflow-y-auto">
+      <div className="flex-grow">
+        <CollaborativeRoom
+          roomId={fileId}
+          roomMetadata={{
+            title: fileData?.name || "untitled",
+            workspaceId: workspaceId,
+          }}
+          users={[]}
+         
+        />
       </div>
-    </CollaborativeRoom>
+    </div>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { ClientSideSuspense, LiveblocksProvider } from "@liveblocks/react/suspense";
 import { ReactNode, useEffect, useState } from "react";
 import { LoadingSpinner } from "../LoadingSpinner";
@@ -9,11 +11,13 @@ const LiveblocksProviderWrapper = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       setAuthToken(token);
+    } else {
+      console.error("No access token found in localStorage");
     }
   }, []);
 
   if (!authToken) {
-    return  <LoadingSpinner/>
+    return <LoadingSpinner />;
   }
 
   return (
@@ -33,14 +37,16 @@ const LiveblocksProviderWrapper = ({ children }: { children: ReactNode }) => {
             throw new Error("Failed to authenticate with Liveblocks");
           }
 
-          return await response.json();
+          const result = await response.json();
+          console.log("Liveblocks auth response:", result);  
+          return result;
         } catch (error) {
           console.error("Auth endpoint error:", error);
           throw error;
         }
       }}
     >
-      <ClientSideSuspense fallback={<div>Loading...in client suspense liveblocks provider</div>}>
+      <ClientSideSuspense fallback={<LoadingSpinner />}>
         {() => children}
       </ClientSideSuspense>
     </LiveblocksProvider>

@@ -31,17 +31,17 @@ import axios from "axios";
           
           throw new Error('No access token received');
       } catch (error: any) {
+        if ( error.response?.status === 403) {
+            localStorage.removeItem(isAdmin ? "adminAccessToken" : "accessToken");
+            window.location.href = isAdmin ? "/admin/login" : "/login";
+        }
           console.error("Refresh token failed:", {
               status: error.response?.status,
               message: error.response?.data?.message,
               error
           });
           
-          // Only clear tokens and redirect if it's a true auth failure
-          if ( error.response?.status === 403) {
-              localStorage.removeItem(isAdmin ? "adminAccessToken" : "accessToken");
-              window.location.href = isAdmin ? "/admin/login" : "/login";
-          }
+          
           return null;
       }
   };
@@ -72,7 +72,7 @@ import axios from "axios";
               return Promise.reject(error);
           }
   
-          // Handle blocked user
+          //Blocked user
           if (error.response?.status === 403 && error.response?.data?.message === "Your account is blocked") {
               store.dispatch(clearUser());
               localStorage.clear();

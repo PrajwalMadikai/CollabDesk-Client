@@ -7,11 +7,13 @@ declare global {
       // Example, real-time cursor coordinates
       cursor: { x: number ; y: number } |null;
       selection?: any | null; 
+      isTyping: boolean;
+      lastActive: number|null;
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.
     Storage: {
-      // Example, a conflict-free list
+      document: any;
       // animals: LiveList<string>;
     };
 
@@ -19,11 +21,11 @@ declare global {
     UserMeta: {
       id: string;
       info: {
-        id:string;
+        id: string;
         name: string;
-        email:string;
+        email: string;
         avatar: string;
-        color:string;
+        color: string;
       };
     };
 

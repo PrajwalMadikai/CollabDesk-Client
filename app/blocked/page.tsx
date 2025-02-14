@@ -17,7 +17,7 @@ const Blocked = () => {
           </p>
           <button 
             onClick={() => router.push('/')} 
-            className="bg-[#8B8AF4] hover:bg-[#6a69d8] text-white font-semibold px-6 py-3 rounded-md transition-all"
+            className="bg-[#6a69d8] text-white font-semibold px-6 py-3 rounded-md transition-all"
           >
             Go to Home
           </button>
@@ -26,7 +26,7 @@ const Blocked = () => {
         {/* Right Section (Hidden on small screens) */}
         <div className="hidden md:flex flex-1 justify-center">
           <img 
-            src="/blocked-image.png" 
+            src="/collabdesk white logo.png" 
             alt="Blocked" 
             className="w-full max-w-xs md:max-w-sm"
           />

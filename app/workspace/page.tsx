@@ -85,7 +85,6 @@ export default function CreateWorkspace() {
         },
       });
 
-      // Navigate to the new workspace
       router.push(`/dashboard/${workspaceId}`);
 
     } catch (error: any) {

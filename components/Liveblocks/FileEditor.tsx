@@ -22,10 +22,8 @@ export default function FileEditor() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   
-  // Get current user info from localStorage
-  const defaultUser: User = { name: "Anonymous", color: "#000000" };
-  const currentUser: User = JSON.parse(localStorage.getItem("user") || JSON.stringify(defaultUser));
-  const user = { ...defaultUser, ...currentUser };
+  const currentUser: User = JSON.parse(localStorage.getItem("user")||"");
+  const user = currentUser
   
   useEffect(() => {
     const fetchFileData = async () => {
@@ -48,9 +46,9 @@ export default function FileEditor() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-900">
-        <div className="text-white">Loading editor...</div>
-      </div>
+      <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+    </div>
     );
   }
 
