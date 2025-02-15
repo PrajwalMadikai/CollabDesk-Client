@@ -1,20 +1,24 @@
-import { createClient } from "@liveblocks/client";
-import { createRoomContext } from "@liveblocks/react";
-import { ClientSideSuspense, RoomProvider } from "@liveblocks/react/suspense";
+import { Block as CoreBlock } from "@blocknote/core";
+import { createClient, LiveList, } from "@liveblocks/client";
+import { RoomProvider } from "@liveblocks/react";
+import { ClientSideSuspense } from "@liveblocks/react/suspense";
 import { ReactNode } from "react";
-import { LoadingSpinner } from "../LoadingSpinner"; // Ensure this import is correct
-import { CollaborativeEditor } from "./CollaborativeTextEditor";
-import { LiveCursors } from "./LiveCursor";
+import { LoadingSpinner } from "../LoadingSpinner";
+
 if (!process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY) {
   throw new Error("NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY is missing");
 }
+type Mutable<T> = {
+  -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P];
+};
 
+type Block = Mutable<CoreBlock> & {
+  [key: string]: any; // Add an index signature to satisfy LsonObject
+};
 export const liveblocks = createClient({
   publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY,
 });
-declare type Storage = {
-  document: Record<string, any>; // Serialized representation of Y.XmlFragment
-};
+ 
 declare type Presence = {
   cursor: { x: number; y: number } | null;
   selection: any;
@@ -32,37 +36,16 @@ declare type UserMeta = {
     color: string;
   };
 };
-
-export const {
-  useStorage,
-  useOthers,
-  useSelf,
-  useRoom,
-  useMutation,
-} = createRoomContext<Presence, Storage, UserMeta>(liveblocks);
-// Define types
-interface RoomMetadata {
-  title: string;
-  workspaceId: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-}
-
+ 
+ 
 
 interface CollaborativeRoomProps {
   roomId: string;
-  roomMetadata: RoomMetadata;
-  users: User[];
   children?: ReactNode;
 }
 
-const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
+export const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
   roomId,
-  roomMetadata,
-  users,
   children,
 }) => {
   if (!roomId) {
@@ -78,21 +61,12 @@ const CollaborativeRoom: React.FC<CollaborativeRoomProps> = ({
         isTyping: false,
       }}
       initialStorage={{
-        // Define initial storage if needed
-        document: {},
+        document: new LiveList<Block>([]), // Initialize with an empty LiveList
       }}
     >
       <ClientSideSuspense fallback={<LoadingSpinner />}>
-        {() => (
-          <div className="collaborative-room relative">
-            <LiveCursors />
-            <CollaborativeEditor roomId={roomId} />
-            {children}
-          </div>
-        )}
+        {() => children}
       </ClientSideSuspense>
     </RoomProvider>
   );
 };
-
-export default CollaborativeRoom;

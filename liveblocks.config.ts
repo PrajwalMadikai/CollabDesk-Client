@@ -1,54 +1,68 @@
-// Define Liveblocks types for your application
-// https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
-declare global {
-  interface Liveblocks {
-    // Each user's Presence, for useMyPresence, useOthers, etc.
-    Presence: {
-      // Example, real-time cursor coordinates
-      cursor: { x: number ; y: number } |null;
-      selection?: any | null; 
-      isTyping: boolean;
-    };
-
-    // The Storage tree for the room, for useMutation, useStorage, etc.
-    Storage: {
-      document: any;
-      // animals: LiveList<string>;
-    };
-
-    // Custom user info set when authenticating with a secret key
-    UserMeta: {
-      id: string;
-      info: {
-        id: string;
-        name: string;
-        email: string;
-        avatar: string;
-        color: string;
+import { Block as CoreBlock } from "@blocknote/core";
+import { LiveList, Lson } from "@liveblocks/client";
+  // Define Liveblocks types for your application
+  // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
+  export type Mutable<T> = {
+    -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P];
+  };
+  
+  type Block = Mutable<CoreBlock> & {
+    [key: string]: any; // Add an index signature to satisfy LsonObject
+  };
+ 
+  
+ 
+  
+  declare global {
+    interface Liveblocks {
+      // Each user's Presence, for useMyPresence, useOthers, etc.
+      Presence: {
+        // Example, real-time cursor coordinates
+        cursor: { x: number ; y: number } |null;
+        selection?: any | null; 
+        isTyping: boolean;
       };
-    };
 
-    // Custom events, for useBroadcastEvent, useEventListener
-    RoomEvent: {};
-      // Example has two events, using a union
-      // | { type: "PLAY" } 
-      // | { type: "REACTION"; emoji: "🔥" };
+      // The Storage tree for the room, for useMutation, useStorage, etc.
+      Storage: {
+        document: LiveList<Lson>; 
+        // animals: LiveList<string>;
+      };
 
-    // Custom metadata set on threads, for useThreads, useCreateThread, etc.
-    ThreadMetadata: {
-      // Example, attaching coordinates to a thread
-      // x: number;
-      // y: number;
-    };
+      // Custom user info set when authenticating with a secret key
+      UserMeta: {
+        id: string;
+        info: {
+          id: string;
+          name: string;
+          email: string;
+          avatar: string;
+          color: string;
+        };
+      };
+    
+      
+      // Custom events, for useBroadcastEvent, useEventListener
+      RoomEvent: {};
+        // Example has two events, using a union
+        // | { type: "PLAY" } 
+        // | { type: "REACTION"; emoji: "🔥" };
 
-    // Custom room info set with resolveRoomsInfo, for useRoomInfo
-    RoomInfo: {
-      // Example, rooms with a title and url
-      // title: string;
-      // url: string;
-    };
+      // Custom metadata set on threads, for useThreads, useCreateThread, etc.
+      ThreadMetadata: {
+        // Example, attaching coordinates to a thread
+        // x: number;
+        // y: number;
+      };
+
+      // Custom room info set with resolveRoomsInfo, for useRoomInfo
+      RoomInfo: {
+        // Example, rooms with a title and url
+        // title: string;
+        // url: string;
+      };
+    }
   }
-}
 
-export { };
+  export { };
 
