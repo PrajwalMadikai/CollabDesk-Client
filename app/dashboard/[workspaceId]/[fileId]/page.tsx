@@ -1,7 +1,8 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
-import { CollaborativeRoom } from "@/components/Liveblocks/CollaborativeRoom";
-import { CollaborativeEditor } from "@/components/Liveblocks/CollaborativeTextEditor";
+import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeRoom";
+import { CollaborativeEditor } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -40,9 +41,9 @@ export default function FileEditor() {
     <div className="h-full flex flex-col bg-gray-900  overflow-x-hidden overflow-y-auto">
       <div className="flex-grow">
         <CollaborativeRoom
-          roomId={fileId}
+          roomId={fileId} fallback={<LoadingSpinner/>}
            >
-        <CollaborativeEditor roomId={fileId} />
+           <CollaborativeEditor fileId={fileId} />
         </CollaborativeRoom>
       </div>
     </div>

@@ -1,68 +1,155 @@
-import { Block as CoreBlock } from "@blocknote/core";
-import { LiveList, Lson } from "@liveblocks/client";
-  // Define Liveblocks types for your application
-  // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
-  export type Mutable<T> = {
-    -readonly [P in keyof T]: T[P] extends object ? Mutable<T[P]> : T[P];
+import { Color, Layer } from "@/Types/canvas";
+import {
+  createClient,
+  LiveList,
+  LiveMap,
+  LiveObject,
+} from "@liveblocks/client";
+import { createLiveblocksContext, createRoomContext } from "@liveblocks/react";
+const API_KEY = process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY;
+
+const client = createClient({
+  publicApiKey: `${API_KEY}`,
+  throttle: 16,
+  // authEndpoint: "/api/liveblocks-auth",
+  async resolveUsers({ userIds }) {
+    // Used only for Comments and Notifications. Return a list of user information
+    // retrieved from `userIds`. This info is used in comments, mentions etc.
+
+    // const usersData = await __fetchUsersFromDB__(userIds);
+    //
+    // return usersData.map((userData) => ({
+    //   name: userData.name,
+    //   avatar: userData.avatar.src,
+    // }));
+
+    return [];
+  },
+  async resolveMentionSuggestions({ text }) {
+    // Used only for Comments. Return a list of userIds that match `text`.
+    // These userIds are used to create a mention list when typing in the
+    // composer.
+    //
+    // For example when you type "@jo", `text` will be `"jo"`, and
+    // you should to return an array with John and Joanna's userIds:
+    // ["john@example.com", "joanna@example.com"]
+
+    // const users = await getUsers({ search: text });
+    // return users.map((user) => user.id);
+
+    return [];
+  },
+  async resolveRoomsInfo({ roomIds }) {
+    // Used only for Comments and Notifications. Return a list of room information
+    // retrieved from `roomIds`.
+
+    // const roomsData = await __fetchRoomsFromDB__(roomIds);
+    //
+    // return roomsData.map((roomData) => ({
+    //   name: roomData.name,
+    //   url: roomData.url,
+    // }));
+
+    return [];
+  },
+});
+
+// Presence represents the properties that exist on every user in the Room
+// and that will automatically be kept in sync. Accessible through the
+// `user.presence` property. Must be JSON-serializable.
+type Presence = {
+  [x: string]: any;
+  cursor: { x: number; y: number } | null;
+  selection: string[];
+  pencilDraft: [x: number, y: number, pressure: number][] | null;
+  penColor: Color | null;
+};
+
+// Optionally, Storage represents the shared document that persists in the
+// Room, even after all users leave. Fields under Storage typically are
+// LiveList, LiveMap, LiveObject instances, for which updates are
+// automatically persisted and synced to all connected clients.
+type Storage = {
+  layers: LiveMap<string, LiveObject<Layer>>;
+  layerIds: LiveList<string>;
+};
+
+// Optionally, UserMeta represents static/readonly metadata on each user, as
+// provided by your own custom auth back end (if used). Useful for data that
+// will not change during a session, like a user's name or avatar.
+type UserMeta= {
+  id: string;
+  info: {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
+    color: Color;
   };
+};
+
+// Optionally, the type of custom events broadcast and listened to in this
+// room. Use a union for multiple events. Must be JSON-serializable.
+type RoomEvent = {
+  // type: "NOTIFICATION",
+  // ...
+};
+
+// Optionally, when using Comments, ThreadMetadata represents metadata on
+// each thread. Can only contain booleans, strings, and numbers.
+export type ThreadMetadata = {
+  // resolved: boolean;
+  // quote: string;
+  // time: number;
+};
+
+export const {
+  suspense: {
+    RoomProvider,
+    useRoom,
+    useMyPresence,
+    useUpdateMyPresence,
+    useSelf,
+    useOthers,
+    useOthersMapped,
+    useOthersConnectionIds,
+    useOther,
+    useBroadcastEvent,
+    useEventListener,
+    useErrorListener,
+    useStorage,
+    useBatch,
+    useHistory,
+    useUndo,
+    useRedo,
+    useCanUndo,
+    useCanRedo,
+    useMutation,
+    useStatus,
+    useLostConnectionListener,
+    useThreads,
+    useCreateThread,
+    useEditThreadMetadata,
+    useCreateComment,
+    useEditComment,
+    useDeleteComment,
+    useAddReaction,
+    useRemoveReaction,
+  },
+} = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(
+  client
+);
+// Project-level hooks, use inside `LiveblocksProvider`
+export const {
+  suspense: {
+    LiveblocksProvider,
+    useMarkInboxNotificationAsRead,
+    useMarkAllInboxNotificationsAsRead,
+    useInboxNotifications,
+    useUnreadInboxNotificationsCount,
   
-  type Block = Mutable<CoreBlock> & {
-    [key: string]: any; // Add an index signature to satisfy LsonObject
-  };
- 
-  
- 
-  
-  declare global {
-    interface Liveblocks {
-      // Each user's Presence, for useMyPresence, useOthers, etc.
-      Presence: {
-        // Example, real-time cursor coordinates
-        cursor: { x: number ; y: number } |null;
-        selection?: any | null; 
-        isTyping: boolean;
-      };
-
-      // The Storage tree for the room, for useMutation, useStorage, etc.
-      Storage: {
-        document: LiveList<Lson>; 
-        // animals: LiveList<string>;
-      };
-
-      // Custom user info set when authenticating with a secret key
-      UserMeta: {
-        id: string;
-        info: {
-          id: string;
-          name: string;
-          email: string;
-          avatar: string;
-          color: string;
-        };
-      };
-    
-      
-      // Custom events, for useBroadcastEvent, useEventListener
-      RoomEvent: {};
-        // Example has two events, using a union
-        // | { type: "PLAY" } 
-        // | { type: "REACTION"; emoji: "🔥" };
-
-      // Custom metadata set on threads, for useThreads, useCreateThread, etc.
-      ThreadMetadata: {
-        // Example, attaching coordinates to a thread
-        // x: number;
-        // y: number;
-      };
-
-      // Custom room info set with resolveRoomsInfo, for useRoomInfo
-      RoomInfo: {
-        // Example, rooms with a title and url
-        // title: string;
-        // url: string;
-      };
-    }
+    // These hooks can be exported from either context
+    useUser,
+    useRoomInfo,
   }
-
-  export { };
-
+} = createLiveblocksContext<UserMeta, ThreadMetadata>(client);
