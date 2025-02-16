@@ -1,5 +1,6 @@
 "use client";
 
+import { baseUrl } from "@/app/api/urlconfig";
 import { connectionIdToColor } from "@/lib/utils";
 import {
   BlockNoteViewRaw,
@@ -7,17 +8,26 @@ import {
 } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { io } from 'socket.io-client';
 import * as Y from "yjs";
 import {
   useMutation,
   useRoom,
-  useSelf
+  useSelf,
 } from "../../../liveblocks.config";
+
+const socket=io(baseUrl,{
+  withCredentials:true,
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionAttempts: 5
+})
+
 
 type EditorProps = {
   doc: Y.Doc;
-  provider: any;
+  provider: LiveblocksYjsProvider;
   fileId: string;
 };
 
@@ -27,10 +37,31 @@ interface Props {
 
 export function CollaborativeEditor({ fileId }: Props) {
   const room = useRoom();
-  const [doc, setDoc] = useState<Y.Doc>();
-  const [provider, setProvider] = useState<any>();
+  const [doc, setDoc] = useState<Y.Doc | null>(null);
+  const [provider, setProvider] = useState<LiveblocksYjsProvider | null>(null);
 
   useEffect(() => {
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+    socket.on('fileUpdated', (updatedData: { id: string, content: string }) => {
+      if (updatedData.id === fileId && doc) {
+        try {
+          const content = JSON.parse(updatedData.content);
+          const fragment = doc.getXmlFragment(fileId);
+          if (fragment && content) {
+            // Update the document without triggering a new socket event
+            Y.applyUpdate(doc, new Uint8Array(content));
+          }
+        } catch (error) {
+          console.error('Error applying remote update:', error);
+        }
+      }
+    });
+  
+
+
     const yDoc = new Y.Doc();
     const yProvider = new LiveblocksYjsProvider(room, yDoc);
     setDoc(yDoc);
@@ -43,16 +74,21 @@ export function CollaborativeEditor({ fileId }: Props) {
   }, [room]);
 
   if (!doc || !provider) {
-    return null;
+    return <div>Loading editor...</div>;
   }
 
   return (
-    <BlockNote doc={doc} provider={provider} fileId={fileId} />
+    <BlockNote
+      doc={doc}
+      provider={provider}
+      fileId={fileId}
+    />
   );
 }
 
 function BlockNote({ doc, provider, fileId }: EditorProps) {
   const currentUser = useSelf();
+  const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
 
   const editor = useCreateBlockNote({
     collaboration: {
@@ -63,24 +99,69 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
         color: connectionIdToColor(currentUser.connectionId),
       },
     },
+    domAttributes: {
+      editor: {
+        class: "min-h-[500px] p-4",
+      },
+    },
   });
+  const debouncedUpdate = useCallback(() => {
+    const now = Date.now();
+    if (now - lastUpdate > 500) { // Debounce threshold of 500ms
+      const data = {
+        id: fileId,
+        content: JSON.stringify(editor.document)
+      };
+      socket?.emit("updateFile", data);
+      setLastUpdate(now);
+    }
+  }, [fileId, editor, lastUpdate]);
 
-  const updateStorage = useMutation(({ storage }, content: string) => {
-    // Storage update logic if needed
-  }, []);
 
+ 
   useEffect(() => {
-    const syncDocument = () => {
-      const content = JSON.stringify(editor.document);
-      updateStorage(content);
+    if (!editor) return;
+
+    const updateHandler = (update: Uint8Array) => {
+      debouncedUpdate();
     };
 
-    editor.onEditorContentChange(syncDocument);
+    doc.on('update', updateHandler);
 
     return () => {
-      editor.onEditorContentChange(() => {});
+      doc.off('update', updateHandler);
     };
-  }, [editor, updateStorage]);
+  }, [editor, doc, debouncedUpdate]);
+
+
+  // const updateStorage = useMutation(
+  //   ({ storage }, content: string) => {
+  //     if (!isStorageLoaded) return;
+  //     storage.set(fileId, content);
+  //   },
+  //   [isStorageLoaded]
+  // );
+
+  // useEffect(() => {
+  //   setIsStorageLoaded(true);
+    
+  //   const syncDocument = () => {
+  //     if (editor && isStorageLoaded) {
+  //       const content = JSON.stringify(editor.document);
+  //       updateStorage(content);
+  //     }
+  //   };
+
+  //   if (editor) {
+  //     editor.onEditorContentChange(syncDocument);
+  //   }
+
+  //   return () => {
+  //     if (editor) {
+  //       editor.onEditorContentChange(() => {});
+  //     }
+  //   };
+  // }, [editor, updateStorage, isStorageLoaded]);
 
   const onPointerMove = useMutation(
     ({ setMyPresence }, e: React.PointerEvent) => {
@@ -94,19 +175,25 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
     []
   );
 
-  const onPointerLeave = useMutation(({ setMyPresence }) => {
-    setMyPresence({ cursor: null });
-  }, []);
+  const onPointerLeave = useMutation(
+    ({ setMyPresence }) => {
+      setMyPresence({ cursor: null });
+    },
+    []
+  );
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      className="w-full h-full"
+      className="relative"
     >
-      <BlockNoteViewRaw 
+      <BlockNoteViewRaw
         editor={editor}
-        theme="dark"
       />
     </div>
   );
