@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 interface FileData {
   id: string;
   name: string;
+  content: string; // Add a `content` field to store the file's content
 }
 
 export default function FileEditor() {
@@ -20,7 +21,9 @@ export default function FileEditor() {
     const fetchFileData = async () => {
       try {
         const response = await API.get(`/file/${fileId}`, { withCredentials: true });
-        setFileData(response.data.file);
+           console.log('content:',response.data.content);
+           
+        setFileData(response.data.content);
       } catch (error) {
         console.error("Error fetching file data:", error);
       } finally {
@@ -37,13 +40,15 @@ export default function FileEditor() {
     return <div className="flex items-center justify-center h-screen">Loading file...</div>;
   }
 
+  if (!fileData) {
+    return <div className="flex items-center justify-center h-screen">Failed to load file.</div>;
+  }
+
   return (
-    <div className="h-full flex flex-col bg-gray-900  overflow-x-hidden overflow-y-auto">
+    <div className="h-full flex flex-col bg-gray-900 overflow-x-hidden overflow-y-auto">
       <div className="flex-grow">
-        <CollaborativeRoom
-          roomId={fileId} fallback={<LoadingSpinner/>}
-           >
-           <CollaborativeEditor fileId={fileId} />
+        <CollaborativeRoom roomId={fileId} fallback={<LoadingSpinner />}>
+          <CollaborativeEditor fileId={fileId} initialContent={fileData.content} />
         </CollaborativeRoom>
       </div>
     </div>

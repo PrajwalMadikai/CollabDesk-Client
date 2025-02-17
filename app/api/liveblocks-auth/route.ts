@@ -1,4 +1,5 @@
 import { liveblocks } from "@/lib/liveblocks-server";
+import { connectionIdToColor } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -25,6 +26,8 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await backendResponse.json();
+    console.log('user when auth:',user);
+    
     
     const authResponse = await liveblocks.identifyUser(
       {
@@ -37,7 +40,7 @@ export async function POST(request: NextRequest) {
           name: user.name,
           email: user.email,
           avatar: user.avatar || "",
-          color:'#00000'        
+          color:connectionIdToColor()      
         },
       }
     );

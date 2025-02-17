@@ -1,4 +1,3 @@
-// /api/room-access/route.ts
 import { liveblocks } from "@/lib/liveblocks-server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +5,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { roomId, userId, email } = body;
-   console.log('room access body',body);
    
     if (!roomId || !userId || !email) {
       return NextResponse.json(
@@ -16,10 +14,8 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // First check if room exists
       const room = await liveblocks.getRoom(roomId);
       
-      // If room exists, update access
       await liveblocks.updateRoom(roomId, {
         usersAccesses: {
           [email]: ["room:write"],
