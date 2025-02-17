@@ -55,7 +55,6 @@ function HeaderAndLandingHome() {
      }
   }
   
-console.log('user home:',user);
 const handleDashboard = async () => {
   if (!user.isAuthenticated) {
     router.push('/login');
