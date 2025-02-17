@@ -5,7 +5,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import * as Y from "yjs";
 import { useRoom, useSelf } from "../../../liveblocks.config";
@@ -34,31 +34,58 @@ export function CollaborativeEditor({ fileId, initialContent }: Props) {
   const room = useRoom();
   const [doc, setDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<YjsProvider | null>(null);
+  const providerRef = useRef<YjsProvider | null>(null);
 
   useEffect(() => {
-    const yProvider = getYjsProviderForRoom(room);
-    const yDoc = yProvider.getYDoc();
+    const setupCollaboration = async () => {
+      const yProvider = getYjsProviderForRoom(room);
+      const yDoc = yProvider.getYDoc();
+      providerRef.current = yProvider;
 
-    // Initialize with content if provided
-    if (initialContent) {
-      try {
-        const content = JSON.parse(initialContent);
-        Y.applyUpdate(yDoc, new Uint8Array(content));
-      } catch (error) {
-        console.error("Error applying initial content:", error);
+      // Initialize with content if provided
+      if (initialContent) {
+        try {
+          const content = JSON.parse(initialContent);
+          Y.applyUpdate(yDoc, new Uint8Array(content));
+        } catch (error) {
+          console.error("Error applying initial content:", error);
+        }
       }
-    }
 
-    // Connect the provider
-    yProvider.connect();
-    
-    setDoc(yDoc);
-    setProvider(yProvider);
+      // Set up awareness update handling
+      yProvider.awareness.on('update', () => {
+        console.log('Awareness updated');
+      });
+
+      // Listen for provider syncing
+      yProvider.on('sync', (isSynced: boolean) => {
+        console.log('Provider sync status:', isSynced);
+        if (isSynced) {
+          // Force a re-render of the document when synced
+          const fragment = yDoc.getXmlFragment(fileId);
+          fragment.observe(() => {
+            console.log('Document updated from remote');
+          });
+        }
+      });
+
+      // Connect the provider
+      await yProvider.connect();
+      
+      setDoc(yDoc);
+      setProvider(yProvider);
+    };
+
+    setupCollaboration();
 
     return () => {
-      yProvider.disconnect();
-      yProvider.destroy();
-      yDoc.destroy();
+      if (providerRef.current) {
+        providerRef.current.disconnect();
+        providerRef.current.destroy();
+      }
+      if (doc) {
+        doc.destroy();
+      }
     };
   }, [room, fileId, initialContent]);
 
@@ -72,6 +99,7 @@ export function CollaborativeEditor({ fileId, initialContent }: Props) {
 function BlockNote({ doc, provider, fileId }: EditorProps) {
   const currentUser = useSelf((me) => me.info);
   const [isConnected, setIsConnected] = useState(false);
+  const editorRef = useRef<any>(null);
 
   const editor = useCreateBlockNote({
     collaboration: {
@@ -79,7 +107,7 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       fragment: doc.getXmlFragment(fileId),
       user: {
         name: currentUser?.name || "Anonymous",
-        color: connectionIdToColor()|| "#000000",
+        color: connectionIdToColor() || "#000000",
       },
     },
     domAttributes: {
@@ -91,6 +119,8 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
 
   useEffect(() => {
     if (!editor || !doc) return;
+    
+    editorRef.current = editor;
 
     // Monitor provider connection status
     provider.on('sync', (isSynced: boolean) => {
@@ -98,8 +128,11 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       console.log('Provider sync status:', isSynced);
     });
 
-    // Handle all updates without filtering
-    const handleUpdate = () => {
+    // Set up document update handling
+    const fragment = doc.getXmlFragment(fileId);
+    
+    // Handle local updates
+    const handleLocalUpdate = () => {
       const content = Y.encodeStateAsUpdate(doc);
       const data = {
         id: fileId,
@@ -109,10 +142,34 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       socket.emit("updateFile", data);
     };
 
-    doc.on("update", handleUpdate);
+    // Handle remote updates
+    fragment.observe(() => {
+      console.log('Document fragment updated');
+      if (editorRef.current) {
+        // Force editor to sync with latest document state
+        editorRef.current.updateContent();
+      }
+    });
+
+    doc.on("update", handleLocalUpdate);
+
+    // Handle socket updates
+    socket.on("fileUpdated", (updatedData: { id: string; content: string }) => {
+      if (updatedData.id === fileId) {
+        try {
+          const content = JSON.parse(updatedData.content);
+          Y.applyUpdate(doc, new Uint8Array(content));
+        } catch (error) {
+          console.error("Error applying remote update:", error);
+        }
+      }
+    });
 
     return () => {
-      doc.off("update", handleUpdate);
+      doc.off("update", handleLocalUpdate);
+      socket.off("fileUpdated");
+      fragment.unobserve(() => {});
+      // provider.off('sync');   uncomment if not working
     };
   }, [editor, doc, fileId, provider]);
 
