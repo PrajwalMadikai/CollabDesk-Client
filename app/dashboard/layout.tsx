@@ -1,7 +1,7 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
 import LiveblocksProviderWrapper from "@/components/Providers/LiveblocksProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
 
@@ -13,6 +13,7 @@ interface Workspace {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [workspaces, setWorkspaces] = useState([]);
+  const pathname=usePathname()
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -37,12 +38,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     fetchWorkspaces();
   }, [router]);
+  
+   const whiteboardPresent=pathname.startsWith('/dashboard/whiteboard')
 
   return (
     <LiveblocksProviderWrapper>
       <div className="flex h-screen bg-gray-900">
-        <Sidebar />
-        <div className="flex-1 ml-[270px]">
+       {  !whiteboardPresent && <Sidebar />  }
+
+        <div  className={`flex-1 transition-all duration-300 *
+        ${  !whiteboardPresent ? " md:ml-[255px]" : "ml-0"    }`}>
           {children}
         </div>
       </div>

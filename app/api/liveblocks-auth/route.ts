@@ -1,5 +1,4 @@
 import { liveblocks } from "@/lib/liveblocks-server";
-import { connectionIdToColor } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
           name: user.name,
           email: user.email,
           avatar: user.avatar || "",
-          color:connectionIdToColor()      
+          color:'#000000'     
         },
       }
     );

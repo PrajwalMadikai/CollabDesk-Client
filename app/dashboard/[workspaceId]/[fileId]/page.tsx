@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 interface FileData {
   id: string;
   name: string;
-  content: string; // Add a `content` field to store the file's content
+  content: string; 
 }
 
 export default function FileEditor() {

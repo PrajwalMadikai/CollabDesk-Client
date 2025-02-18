@@ -1,14 +1,17 @@
 'use client';
 import { baseUrl } from "@/app/api/urlconfig";
 import { connectionIdToColor } from "@/lib/utils";
+import { BlockNoteEditor, filterSuggestionItems } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
-import { useCreateBlockNote } from "@blocknote/react";
+import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMenuController, useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
+import { ActionIcon, Box, Group, Text, ThemeIcon } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import * as Y from "yjs";
-import { useRoom, useSelf } from "../../../liveblocks.config";
+import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
 
 const socket = io(baseUrl, {
   withCredentials: true,
@@ -42,7 +45,6 @@ export function CollaborativeEditor({ fileId, initialContent }: Props) {
       const yDoc = yProvider.getYDoc();
       providerRef.current = yProvider;
 
-      // Initialize with content if provided
       if (initialContent) {
         try {
           const content = JSON.parse(initialContent);
@@ -52,12 +54,10 @@ export function CollaborativeEditor({ fileId, initialContent }: Props) {
         }
       }
 
-      // Set up awareness update handling
       yProvider.awareness.on('update', () => {
         console.log('Awareness updated');
       });
 
-      // Listen for provider syncing
       yProvider.on('sync', (isSynced: boolean) => {
         console.log('Provider sync status:', isSynced);
         if (isSynced) {
@@ -69,7 +69,6 @@ export function CollaborativeEditor({ fileId, initialContent }: Props) {
         }
       });
 
-      // Connect the provider
       await yProvider.connect();
       
       setDoc(yDoc);
@@ -97,7 +96,9 @@ export function CollaborativeEditor({ fileId, initialContent }: Props) {
 }
 
 function BlockNote({ doc, provider, fileId }: EditorProps) {
+  const router=useRouter()
   const currentUser = useSelf((me) => me.info);
+  const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
   const editorRef = useRef<any>(null);
 
@@ -107,12 +108,13 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       fragment: doc.getXmlFragment(fileId),
       user: {
         name: currentUser?.name || "Anonymous",
-        color: connectionIdToColor() || "#000000",
+        color: connectionIdToColor(connectionId),
       },
     },
     domAttributes: {
       editor: {
-        class: "min-h-[500px] p-4",
+        class: "min-h-screen ",
+         
       },
     },
   });
@@ -122,16 +124,12 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
     
     editorRef.current = editor;
 
-    // Monitor provider connection status
     provider.on('sync', (isSynced: boolean) => {
       setIsConnected(isSynced);
-      console.log('Provider sync status:', isSynced);
     });
 
-    // Set up document update handling
     const fragment = doc.getXmlFragment(fileId);
     
-    // Handle local updates
     const handleLocalUpdate = () => {
       const content = Y.encodeStateAsUpdate(doc);
       const data = {
@@ -142,18 +140,16 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       socket.emit("updateFile", data);
     };
 
-    // Handle remote updates
+  // Force editor to sync with latest document state
     fragment.observe(() => {
-      console.log('Document fragment updated');
+      console.log('Document fragment remote updated ');
       if (editorRef.current) {
-        // Force editor to sync with latest document state
         editorRef.current.updateContent();
       }
     });
 
     doc.on("update", handleLocalUpdate);
 
-    // Handle socket updates
     socket.on("fileUpdated", (updatedData: { id: string; content: string }) => {
       if (updatedData.id === fileId) {
         try {
@@ -169,22 +165,95 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       doc.off("update", handleLocalUpdate);
       socket.off("fileUpdated");
       fragment.unobserve(() => {});
-      // provider.off('sync');   uncomment if not working
+      // provider.off('sync',);  
     };
   }, [editor, doc, fileId, provider]);
+  const onPointerMove = useMutation(
+    ({ setMyPresence }, e: React.PointerEvent) => {
+      e.preventDefault();
+
+      const current = {
+        x: Math.round(e.clientX),
+        y: Math.round(e.clientY), 
+      };
+      
+      setMyPresence({ cursor: current });
+    },
+    []
+  );
+
+  const onPointerLeave = useMutation(({ setMyPresence }) => {
+    setMyPresence({ cursor: null });
+  }, []);
+
+  const getCustomSlashMenuItems = (
+    editor: BlockNoteEditor
+  ): DefaultReactSuggestionItem[] => [
+    ...getDefaultReactSlashMenuItems(editor).map((item) => ({
+      ...item,
+      render: (props: { onClick: () => void }) => (
+        <Box
+        style={{
+          padding: "8px 12px",
+          borderRadius: "4px",
+          cursor: "pointer",
+          "&:hover": {
+            backgroundColor: "#f0f0f0",   
+          },
+        }}
+          onClick={props.onClick}
+        >
+          <Group gap="sm">
+            {item.icon && (
+              <ThemeIcon size="sm" radius="xl">
+                {item.icon}
+              </ThemeIcon>
+            )}
+            <div>
+              <Text size="sm" fw={500}>
+                {item.title}
+              </Text>
+              {item.subtext && (
+                <Text size="xs" color="dimmed">
+                  {item.subtext}
+                </Text>
+              )}
+            </div>
+          </Group>
+        </Box>
+      ),
+    })),
+  ];
 
   if (!editor) {
     return null;
   }
 
   return (
-    <div className="relative">
-      {!isConnected && (
-        <div className="absolute top-0 right-0 bg-yellow-100 p-2 rounded-md text-sm">
-          Connecting...
-        </div>
-      )}
-      <BlockNoteView editor={editor} />
+       
+    <div
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+      className="w-full h-full"
+       >
+        <ActionIcon
+        onClick={() => {
+          router.push(`/dashboard/whiteboard/${fileId}`);
+        }}
+        className="absolute top-4 right-4 z-10 w-[105px] p-1 rounded-[3px] bg-white font-medium  text-black"
+        size="lg"
+        radius="xl"
+        title="Open Canvas"
+      >
+         Whiteboard
+      </ActionIcon>
+      <BlockNoteView editor={editor}>
+        <SuggestionMenuController triggerCharacter={'/'}
+         getItems={async query=>
+          filterSuggestionItems(getCustomSlashMenuItems(editor),query)
+         }
+        /> 
+      </BlockNoteView>
     </div>
   );
 }

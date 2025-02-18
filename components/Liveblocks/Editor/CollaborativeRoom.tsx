@@ -20,17 +20,16 @@ export const CollaborativeRoom = ({ children, roomId, fallback }: RoomProps) => 
     <RoomProvider
       id={roomId}
       initialPresence={{
-        cursor: null, // Tracks the user's cursor position
-        selection: [], // Tracks selected layer IDs
-        pencilDraft: null, // Tracks pencil draft data
-        penColor: null, // Tracks the pen color
+        cursor: null,  
+        selection: [], 
+        pencilDraft: null, 
+        penColor: null,  
       }}
       initialStorage={{
-        layers: new LiveMap<string, LiveObject<Layer>>(), // A map of layers in the canvas
-        layerIds: new LiveList<string>([]), // A list of layer IDs to maintain order
+        layers: new LiveMap<string, LiveObject<Layer>>(), 
+        layerIds: new LiveList<string>([]),  
       }}
     >
-      {/* Use ClientSideSuspense to handle loading states */}
       <ClientSideSuspense fallback={fallback}>
         {() => children}
       </ClientSideSuspense>

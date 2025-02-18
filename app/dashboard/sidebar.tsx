@@ -6,8 +6,16 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { API } from "../api/handle-token-expire";
+interface Workspace {
+  workspaceId: string;
+  workspaceName: string;
+}
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onWorkspaceUpdate?: (workspace: Workspace) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
   
   const router = useRouter();
   const params = useParams();
@@ -15,6 +23,7 @@ const Sidebar: React.FC = () => {
   const [folders, setFolders] = useState<{ id: string; name: string; files: { fileId: string; fileName: string }[]; isExpanded?: boolean }[]>([]);
   const [workspaces, setWorkspaces] = useState<{ workspaceId: string; workspaceName: string }[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<{ workspaceId: string; workspaceName: string } | null>(null);
+  const [selectedFile,setSelectedFile]=useState<string|null>(null)
   const [showWorkspaceList, setShowWorkspaceList] = useState<boolean>(false);
   const [newWorkspaceName, setNewWorkspaceName] = useState<string>("");
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
@@ -207,7 +216,7 @@ const Sidebar: React.FC = () => {
       console.error("Missing workspace or user information");
       return;
     }
-    
+    setSelectedFile(fileId)
     try {
       const response = await fetch("/api/room-access", {
         method: "POST",
@@ -234,6 +243,23 @@ const Sidebar: React.FC = () => {
       console.error("Error accessing room:", error);
     }
   };
+
+  const handleWorkspaceUpdate = (updatedWorkspace: Workspace) => {
+    setWorkspaces(prevWorkspaces =>
+      prevWorkspaces.map(workspace =>
+        workspace.workspaceId === updatedWorkspace.workspaceId
+          ? { ...workspace, workspaceName: updatedWorkspace.workspaceName }
+          : workspace
+      )
+    );
+
+    if (selectedWorkspace?.workspaceId === updatedWorkspace.workspaceId) {
+      setSelectedWorkspace(updatedWorkspace);
+    }
+  };
+
+
+
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
@@ -355,11 +381,19 @@ const Sidebar: React.FC = () => {
           ))}
         </div>
        )}
+       {isOpen&&(
+        <div>
+          <button>open canvas</button>
+        </div>
+       )}
       </div>
       {/* setting section  */}
       {isSettingsModalOpen && (
-        <SettingsModal isOpen={isSettingsModalOpen} onClose={()=>setIsSettingsModalOpen(!isSettingsModalOpen)}
-         workspaceId={selectedWorkspace?.workspaceId || ""} workspaceName={selectedWorkspace?.workspaceName||""}/>
+        <SettingsModal isOpen={isSettingsModalOpen} 
+        onClose={()=>setIsSettingsModalOpen(!isSettingsModalOpen)}
+         workspaceId={selectedWorkspace?.workspaceId || ""} 
+         workspaceName={selectedWorkspace?.workspaceName||""}
+         onWorkspaceUpdate={handleWorkspaceUpdate}/>
       )}
 
     </div>
