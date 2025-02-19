@@ -1,6 +1,6 @@
 import SettingsModal from "@/components/Settings";
 import { RootState } from "@/store/store";
-import { ChevronRight, FileText, Folder, Menu, Plus, Settings } from "lucide-react";
+import { ChevronRight, FileText, Folder, Menu, MessageSquare, Plus, Settings } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -48,6 +48,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
 
   }, [userId, token, params.workspaceId]);
 
+  const handleWhiteboardClick = () => {
+    if (!selectedWorkspace?.workspaceId) return;
+
+    router.push(`/dashboard/whiteboard/${selectedWorkspace.workspaceId}`);
+  };
   const fetchSpace = async () => {
     try {
       let response = await API.post("/workspace/fetch", { userId }, { withCredentials: true });
@@ -80,6 +85,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
         
         if (response.status === 201) {
           const newWorkspace = response.data.workspace;
+        
+          const roomResponse = await fetch("/api/create-room", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`  
+            },
+            body: JSON.stringify({
+              roomId: newWorkspace.id,
+              userId: user.id,
+              email: user.email,
+              title: newWorkspace.name || "Untitled",
+            }),
+          });
+    
+          if (!roomResponse.ok) {
+            throw new Error("Failed to create room");
+          }
         setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
           setNewWorkspaceName("");
           fetchSpace()
@@ -443,9 +466,22 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
               )}
             </div>
           ))}
+          
         </div>
+        
        )}
       </div>
+      {isOpen && (
+          <div className="p-4 border-t border-gray-800 mt-auto">
+            <button
+              onClick={handleWhiteboardClick}
+              className="flex items-center justify-center gap-2 w-full p-3 text-white hover:bg-gray-800 rounded-lg transition-colors duration-200"
+            >
+              <MessageSquare className="h-5 w-5" />
+              <span className="text-sm">Open Whiteboard</span>
+            </button>
+          </div>
+        )}
       {isSettingsModalOpen && (
         <SettingsModal isOpen={isSettingsModalOpen} 
         onClose={()=>setIsSettingsModalOpen(!isSettingsModalOpen)}

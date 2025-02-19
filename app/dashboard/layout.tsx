@@ -13,7 +13,7 @@ interface Workspace {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [workspaces, setWorkspaces] = useState([]);
-  const pathname=usePathname()
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         const userData = JSON.parse(userFetch);
         const response = await API.post(
-          "/workspace/fetch", 
-          { userId: userData.id }, 
+          "/workspace/fetch",
+          { userId: userData.id },
           { withCredentials: true }
         );
 
@@ -39,29 +39,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     fetchWorkspaces();
   }, [router]);
-  
-   const whiteboardPresent=pathname.startsWith('/dashboard/whiteboard')
+
+  const whiteboardPresent = pathname.startsWith('/dashboard/whiteboard');
 
   return (
     <LiveblocksProviderWrapper>
-    <div className="flex h-screen bg-gray-900 overflow-hidden">
-      {!whiteboardPresent && (
-        <div className={`fixed top-0 left-0 h-full transition-all duration-300 z-10
-          ${isSidebarOpen ? 'w-64' : 'w-16'}`}>
-          <Sidebar onToggle={(isOpen) => setIsSidebarOpen(isOpen)} />
-        </div>
-      )}
+      <div className="flex h-screen bg-gray-900 overflow-hidden">
+        {!whiteboardPresent && (
+          <div
+            className={`fixed top-0 left-0 h-full transition-all duration-300 z-10
+              ${isSidebarOpen ? 'w-64' : 'w-16'}`}
+          >
+            <Sidebar onToggle={(isOpen) => setIsSidebarOpen(isOpen)} />
+          </div>
+        )}
 
-      <main className={`flex-1 h-full overflow-auto transition-all duration-300
-        ${!whiteboardPresent 
-          ? `${isSidebarOpen 
-              ? 'ml-64 w-[calc(100%-16rem)]' 
-              : 'ml-16 w-[calc(100%-4rem)]'}`
-          : 'ml-0 w-full'
-        }`}>
-        {children}
-      </main>
-    </div>
-  </LiveblocksProviderWrapper>
+        <main
+          className={`flex-1 h-full overflow-auto transition-all duration-300
+            ${!whiteboardPresent
+              ? `${isSidebarOpen
+                ? 'ml-64 w-[calc(100%-16rem)]'
+                : 'ml-16 w-[calc(100%-4rem)]'}`
+              : 'ml-0 w-full'
+            }`}
+        >
+          {children}
+        </main>
+      </div>
+    </LiveblocksProviderWrapper>
   );
 }

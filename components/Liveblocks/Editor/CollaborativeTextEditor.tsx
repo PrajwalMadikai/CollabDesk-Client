@@ -6,7 +6,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMenuController, useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import { ActionIcon, Box, Group, Text, ThemeIcon } from "@mantine/core";
+import { Box, Group, Text, ThemeIcon } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
@@ -118,6 +118,12 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       },
     },
   });
+
+  const { theme, setTheme } = useTheme();
+  let mode: "dark" | "light" = "dark";
+  if (theme === "light") {
+    mode = "light";
+  }
 
   useEffect(() => {
     if (!editor || !doc) return;
@@ -236,17 +242,6 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       onPointerLeave={onPointerLeave}
       className="w-full h-full"
        >
-        <ActionIcon
-        onClick={() => {
-          router.push(`/dashboard/whiteboard/${fileId}`);
-        }}
-        className="absolute top-4 right-4 z-10 w-[105px] p-1 rounded-[3px] bg-white font-medium  text-black"
-        size="lg"
-        radius="xl"
-        title="Open Canvas"
-      >
-         Whiteboard
-      </ActionIcon>
       <BlockNoteView editor={editor}>
         <SuggestionMenuController triggerCharacter={'/'}
          getItems={async query=>
