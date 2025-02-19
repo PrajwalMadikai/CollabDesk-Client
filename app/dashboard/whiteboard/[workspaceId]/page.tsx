@@ -5,12 +5,12 @@ import { LoadingSpinner } from "@/components/LoadingSpinner"
 import { useParams } from "next/navigation"
 
 const whiteboardLayout=()=>{
-    const {fileId}= useParams() as {fileId:string}
+    const {workspaceId}= useParams() as {workspaceId:string}
 
     return (
         <>
-        <CollaborativeRoom roomId={fileId} fallback={<LoadingSpinner />}>
-        <Canvas boardId={fileId}/>
+        <CollaborativeRoom roomId={workspaceId} fallback={<LoadingSpinner />}>
+        <Canvas boardId={workspaceId}/>
         </CollaborativeRoom>
         </>
     )

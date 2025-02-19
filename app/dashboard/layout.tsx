@@ -14,6 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [workspaces, setWorkspaces] = useState([]);
   const pathname=usePathname()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -43,14 +44,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <LiveblocksProviderWrapper>
-      <div className="flex h-screen bg-gray-900">
-       {  !whiteboardPresent && <Sidebar />  }
-
-        <div  className={`flex-1 transition-all duration-300 *
-        ${  !whiteboardPresent ? " md:ml-[255px]" : "ml-0"    }`}>
-          {children}
+    <div className="flex h-screen bg-gray-900 overflow-hidden">
+      {!whiteboardPresent && (
+        <div className={`fixed top-0 left-0 h-full transition-all duration-300 z-10
+          ${isSidebarOpen ? 'w-64' : 'w-16'}`}>
+          <Sidebar onToggle={(isOpen) => setIsSidebarOpen(isOpen)} />
         </div>
-      </div>
-    </LiveblocksProviderWrapper>
+      )}
+
+      <main className={`flex-1 h-full overflow-auto transition-all duration-300
+        ${!whiteboardPresent 
+          ? `${isSidebarOpen 
+              ? 'ml-64 w-[calc(100%-16rem)]' 
+              : 'ml-16 w-[calc(100%-4rem)]'}`
+          : 'ml-0 w-full'
+        }`}>
+        {children}
+      </main>
+    </div>
+  </LiveblocksProviderWrapper>
   );
 }

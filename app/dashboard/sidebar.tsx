@@ -13,9 +13,10 @@ interface Workspace {
 
 interface SidebarProps {
   onWorkspaceUpdate?: (workspace: Workspace) => void;
+  onToggle?: (isOpen: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
   
   const router = useRouter();
   const params = useParams();
@@ -29,10 +30,18 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
   const [editingFolderName, setEditingFolderName] = useState<string>("");
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
+  const [editingFileName, setEditingFileName] = useState<string>("");
+
   const user = useSelector((state: RootState) => state.user);
   const token = localStorage.getItem("accessToken");
   const userId: string | null = user.id;
 
+  const handleToggle = () => {
+    const newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
+    onToggle?.(newIsOpen);
+  };
   useEffect(() => {
     
     fetchSpace();
@@ -121,8 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
   const handleFolderNameSave = async (folderId: string) => {
     if (editingFolderName.trim()) {
       try {
-        const response = await API.post("/folder/update", {
-          folderId,
+        const response = await API.put(`/folder/update/${folderId}`, {
           name: editingFolderName
         }, { withCredentials: true });
 
@@ -257,9 +265,44 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
       setSelectedWorkspace(updatedWorkspace);
     }
   };
-
-
-
+  const handleFileNameEdit = (fileId: string, currentName: string) => {
+    setEditingFileId(fileId);
+    setEditingFileName(currentName);
+  };
+  const handleFileNameSave = async (fileId: string, folderId: string) => {
+    if (editingFileName.trim()) {
+      try {
+        const response = await API.put(`/file/update/${fileId}`, {
+          name: editingFileName,
+          folderId
+        }, { withCredentials: true });
+  
+        if (response.status === 200) {
+          setFolders(folders.map(folder => {
+            if (folder.id === folderId) {
+              return {
+                ...folder,
+                files: folder.files.map(file => 
+                  file.fileId === fileId
+                    ? { ...file, fileName: editingFileName }
+                    : file
+                )
+              };
+            }
+            return folder;
+          }));
+        }
+      } catch (error) {
+        console.error("Error updating file name:", error);
+        toast.error("Failed to rename file", {
+          duration: 1500,
+          position: "top-right"
+        });
+      }
+    }
+    setEditingFileId(null);
+  };
+ 
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
@@ -275,7 +318,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
               />
             </div>
           )}
-          <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg text-white hover:bg-gray-800">
+          <button  onClick={handleToggle}  className="p-2 rounded-lg text-white hover:bg-gray-800">
             <Menu className="h-5 w-5" />
           </button>
         </div>
@@ -372,7 +415,28 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
                       onClick={() => handleFileClick(file.fileId)}
                     >
                       <FileText className="h-4 w-4 text-gray-500" />
-                      <span className="text-[14px]">{file.fileName}</span>
+                      {editingFileId === file.fileId ? (
+                        <input
+                          type="text"
+                          className="bg-transparent border-none focus:outline-none text-sm text-gray-300 w-full"
+                          value={editingFileName}
+                          onChange={(e) => setEditingFileName(e.target.value)}
+                          onBlur={() => handleFileNameSave(file.fileId, folder.id)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleFileNameSave(file.fileId, folder.id)}
+                          autoFocus
+                        />
+                      ) : (
+                        <span 
+                          className="text-[14px] flex-1"
+                          onDoubleClick={(e) => {
+                            e.stopPropagation(); 
+                            handleFileNameEdit(file.fileId, file.fileName);
+                          }}
+                          onClick={() => handleFileClick(file.fileId)}
+                        >
+                          {file.fileName}
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -381,13 +445,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate }) => {
           ))}
         </div>
        )}
-       {isOpen&&(
-        <div>
-          <button>open canvas</button>
-        </div>
-       )}
       </div>
-      {/* setting section  */}
       {isSettingsModalOpen && (
         <SettingsModal isOpen={isSettingsModalOpen} 
         onClose={()=>setIsSettingsModalOpen(!isSettingsModalOpen)}

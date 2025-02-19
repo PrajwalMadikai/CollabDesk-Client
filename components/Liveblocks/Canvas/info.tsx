@@ -48,7 +48,7 @@ export const Info = ({ boardId }: InfoProps) => {
         onClick={onClick}
         className="text-base font-normal px-2"
       >
-        {workspaceName}
+        {workspaceName }
       </Button>
     </div>
   );
