@@ -119,11 +119,7 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
     },
   });
 
-  const { theme, setTheme } = useTheme();
-  let mode: "dark" | "light" = "dark";
-  if (theme === "light") {
-    mode = "light";
-  }
+   
 
   useEffect(() => {
     if (!editor || !doc) return;
