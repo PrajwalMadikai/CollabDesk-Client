@@ -472,13 +472,42 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
        )}
       </div>
       {isOpen && (
-          <div className="p-4 border-t border-gray-800 mt-auto">
+          <div className="p-4  border-gray-800 mt-auto">
             <button
               onClick={handleWhiteboardClick}
               className="flex items-center justify-center gap-2 w-full p-3 text-white hover:bg-gray-800 rounded-lg transition-colors duration-200"
             >
               <MessageSquare className="h-5 w-5" />
               <span className="text-sm">Open Whiteboard</span>
+            </button>
+          </div>
+        )}
+
+        {isOpen && (
+          <div className="p-4 border-t border-gray-800 mt-auto flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0"></div>
+
+            <div className="flex-1">
+              <p className="text-[12px] font-medium text-gray-300">{user.email}</p>
+            </div>
+
+            <button
+              className="text-gray-400 hover:text-red-500 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
             </button>
           </div>
         )}

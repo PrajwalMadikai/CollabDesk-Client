@@ -7,6 +7,7 @@ import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMe
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { Box, Group, Text, ThemeIcon } from "@mantine/core";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
@@ -119,7 +120,13 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
     },
   });
 
-   
+   const {theme}=useTheme()
+
+   let mode: "dark" | "light" = "dark";
+   if(theme=='light')
+   {
+    mode='light'
+   }
 
   useEffect(() => {
     if (!editor || !doc) return;
@@ -238,7 +245,7 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       onPointerLeave={onPointerLeave}
       className="w-full h-full"
        >
-      <BlockNoteView editor={editor}>
+      <BlockNoteView editor={editor} theme={mode} slashMenu={false}>
         <SuggestionMenuController triggerCharacter={'/'}
          getItems={async query=>
           filterSuggestionItems(getCustomSlashMenuItems(editor),query)

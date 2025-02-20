@@ -1,7 +1,7 @@
 import AppProviders from "@/components/Providers/AppProvider";
 import ProtectedRoute from "@/components/Providers/ProtectedRoute";
-import { MantineProvider } from "@mantine/core";
 import type { Metadata } from "next";
+import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 const geistSans = Geist({
@@ -26,18 +26,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <MantineProvider >
-
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               <AppProviders>
               <ProtectedRoute>
                 {children}
               </ProtectedRoute>
               </AppProviders>
-              
-          </MantineProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
