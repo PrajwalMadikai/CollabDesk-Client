@@ -66,7 +66,10 @@ export default function FileEditor() {
       });
       if(response.data.status==200){
        fetchFileData()
-      console.log("Image uploaded successfully:", response.data);
+       toast.success("File uploaded.",{
+        duration:2000,
+        position:'bottom-right'
+       })
       setIsUploadOpen(false);
 
       }
@@ -101,7 +104,7 @@ export default function FileEditor() {
         {fileData?.coverImage ? (
           <>
             <img
-              src={`http://localhost:5713/public/${fileData?.coverImage}`}
+              src={fileData?.coverImage}
               alt="Cover"
               className="w-full h-full object-cover"
             />
