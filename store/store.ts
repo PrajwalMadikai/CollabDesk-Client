@@ -2,12 +2,13 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import adminReducer from './slice/adminSlice';
+import planReducer from './slice/planSlice';
 import userReducer from './slice/userSlice';
-
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    admin:adminReducer
+    admin:adminReducer,
+    plan:planReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

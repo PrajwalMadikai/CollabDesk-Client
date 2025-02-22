@@ -1,29 +1,38 @@
 "use client";
-
 import { API } from "@/app/api/handle-token-expire";
 import ThemeToggle from '@/components/toggleTheme';
+import { setPlan } from "@/store/slice/planSlice";
 import { clearUser, setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import PaymentComponent, { paymentPlans } from "./PaymentComponent";
+
 
 function HeaderAndLandingHome() {
+  useEffect(()=>{
+    fetchPaymentPlans()
+  },[])
 
   const router=useRouter()
   const user=useSelector((state:RootState)=>state.user)
-  const dispath=useDispatch<AppDispatch>()
+  const dispatch=useDispatch<AppDispatch>()
+  const [basePlan,setBasePlan]=useState<paymentPlans>()
+  const [premiumPlan,setPremiumPlan]=useState<paymentPlans>()
+
   const {theme}=useTheme()
+
   useEffect(() => {
     const userFetch = localStorage.getItem('user');
     
     if (userFetch) {
       const userData = JSON.parse(userFetch);
       if (userData) {
-        dispath(setUser({
+        dispatch(setUser({
           id: userData.id,
           fullname: userData.fullname,
           email: userData.email,
@@ -32,7 +41,7 @@ function HeaderAndLandingHome() {
         }));
       }
     }
-  }, [dispath]);
+  }, [dispatch]);
   
 
   const logout=async()=>{
@@ -45,7 +54,7 @@ function HeaderAndLandingHome() {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       
-       dispath(clearUser())
+      dispatch(clearUser())
 
        toast.success('Logged out successfully',{
         duration:2000,
@@ -82,7 +91,28 @@ const handleDashboard = async () => {
     toast.error("Failed to fetch workspaces.");
   }
 };
+const fetchPaymentPlans=async()=>{
+  try {
+    const response=await API.get('/get-plans',{withCredentials:true})
 
+    if(response.status === 200){
+
+    const plansArray = response.data.data;
+    dispatch(setPlan(plansArray));
+
+    const base = plansArray.find((plan: any) => plan.paymentType === "base");
+    const premium = plansArray.find((plan: any) => plan.paymentType === "premium");
+
+    setBasePlan(base)
+    setPremiumPlan(premium)
+    }
+  } catch (error) {
+    console.log("Error during plans fetching",error);
+    
+  }
+}
+
+ 
 
     return (
       <>
@@ -155,7 +185,7 @@ const handleDashboard = async () => {
   
           {/* Features boxes */}
         <div className="w-full flex flex-wrap justify-center gap-5 mt-10 px-4 sm:px-6 md:px-0">
-          {/* Feature Box 1 */}
+
           <div className="animate-fade-right w-full sm:w-[48%] md:w-[250px] h-[240px] border-[1px] border-gray-400 rounded-[9px] p-4 flex flex-col items-start shadow-md bg-[rgba(99,102,241,0.1)]">
             <div className="flex items-start">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 mr-2" viewBox="0 0 640 512">
@@ -198,6 +228,7 @@ const handleDashboard = async () => {
             <h3 className="text-xl md:text-lg font-semibold mb-2 mt-4 text-foreground">AI Auto-completion</h3>
             <p className="text-[18px] md:text-[14px] font-light dark:text-gray-200">Ensure data privacy with secure access controls.</p>
           </div>
+          
         </div>
 
  
@@ -210,48 +241,9 @@ const handleDashboard = async () => {
       Subscription <span className="text-blue-800 font-extrabold">Details</span>
     </h2>
 
-    {/* Subscription Options */}
-    <div className="flex flex-col md:flex-row gap-6">
-      {/* Starter Plan */}
-      <div className="flex-1 bg-gray-900 text-white p-6 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">Starter</h3>
-        <p className="mb-6 text-gray-400">
-          This package offers the basic features you need to get started.
-        </p>
-        <h4 className="text-3xl font-bold mb-4">$39 <span className="text-lg font-medium">/ month</span></h4>
-        <button className="w-full py-2 bg-transparent border-[1px] border-white rounded-lg text-white hover:bg-blue-800 hover:border-blue-800 transition">
-          Get Started
-        </button>
-        <hr className="my-6 border-gray-700" />
-        <ul className="space-y-3 text-gray-400">
-          <li>✔️ Production up to 10,000 units per month</li>
-          <li>✔️ 24/7 technical support</li>
-          <li>✔️ Access the production dashboard</li>
-          <li>✔️ Initial setup guide</li>
-        </ul>
-      </div>
+     <PaymentComponent basePlan={basePlan} premiumPlan={premiumPlan} />
 
-      {/* Enterprise Plan */}
-      <div className="flex-1 bg-gray-900 text-white p-6 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">Enterprise</h3>
-        <p className="mb-6 text-gray-400">
-          This package provides full access to all premium features.
-        </p>
-        <h4 className="text-3xl font-bold mb-4">$99 <span className="text-lg font-medium">/ month</span></h4>
-        <button className="w-full py-2 bg-transparent border-[1px] border-white rounded-lg text-white hover:bg-blue-800 hover:border-blue-800 transition">
-          Get Started
-        </button>
-        <hr className="my-6 border-gray-700" />
-        <ul className="space-y-3 text-gray-400">
-          <li>✔️ Unlimited production units</li>
-          <li>✔️ Dedicated account manager</li>
-          <li>✔️ Tailored manufacturing solutions</li>
-          <li>✔️ Predictive production optimization</li>
-        </ul>
-      </div>
-    </div>
 
-    {/* Professional Plan */}
     <div className="bg-[#272757] text-white p-6 rounded-lg shadow-md text-center">
       <h3 className="text-xl font-semibold mb-4">Professional</h3>
       <p className="mb-6 text-gray-300">
@@ -262,6 +254,7 @@ const handleDashboard = async () => {
       </button>
     </div>
     </div>
+
     </div>
     </div>
       </>
