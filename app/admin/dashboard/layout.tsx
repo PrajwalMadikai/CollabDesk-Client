@@ -1,37 +1,46 @@
 "use client";
 import AddPayment from "@/components/admin/AddPayment";
-import Payments from "@/components/admin/Payments";
+import Home from "@/components/admin/AdminHome";
 import Users from "@/components/admin/Users";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { setAdmin } from "@/store/slice/adminSlice";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import AppSidebar from "./page";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 
   const [selectedMenu, setSelectedMenu] = useState<string>("home");
   const router=useRouter()
+  const dispatch=useDispatch()
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminAccessToken');
+    const adminData = localStorage.getItem('admin')
+
+    if(adminData){
+    const admin=JSON.parse(adminData)
+    dispatch(setAdmin({id:admin.id,email:admin.email}))
+    }
+
     if (!adminToken) {
       router.replace('/admin/login');
     }
+
   }, [router]);
 
   const renderContent = () => {
     switch (selectedMenu) {
       case "users":
         return <Users />;
-      case "payments":
-        return <Payments />;
+      case "home":
+        return <Home />;
       case "add-payment":
         return <AddPayment />;
       default:
         return (
-          <div className="w-full h-full flex justify-center items-center bg-black">
-            <img src="/collabdesk white logo.png" alt="Admin Dashboard Logo" className="h-[170px] w-auto md:h-[155px]" />
-          </div>
+           <Home/>
         );
     }
   };
@@ -50,3 +59,4 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+ 

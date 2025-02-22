@@ -19,7 +19,7 @@ import {
 import { clearAdmin, setAdmin } from "@/store/slice/adminSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import axios from "axios";
-import { DollarSign, Home, LogOut, Plus, Users } from "lucide-react";
+import { Home, LogOut, Plus, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -36,7 +36,6 @@ const user = {
 const items = [
   { title: "Home", key: "home", icon: Home },
   { title: "Users", key: "users", icon: Users },
-  { title: "Payments", key: "payments", icon: DollarSign },
   { title: "Add Payment", key: "add-payment", icon: Plus },
 ];
 

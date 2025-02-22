@@ -1,4 +1,3 @@
-// hooks/useAuthInit.ts
 "use client";
 import { setUser } from '@/store/slice/userSlice';
 import { useEffect } from 'react';
