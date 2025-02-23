@@ -24,6 +24,9 @@ export async function POST(req: Request) {
             mode: 'subscription',  
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel`,
+            metadata: {
+                planType, 
+            },
         });
 
         return new Response(JSON.stringify({ sessionUrl: session.url }), {
