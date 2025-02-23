@@ -2,7 +2,7 @@
 import { API } from "@/app/api/handle-token-expire";
 import ThemeToggle from '@/components/toggleTheme';
 import { setPlan } from "@/store/slice/planSlice";
-import { clearUser, setUser } from "@/store/slice/userSlice";
+import { clearUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -26,22 +26,22 @@ function HeaderAndLandingHome() {
 
   const {theme}=useTheme()
 
-  useEffect(() => {
-    const userFetch = localStorage.getItem('user');
+  // useEffect(() => {
+  //   const userFetch = localStorage.getItem('user');
     
-    if (userFetch) {
-      const userData = JSON.parse(userFetch);
-      if (userData) {
-        dispatch(setUser({
-          id: userData.id,
-          fullname: userData.fullname,
-          email: userData.email,
-          workSpaces: userData.workSpaces,
-          isAuthenticated: true,
-        }));
-      }
-    }
-  }, [dispatch]);
+  //   if (userFetch) {
+  //     const userData = JSON.parse(userFetch);
+  //     if (userData) {
+  //       dispatch(setUser({
+  //         id: userData.id,
+  //         fullname: userData.fullname,
+  //         email: userData.email,
+  //         workSpaces: userData.workSpaces,
+  //         isAuthenticated: true,
+  //       }));
+  //     }
+  //   }
+  // }, [dispatch]);
   
 
   const logout=async()=>{

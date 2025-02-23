@@ -1,13 +1,13 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
 import ProtectedRoute from "@/components/Providers/ProtectedRoute";
-import { setUser } from "@/store/slice/userSlice";
+import { addWorkspace } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { workspaceSchema } from "@/validations/workspace";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,19 +34,19 @@ export default function CreateWorkspace() {
 
   const workspaceName = watch("workspaceName");
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      const parsedData = JSON.parse(userData);
-      dispatch(setUser({
-        id: parsedData.id,
-        fullname: parsedData.fullname,
-        email: parsedData.email,
-        workSpaces: parsedData.workSpaces,
-        isAuthenticated: true,
-      }));
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const userData = localStorage.getItem('user');
+  //   if (userData) {
+  //     const parsedData = JSON.parse(userData);
+  //     dispatch(setUser({
+  //       id: parsedData.id,
+  //       fullname: parsedData.fullname,
+  //       email: parsedData.email,
+  //       workSpaces: parsedData.workSpaces,
+  //       isAuthenticated: true,
+  //     }));
+  //   }
+  // }, [dispatch]);
 
   const onSubmit = async (formData: { workspaceName: string }) => {
     if (!userId || !user.email) {
@@ -82,6 +82,7 @@ export default function CreateWorkspace() {
             color: '#fff',
           },
         });
+        dispatch(addWorkspace(workspaceResponse.data.workspace))
 
       const workspaceId = workspaceResponse.data.workspace.id;
 

@@ -1,10 +1,11 @@
 'use client';
 import { API } from '@/app/api/handle-token-expire';
+import { setPlanType } from '@/store/slice/userSlice';
 import { RootState } from '@/store/store';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function PaymentSuccess() {
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -13,6 +14,7 @@ export default function PaymentSuccess() {
     const sessionId = searchParams.get('session_id');
     const [sessionDetails, setSessionDetails] = useState<any>(null);
     const user = useSelector((state: RootState) => state.user);
+    const dispatch=useDispatch()
 
     useEffect(() => {
         console.log("useEffect triggered with sessionId:", sessionId);
@@ -55,8 +57,11 @@ export default function PaymentSuccess() {
                 { userData },
                 { withCredentials: true }
             );
-            console.log("Payment details stored successfully:", response.data);
-            setIsPaymentStored(true); // Mark as completed
+            
+              dispatch(setPlanType(userData.paymentType))
+            console.log('user',user);
+            
+            setIsPaymentStored(true);  
         } catch (error) {
             console.error("Error storing payment details:", error);
         }
