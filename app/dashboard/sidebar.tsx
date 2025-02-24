@@ -40,9 +40,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
   const userPlan = user.planType
   const plans = plan.plans;
   const userSelectedPlan = plans.find((p) => p.paymentType === userPlan);
-// console.log('user selcet:',userSelectedPlan);
-// console.log('plan:',plan);
-// console.log('user plan:',userPlan)
 console.log('user',user);
 
 
@@ -90,7 +87,7 @@ console.log('user',user);
       return
     }
 
-    if(user.planType==null && user.workspaceCount==1)
+    if(user.planType==null && user.workspaceCount>=1)
     {
       toast.custom((t) => (
         <div
@@ -235,12 +232,16 @@ console.log('user',user);
           if (!roomResponse.ok) {
             throw new Error("Failed to create room");
           }
-        setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
+          setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
           setNewWorkspaceName("");
           fetchSpace()
         }
-      } catch (error) {
-        console.error("Error creating workspace:", error);
+      } catch (error:any) {
+        if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
+          router.push('/subscription-ended')
+        } else {
+          console.error("Error creating workspace:", error);
+        }
       }
   };
   const fetchFolders = async () => {
@@ -304,7 +305,124 @@ console.log('user',user);
   };
 
   const handleAddFolder = async () => {
+
     if (!selectedWorkspace?.workspaceId) return;
+    if(user.planType==null && user.folderCount>=1)
+      {
+        toast.custom((t) => (
+          <div
+            className={`${
+              t.visible ? 'animate-enter' : 'animate-leave'
+            } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+          >
+            <div className="flex-1 w-0 p-4">
+              <div className="flex items-center">
+                {/* Replace image with an icon or text */}
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-6 w-6 text-red-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-medium text-gray-900">
+                    Your subscription plan has reached the maximum number of folders.
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Please upgrade your subscription to create more folders.
+                  </p>
+                  <Link href='/'>
+                  <p
+                    onClick={() => toast.dismiss(t.id)}
+                    className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                  >
+                    Upgrade Subscription
+                  </p>
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="flex border-l border-gray-200">
+              <button
+                onClick={() => toast.dismiss(t.id)}
+                className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        ));
+        return
+      }
+    if (user.folderCount === userSelectedPlan?.WorkspaceNum) {
+      toast.custom((t) => (
+        <div
+          className={`${
+            t.visible ? 'animate-enter' : 'animate-leave'
+          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+        >
+          <div className="flex-1 w-0 p-4">
+            <div className="flex items-center">
+              {/* Replace image with an icon or text */}
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-6 w-6 text-red-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 flex-1">
+                <p className="text-sm font-medium text-gray-900">
+                  Your subscription plan has reached the maximum number of folders.
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  Please upgrade your subscription to create more folders.
+                </p>
+                {/* Add a link to the home page */}
+                <Link href='/' >
+                <p
+                  
+                  className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                >
+                  Upgrade Subscription
+                </p>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="flex border-l border-gray-200">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ));
+      return;
+    }
     try {
       const response = await API.post("/folder/create", {
         name: "Untitled",
@@ -316,8 +434,12 @@ console.log('user',user);
         setFolders([...folders, { ...response.data.folder, files: [] }]);
         
       }
-    } catch (error) {
-      console.error("Error creating folder:", error);
+    } catch (error:any) {
+      if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
+        router.push('/subscription-ended')
+      } else {
+        console.error("Error creating workspace:", error);
+      }
     }
   };
 
@@ -624,7 +746,7 @@ console.log('user',user);
             <div className="flex-1">
               <p className="text-[12px] font-medium text-gray-300">{user.email}</p>
             </div>
-
+            <Link href='/'>
             <button
               className="text-gray-400 hover:text-red-500 transition"
             >
@@ -643,6 +765,7 @@ console.log('user',user);
                 />
               </svg>
             </button>
+            </Link>
           </div>
         )}
       {isSettingsModalOpen && (

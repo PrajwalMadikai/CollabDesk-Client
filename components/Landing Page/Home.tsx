@@ -25,6 +25,7 @@ function HeaderAndLandingHome() {
   const [premiumPlan,setPremiumPlan]=useState<paymentPlans>()
 
   const {theme}=useTheme()
+console.log('user redux:',user);
 
   // useEffect(() => {
   //   const userFetch = localStorage.getItem('user');

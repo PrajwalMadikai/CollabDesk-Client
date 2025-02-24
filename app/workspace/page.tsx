@@ -119,7 +119,10 @@ export default function CreateWorkspace() {
             color: '#fff',
           },
         });
-      } else {
+      }else if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
+        router.push('/subscription-ended')
+      }
+      else {
         toast.error(error.response?.data?.message || "Failed to create workspace", {
           duration: 2000,
           position: 'top-right',

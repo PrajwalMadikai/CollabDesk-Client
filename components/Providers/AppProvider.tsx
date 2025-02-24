@@ -1,5 +1,4 @@
 "use client";
-
 import { useAuthInit } from "@/hooks/useAuthInit";
 import { persistor, store } from "@/store/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";

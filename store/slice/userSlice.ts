@@ -6,8 +6,8 @@ interface Folder {
 }
 
 interface Workspace {
-  id: string;
-  name: string;
+  workspaceId: string;
+  workspaceName: string;
 }
 
 interface UserState {
@@ -69,7 +69,7 @@ const userSlice = createSlice({
     },
     removeWorkspace(state, action: PayloadAction<string>) {
       const wsIndex = state.workSpaces.findIndex(
-        (ws) => ws.id === action.payload
+        (ws) => ws.workspaceId === action.payload
       );
       if (wsIndex !== -1) {
         state.folders.splice(wsIndex, 1);  
