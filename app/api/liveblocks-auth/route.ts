@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-
     const token = authHeader.split(" ")[1];
     const backendResponse = await fetch(`http://localhost:5713/verify-user`, {
       method: "POST",
@@ -43,7 +42,7 @@ export async function POST(request: NextRequest) {
         },
       }
     );
-    console.log('room auth SUCCESS');
+    console.log('liveblocks auth SUCCESS');
     const parsedBody = JSON.parse(authResponse.body);
     return NextResponse.json({ token: parsedBody.token });
   } catch (error) {

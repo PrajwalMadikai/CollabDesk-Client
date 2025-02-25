@@ -1,33 +1,28 @@
 "use client";
 
 import { ClientSideSuspense, LiveblocksProvider } from "@liveblocks/react/suspense";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { LoadingSpinner } from "../LoadingSpinner";
 
 const LiveblocksProviderWrapper = ({ children }: { children: ReactNode }) => {
-  const [authToken, setAuthToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      setAuthToken(token);
-    } else {
-      console.error("No access token found in localStorage");
-    }
-  }, []);
+  const token = localStorage.getItem("accessToken");
+   
 
-  if (!authToken) {
+  if (!token) {
     return <LoadingSpinner />;
   }
 
   return (
     <LiveblocksProvider
       authEndpoint={async () => {
+      console.log('auth wrapper calling');
+
         try {
           const response = await fetch("/api/liveblocks-auth", {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${authToken}`,
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
             credentials: "include",

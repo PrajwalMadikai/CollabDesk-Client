@@ -136,7 +136,7 @@ const fetchPaymentPlans=async()=>{
               <button onClick={logout} className="text-primary h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
                Logout
               </button>
-              <button onClick={handleDashboard} className="bg-primary text-primary-foreground hover:bg-primary/90 h-[32px] rounded w-24  font-extralight text-sm hover:bg-gray-200 transition duration-200">
+              <button onClick={handleDashboard} className="bg-primary text-primary-foreground hover:bg-primary/90 h-[32px] rounded w-24  font-light text-sm hover:bg-gray-200 transition duration-200">
                 Dashboard
               </button>
             </>
@@ -160,8 +160,8 @@ const fetchPaymentPlans=async()=>{
         {/* Home Content */}
         <div className="w-full flex flex-col items-center justify-center pt-[60px] min-h-screen">
           {/* Small Text under Logo */}
-          <div className="text-center h-7 mt-12 text-sm text-white md:h-7 md:w-[250px] border-2 border-white rounded-[14px] mb-4">
-            <p className="p-1 tracking-tight">A perfect workspace</p>
+          <div className="text-center h-7 w-[200px] mt-12 text-sm text-white md:h-7 md:w-[250px] border-2 border-white rounded-[14px] mb-4">
+            <p className=" tracking-tight">A perfect workspace</p>
           </div>
   
           {/* Big Text under Small Text */}
@@ -231,34 +231,29 @@ const fetchPaymentPlans=async()=>{
           </div>
           
         </div>
-
- 
         </div>
  
 
       <div className="w-full h-auto  py-10 flex justify-center items-center">
-  <div className="w-[1100px] flex flex-col gap-6">
-    <h2 className="animate-fade-down text-foreground text-3xl font-semibold text-center mb-6">
-      Subscription <span className="text-blue-800 font-extrabold">Details</span>
-    </h2>
+    <div className="w-[1100px] flex flex-col gap-6">
+      <h2 className="animate-fade-down text-foreground text-3xl font-semibold text-center mb-6">
+        Subscription <span className="text-blue-800 font-extrabold">Details</span>
+      </h2>
+       <PaymentComponent basePlan={basePlan} premiumPlan={premiumPlan} />
 
-     <PaymentComponent basePlan={basePlan} premiumPlan={premiumPlan} />
-
-
-    <div className="bg-[#272757] text-white p-6 rounded-lg shadow-md text-center">
-      <h3 className="text-xl font-semibold mb-4">Professional</h3>
-      <p className="mb-6 text-gray-300">
-        Designed for greater flexibility, this solution offers advanced tools for custom tailoring to your needs.
-      </p>
-      <button className="py-2 px-6 bg-blue-800 rounded-lg text-white hover:bg-blue-600 transition">
-        Get Started
-      </button>
-    </div>
-    </div>
-
-    </div>
-    </div>
-      </>
+        <div className="bg-[#272757] text-white p-6 rounded-lg shadow-md text-center">
+            <h3 className="text-xl font-semibold mb-4">Professional</h3>
+            <p className="mb-6 text-gray-300">
+              Designed for greater flexibility, this solution offers advanced tools for custom tailoring to your needs.
+            </p>
+            <button className="py-2 px-6 bg-blue-800 rounded-lg text-white hover:bg-blue-600 transition">
+              Get Started
+            </button>
+        </div>
+       </div>
+     </div>
+   </div> 
+</>
     );
   }
   

@@ -4,7 +4,7 @@ import { persistor, store } from "@/store/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/es/integration/react";
+import { PersistGate } from 'redux-persist/integration/react';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   useAuthInit();

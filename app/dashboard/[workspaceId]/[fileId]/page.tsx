@@ -64,13 +64,13 @@ export default function FileEditor() {
       const response = await API.put(`/file/uploadImage/${fileId}`, formData, {
         withCredentials: true,
       });
+      setIsUploadOpen(false);
       if(response.data.status==200){
        fetchFileData()
        toast.success("File uploaded.",{
         duration:2000,
         position:'bottom-right'
        })
-      setIsUploadOpen(false);
 
       }
     } catch (error) {
@@ -96,7 +96,7 @@ export default function FileEditor() {
   return (
     <div className="min-h-screen  bg-gray-900">
       {/* Header */}
-      <div className="flex justify-end items-center p-2 border-b">
+      <div className="flex justify-end items-center p-3 border-b">
         <ThemeToggle/>
       </div>
 
@@ -126,7 +126,7 @@ export default function FileEditor() {
             </div>
           </>
         ) : (
-          <div className="w-full h-full relative bg-gray-50">
+          <div className="w-full h-full relative bg-black-500">
           <button
             className="absolute top-[160px] left-2 text-gray-500 text-[11px] font-semibold uppercase flex items-center gap-1"
             onClick={() => setIsUploadOpen(true)}
@@ -137,7 +137,6 @@ export default function FileEditor() {
         </div>
         )}
 
-        {/* Upload Modal */}
         {isUploadOpen && (
           <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
             <Card className="w-[600px]">

@@ -7,16 +7,18 @@ export async function POST(request: NextRequest) {
     console.log("Received data:", body);
     const { roomId, userId, email, title } = body;
 
-    if (!roomId || !userId || !email) {
+    if (!roomId || !userId || !email || !title) {
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 }
       );
     }
 
+     
+
     const room = await liveblocks.createRoom(roomId, {
       metadata: {
-        title: title || "Untitled",
+        title: title ,
         createdBy: userId,
       },
       defaultAccesses: ["room:write"],  

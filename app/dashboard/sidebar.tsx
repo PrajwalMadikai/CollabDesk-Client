@@ -1,7 +1,7 @@
 import SettingsModal from "@/components/Settings";
 import { addFolder, addWorkspace } from "@/store/slice/userSlice";
 import { RootState } from "@/store/store";
-import { ChevronRight, FileText, Folder, Menu, MessageSquare, Plus, Settings } from "lucide-react";
+import { ChevronRight, File, Folder, Menu, MessageSquare, Plus, RefreshCcw, Settings, Trash } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -34,6 +34,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onWorkspaceUpdate,onToggle }) => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const [editingFileId, setEditingFileId] = useState<string | null>(null);
   const [editingFileName, setEditingFileName] = useState<string>("");
+  const[isTrashExpanded,setIsTrashExpanded]=useState(false)
+  const [trashItems, setTrashItems] = useState<{
+    folders: Array<{ _id: string; name: string }>;
+    files: Array<{ _id: string; name: string }>;
+  }>({ folders: [], files: [] });
 
   const user = useSelector((state: RootState) => state.user);
   const plan = useSelector((state:RootState)=>state.plan)
@@ -54,7 +59,6 @@ console.log('user',user);
   useEffect(() => {
     
     fetchSpace();
-
   }, [userId, token, params.workspaceId]);
   
   const handleWhiteboardClick = () => {
@@ -70,7 +74,8 @@ console.log('user',user);
 
       if (fetchedWorkspaces.length > 0) {
         const initialWorkspace = fetchedWorkspaces.find((w: { workspaceId: string | string[] | undefined }) => w.workspaceId === params.workspaceId) || fetchedWorkspaces[0];
-        setSelectedWorkspace(initialWorkspace);
+       await setSelectedWorkspace(initialWorkspace);
+
       }
     } catch (error) {
       console.error("Error fetching workspaces:", error);
@@ -234,7 +239,6 @@ console.log('user',user);
           }
           setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
           setNewWorkspaceName("");
-          fetchSpace()
         }
       } catch (error:any) {
         if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
@@ -260,13 +264,15 @@ console.log('user',user);
   };
 
   useEffect(() => {
+     
     if (selectedWorkspace?.workspaceId) {
       fetchFolders()
+      fetchTrashItems();
     }
   }, [selectedWorkspace?.workspaceId]);
 
   const handleWorkspaceSelect = (workspace: { workspaceId: string; workspaceName: string }) => {
-    setSelectedWorkspace(workspace);
+    setSelectedWorkspace(workspace)
     setShowWorkspaceList(false);
     router.push(`/dashboard/${workspace.workspaceId}`);
   };
@@ -468,7 +474,7 @@ console.log('user',user);
             roomId: newFile.id,
             userId: user.id,
             email: user.email,
-            title: newFile.name || "Untitled",
+            title:"Untitled",
           }),
         });
   
@@ -476,19 +482,19 @@ console.log('user',user);
           throw new Error("Failed to create room");
         }
   
-        setFolders((prevFolders) =>
-          prevFolders.map((folder) =>
-            folder.id === folderId 
-              ? { 
-                  ...folder, 
-                  files: [...(folder.files || []), { 
-                    fileId: newFile.id,
-                    fileName: newFile.name
-                  }]
-                } 
-              : folder
-          )
-        );
+        // setFolders((prevFolders) =>
+        //   prevFolders.map((folder) =>
+        //     folder.id === folderId 
+        //       ? { 
+        //           ...folder, 
+        //           files: [...(folder.files || []), { 
+        //             fileId: newFile.id,
+        //             fileName: newFile.name
+        //           }]
+        //         } 
+        //       : folder
+        //   )
+        // );
         toggleFolderExpansion(folderId)
         await fetchFolders();
       }
@@ -581,6 +587,121 @@ console.log('user',user);
     }
     setEditingFileId(null);
   };
+
+  const handleFileDelete=async(fileId:string,folderId:string)=>{
+    try {
+
+      const response=await API.post(`/file/move-to-trash`,{fileId,folderId},{withCredentials:true})
+      if(response.status==200)
+      {
+        await fetchFolders()
+        await fetchTrashItems()
+        toast.success("File has moved to trash", {
+          duration: 3000,  
+          position: "bottom-right",  
+          style: {
+            background: "white",  
+            color: "black",  
+            borderRadius: "8px",  
+            padding: "12px",  
+            fontSize: "14px", 
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",  
+          },
+        });
+      }
+      
+    } catch (error) {
+      console.log("Error in file delete");
+      
+    }
+  }
+
+  const fetchTrashItems=async()=>{
+     if(!selectedWorkspace?.workspaceId) return
+
+    try {
+
+      const response=await API.post("/folder/trash-fetch",
+        { 
+          workspaceId: selectedWorkspace?.workspaceId
+        },
+        {withCredentials:true}
+      )
+      
+      if(response.data.result)
+      {
+        setTrashItems(response.data.result)
+      }
+      
+    } catch (error) {
+      console.log('error in fetching trash items',error);
+      
+    }
+  }
+  const handleFolderMovetoTrash=async(folderId:string)=>{
+    try {
+         const response=await API.post('/folder/move-to-trash',
+          {folderId,workspaceId:selectedWorkspace?.workspaceId},
+          {withCredentials:true})
+
+         if(response.status==200)
+         {
+          toast.success("Folder has moved to trash", {
+            duration: 3000,  
+            position: "bottom-right",  
+            style: {
+              background: "white",  
+              color: "black",  
+              borderRadius: "8px",  
+              padding: "12px",  
+              fontSize: "14px", 
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",  
+            },
+          });
+          fetchFolders()
+          fetchTrashItems()
+         }
+    } catch (error) {
+      console.log('error in folder move to trash');
+      
+    }
+  }
+
+  const handleRestoreFile=async(fileId:string)=>{
+    try {
+      const response=await API.post('/file/restore',{fileId},{withCredentials:true})
+      if(response.status==200)
+        {
+          setTrashItems((prevTrashItems) => ({
+            ...prevTrashItems,
+            files: prevTrashItems.files.filter((file) => file._id !== fileId),
+          }));
+    
+          fetchFolders();
+        }
+    } catch (error) {
+      console.log("Error during file restore",error);
+      
+    }
+  }
+
+  const handleRestoreFolder=async(folderId:string)=>{
+    try {
+
+      const response=await API.post('/folder/restore',{folderId},{withCredentials:true})
+      if(response.status==200)
+      {
+        setTrashItems((previousItems)=>({
+          ...previousItems,
+          folders:previousItems.folders.filter((folder)=>folder._id !== folderId),
+        }))
+        fetchFolders();
+      }
+     
+    } catch (error) {
+      console.log("Error during folder restore",error);
+    }
+  }
  
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
@@ -599,6 +720,7 @@ console.log('user',user);
           )}
           <button  onClick={handleToggle}  className="p-2 rounded-lg text-white hover:bg-gray-800">
             <Menu className="h-5 w-5" />
+            
           </button>
         </div>
 
@@ -650,10 +772,10 @@ console.log('user',user);
         )}
        {isOpen&&(
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           {folders.map((folder) => (
-            <div key={folder.id} className="group flex flex-col">
-              <div className="flex items-center justify-between px-4 py-2 text-white hover:bg-gray-800 cursor-pointer transition duration-200">
+            <div key={folder.id} className="group flex flex-col ">
+              <div className="flex items-center justify-between px-4  text-white hover:bg-gray-800 cursor-pointer transition duration-200">
                 <div className="flex items-center gap-2 flex-1">
                   <ChevronRight 
                     className={`h-4 w-4 transition-transform ${folder.isExpanded ? 'rotate-90' : ''}`}
@@ -679,53 +801,142 @@ console.log('user',user);
                     </span>
                   )}
                 </div>
-                <button onClick={() => handleAddFile(folder.id)} className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200">
+                <div className="flex items-center gap-2">
+                <button
+                  className="hidden group-hover:block text-gray-400  hover:text-white transition duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();  
+                    handleFolderMovetoTrash(folder.id);  
+                  }}
+                >
+                  <Trash className="h-4 w-4" />  
+                </button>
+
+                <button
+                  onClick={() => handleAddFile(folder.id)}
+                  className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
+              </div>
               {folder.isExpanded && (
-                <div className="ml-8">
-                  {(folder.files || []).map((file) => (  
-                    <div 
-                      key={file.fileId} 
-                      className={`flex items-center gap-2 px-4 py-1 text-gray-300 hover:bg-gray-700 cursor-pointer transition duration-200 ${
-                        params.fileId === file.fileId ? 'bg-gray-700' : ''
-                      }`}
-                      onClick={() => handleFileClick(file.fileId)}
-                    >
-                      <FileText className="h-4 w-4 text-gray-500" />
-                      {editingFileId === file.fileId ? (
-                        <input
-                          type="text"
-                          className="bg-transparent border-none focus:outline-none text-sm text-gray-300 w-full"
-                          value={editingFileName}
-                          onChange={(e) => setEditingFileName(e.target.value)}
-                          onBlur={() => handleFileNameSave(file.fileId, folder.id)}
-                          onKeyPress={(e) => e.key === 'Enter' && handleFileNameSave(file.fileId, folder.id)}
-                          autoFocus
-                        />
-                      ) : (
-                        <span 
-                          className="text-[14px] flex-1"
-                          onDoubleClick={(e) => {
-                            e.stopPropagation(); 
-                            handleFileNameEdit(file.fileId, file.fileName);
-                          }}
-                          onClick={() => handleFileClick(file.fileId)}
-                        >
-                          {file.fileName}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="ml-8">
+                {(folder.files || []).map((file) => (
+                 <div 
+                 key={file.fileId} 
+                 className={`flex items-center gap-2 px-4 py-1 text-gray-300  cursor-pointer transition duration-200 group ${
+                   params.fileId === file.fileId ? 'bg-gray-700' : ''
+                 }`}
+                 onClick={() => handleFileClick(file.fileId)}
+               >
+                 <File className="h-4 w-4 text-gray-400" />
+                 {editingFileId === file.fileId ? (
+                   <input
+                     type="text"
+                     className="bg-transparent border-none focus:outline-none text-sm text-gray-300 w-full"
+                     value={editingFileName}
+                     onChange={(e) => setEditingFileName(e.target.value)}
+                     onBlur={() => handleFileNameSave(file.fileId, folder.id)}
+                     onKeyPress={(e) => e.key === 'Enter' && handleFileNameSave(file.fileId, folder.id)}
+                     autoFocus
+                   />
+                 ) : (
+                   <span 
+                     className="text-[14px] flex-1"
+                     onDoubleClick={(e) => {
+                       e.stopPropagation(); 
+                       handleFileNameEdit(file.fileId, file.fileName);
+                     }}
+                     onClick={() => handleFileClick(file.fileId)}
+                   >
+                     {file.fileName}
+                   </span>
+                 )}
+               
+                 <button
+                   className="ml-auto hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
+                   onClick={(e) => {
+                     e.stopPropagation();  
+                     handleFileDelete(file.fileId, folder.id);  
+                   }}
+                 >
+                    <Trash className="h-4 w-4" />
+                 </button>
+               </div>
+                ))}
+              </div>
+            )}
             </div>
           ))}
           
         </div>
         
        )}
+       {isOpen && (
+          <div className="mt-[50px]">
+          <div 
+            className="flex items-center cursor-pointer text-primary   transition duration-200"
+            onClick={() => setIsTrashExpanded(!isTrashExpanded)}  
+          >
+            <Trash className="h-4 w-4" />
+            <span className="font-semibold text-primary text-[13px] ml-2">TRASH</span>
+          </div>
+
+          {isTrashExpanded && (
+          <div className="ml-4 mt-2">
+            {/* Folders Section */}
+            {trashItems.folders.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-300">Folders</h4>
+                {trashItems.folders.map((folder) => (
+                  <div key={folder._id} className="flex items-center justify-between gap-2 text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <Folder className="h-4 w-4" />
+                      <span>{folder.name}</span>
+                    </div>
+                    {/* Restore Button for Folder */}
+                    <button
+                      onClick={() => handleRestoreFolder(folder._id)}
+                      className="text-gray-400 hover:text-white transition duration-200"
+                    >
+                      <RefreshCcw className="h-4 w-4" />  
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          {/* Files Section */}
+          {trashItems.files.length > 0 && (
+            <div className="mt-2">
+              <h4 className="text-sm font-semibold text-gray-300">Files</h4>
+              {trashItems.files.map((file) => (
+                <div key={file._id} className="flex items-center justify-between gap-2 text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <File className="h-4 w-4" />
+                    <span>{file.name}</span>
+                  </div>
+                  {/* Restore Button for File */}
+                  <button
+                    onClick={() => handleRestoreFile(file._id)}
+                    className="text-gray-400 hover:text-white transition duration-200"
+                  >
+                    <RefreshCcw className="h-4 w-4" /> 
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* No Items in Trash */}
+          {trashItems.folders.length === 0 && trashItems.files.length === 0 && (
+            <p className="text-sm text-gray-400">No items in trash.</p>
+          )}
+        </div>
+      )}
+          </div>
+          )}
       </div>
       {isOpen && (
           <div className="p-4  border-gray-800 mt-auto">

@@ -33,10 +33,10 @@ const PaymentComponent=({basePlan,premiumPlan}:{ basePlan:paymentPlans ; premium
             </Link>
             <hr className="my-6 border-gray-700" />
             <ul className="space-y-3 text-gray-400">
-                <li>✔️ {basePlan?.FolderNum} Folder slots per month</li>
-                <li>✔️ {basePlan?.WorkspaceNum} Workspace slots per month</li>
-                <li>✔️ Text Editor access</li>
-                <li>✔️ Whiteboard access</li>
+                <li>✔️ {basePlan?.FolderNum} folders per month</li>
+                <li>✔️ {basePlan?.WorkspaceNum} workspaces per month</li>
+                <li>✔️ Text Editor</li>
+                <li>✔️ Whiteboard</li>
             </ul>
         </div>
 
@@ -59,10 +59,10 @@ const PaymentComponent=({basePlan,premiumPlan}:{ basePlan:paymentPlans ; premium
             </Link>
             <hr className="my-6 border-gray-700" />
             <ul className="space-y-3 text-gray-400">
-                <li>✔️ {premiumPlan?.FolderNum} Folder slots per month</li>
-                <li>✔️ {premiumPlan?.WorkspaceNum} Workspace slots per month</li>
-                <li>✔️ Text Editor access</li>
-                <li>✔️ Whiteboard access</li>
+                <li>✔️ Unlimited folders per month</li>
+                <li>✔️ Unlimited workspaces per month</li>
+                <li>✔️ Text Editor</li>
+                <li>✔️ Whiteboard</li>
             </ul>
         </div>
     </div>
