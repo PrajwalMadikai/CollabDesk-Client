@@ -6,7 +6,8 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMenuController, useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import { Box, Group, Text, ThemeIcon } from "@mantine/core";
+import { Box, Text, ThemeIcon } from "@mantine/core";
+// import { useCompletion } from "ai/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -23,16 +24,20 @@ const socket = io(baseUrl, {
 
 type YjsProvider = ReturnType<typeof getYjsProviderForRoom>;
 
+ 
 type EditorProps = {
   doc: Y.Doc;
   provider: YjsProvider;
   fileId: string;
 };
-
+interface CustomReactSuggestionItem extends DefaultReactSuggestionItem {
+  render?: (props: { onClick: () => void }) => React.ReactNode;
+}
 interface Props {
   fileId: string;
   initialContent?: string;
 }
+
 
 export function CollaborativeEditor({ fileId, initialContent }: Props) {
   const room = useRoom();
@@ -195,44 +200,124 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
     setMyPresence({ cursor: null });
   }, []);
 
+ 
+
+
   const getCustomSlashMenuItems = (
     editor: BlockNoteEditor
-  ): DefaultReactSuggestionItem[] => [
-    ...getDefaultReactSlashMenuItems(editor).map((item) => ({
+  ): CustomReactSuggestionItem[] => 
+    getDefaultReactSlashMenuItems(editor).map((item) => ({
       ...item,
       render: (props: { onClick: () => void }) => (
         <Box
-        style={{
-          padding: "8px 12px",
-          borderRadius: "4px",
-          cursor: "pointer",
-          "&:hover": {
-            backgroundColor: "#f0f0f0",   
-          },
-        }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            padding: "10px 16px", // Increased padding for better spacing
+            cursor: "pointer",
+            transition: "background-color 0.2s ease",
+            backgroundColor: mode === 'dark' ? '#2c2c2c' : '#ffffff',
+            "&:hover": {
+              backgroundColor: mode === 'dark' ? '#3c3c3c' : '#f0f0f0',
+            },
+          }}
           onClick={props.onClick}
+          className="slash-menu-item"
         >
-          <Group gap="sm">
-            {item.icon && (
-              <ThemeIcon size="sm" radius="xl">
-                {item.icon}
-              </ThemeIcon>
-            )}
-            <div>
-              <Text size="sm" fw={500}>
-                {item.title}
+          {/* Icon/Emoji */}
+          {item.icon && (
+            <ThemeIcon
+              size="sm"
+              radius="xl"
+              style={{
+                marginRight: "12px", // Space between icon and text
+                backgroundColor: mode === 'dark' ? '#3c3c3c' : '#e0e0e0',
+                color: mode === 'dark' ? '#ffffff' : '#333333',
+              }}
+            >
+              {item.icon}
+            </ThemeIcon>
+          )}
+  
+          {/* Text Content */}
+          <div style={{ flex: 1 }}>
+            <Text
+              size="md" // Slightly larger font size
+              fw={600} // Bold font weight
+              color={mode === 'dark' ? 'white' : 'black'}
+              style={{
+                marginBottom: "2px", // Space between title and subtext
+              }}
+            >
+              {item.title}
+            </Text>
+            {item.subtext && (
+              <Text
+                size="xs"
+                color={mode === 'dark' ? 'gray.5' : 'dimmed'}
+                style={{
+                  lineHeight: 1.4, // Improved line height for readability
+                }}
+              >
+                {item.subtext}
               </Text>
-              {item.subtext && (
-                <Text size="xs" color="dimmed">
-                  {item.subtext}
-                </Text>
-              )}
-            </div>
-          </Group>
+            )}
+          </div>
         </Box>
       ),
-    })),
-  ];
+    }));
+
+    useEffect(() => {
+      const style = document.createElement('style');
+      style.innerHTML = `
+        /* Slash Menu Container */
+        .bn-suggestion-menu {
+          max-height: 350px !important; /* Increased height */
+          overflow-y: auto !important;
+          border-radius: 12px !important; /* Rounded corners */
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important; /* Softer shadow */
+          border: 1px solid ${mode === 'dark' ? '#444' : '#e0e0e0'} !important;
+          background-color: ${mode === 'dark' ? '#2c2c2c' : '#ffffff'} !important;
+          width: 320px !important; /* Fixed width for consistency */
+          z-index: 9999; /* Ensure it appears above other elements */
+        }
+    
+        /* Individual Menu Items */
+        .slash-menu-item {
+          display: flex;
+          align-items: center;
+          padding: 10px 16px !important;
+          border-bottom: 1px solid ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
+        }
+    
+        /* Hover Effect */
+        .slash-menu-item:hover {
+          background-color: ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
+        }
+    
+        /* Last Item Border Removal */
+        .slash-menu-item:last-child {
+          border-bottom: none !important;
+        }
+    
+        /* Scrollbar Styling */
+        .bn-suggestion-menu::-webkit-scrollbar {
+          width: 8px;
+        }
+        .bn-suggestion-menu::-webkit-scrollbar-thumb {
+          background: ${mode === 'dark' ? '#555' : '#ccc'};
+          border-radius: 4px;
+        }
+        .bn-suggestion-menu::-webkit-scrollbar-track {
+          background: ${mode === 'dark' ? '#2c2c2c' : '#f9f9f9'};
+        }
+      `;
+      document.head.appendChild(style);
+      return () => {
+        document.head.removeChild(style);
+      };
+    }, [mode]);
+
 
   if (!editor) {
     return null;
@@ -245,13 +330,14 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
       onPointerLeave={onPointerLeave}
       className="w-full h-full"
        >
-      <BlockNoteView editor={editor} theme={mode} slashMenu={false}>
-        <SuggestionMenuController triggerCharacter={'/'}
-         getItems={async query=>
-          filterSuggestionItems(getCustomSlashMenuItems(editor),query)
-         }
-        /> 
-      </BlockNoteView>
+        <BlockNoteView editor={editor} theme={mode}>
+          <SuggestionMenuController
+            triggerCharacter={"/"}
+            getItems={async query =>
+              filterSuggestionItems(getCustomSlashMenuItems(editor), query)
+            }
+          />
+        </BlockNoteView>
     </div>
   );
 }
