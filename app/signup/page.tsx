@@ -1,6 +1,8 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
 import { baseUrl } from "@/app/api/urlconfig";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
@@ -34,13 +36,11 @@ export default function Signup() {
     let isValid = true;
     const newErrors: any = {};
   
-    // Full Name validation
     if (!fullName.trim()) {
       newErrors.fullName = "Full name is required.";
       isValid = false;
     }
   
-    // Email validation
     if (!email.trim()) {
       newErrors.email = "Email is required.";
       isValid = false;
@@ -49,7 +49,6 @@ export default function Signup() {
       isValid = false;
     }
   
-    // Password validation
     if (!password.trim()) {
       newErrors.password = "Password is required.";
       isValid = false;
@@ -100,25 +99,28 @@ export default function Signup() {
     try {
       
       const isAdmin=false
-      await axios.post("http://localhost:5713/signup", {
-        fullName,
-        email,
-        password,
-        isAdmin
-      });
+       const response =  await axios.post(`${baseUrl}/signup`, {
+                      fullName,
+                      email,
+                      password,
+                      isAdmin
+                    });
        
-     
+    const responseStatus=getResponseStatus(response.status)
+
+     if(responseStatus==ResponseStatus.CREATED){
+
       router.push('/email-sent');
         
-      
-
       setFullName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-
+     }
     } catch (error:any) {
-      if(error.response && error.response.status==400)
+      const responseStatus=getResponseStatus(error.response.status)
+
+      if(responseStatus==ResponseStatus.BAD_REQUEST)
       {
         const errorMessage = error.response.data.message
         toast.error(errorMessage, {
@@ -151,7 +153,9 @@ export default function Signup() {
         const userData = response.data.user;
         const accessToken = response.data.accessToken;
 
-        if (response.status === 201) {
+        const responseStatus=getResponseStatus(response.status)
+
+        if (responseStatus === ResponseStatus.CREATED) {
             if (userData) {
                 localStorage.setItem('user', JSON.stringify(userData));
                 localStorage.setItem('accessToken', accessToken);
@@ -169,7 +173,8 @@ export default function Signup() {
             }, 2000);
         }
     } catch (error: any) {
-        const errorMessage = error.response?.status === 404 
+      const responseStatus=getResponseStatus(error.response.status)
+        const errorMessage = responseStatus === ResponseStatus.NOT_FOUND
             ? 'Account already exists'
             : 'Google signup failed. Please try again.';
             

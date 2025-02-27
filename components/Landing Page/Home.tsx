@@ -1,6 +1,8 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
 import ThemeToggle from '@/components/toggleTheme';
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import { setPlan } from "@/store/slice/planSlice";
 import { clearUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
@@ -82,11 +84,16 @@ const handleDashboard = async () => {
   try {
     const response = await API.post("/workspace/fetch", { userId: user.id }, { withCredentials: true });
 
+    const responseStatus=getResponseStatus(response.status)
+
+    if(responseStatus==ResponseStatus.SUCCESS){
+
     if (response.data.workspace.length > 0) {
       router.push(`/dashboard/${response.data.workspace[0].workspaceId}`); 
     } else {
       router.push('/workspace');  
     }
+  }
   } catch (error) {
     console.error("Error fetching workspaces:", error);
     toast.error("Failed to fetch workspaces.");
@@ -96,7 +103,9 @@ const fetchPaymentPlans=async()=>{
   try {
     const response=await API.get('/get-plans',{withCredentials:true})
 
-    if(response.status === 200){
+    const responseStatus=getResponseStatus(response.status)
+
+    if(responseStatus === ResponseStatus.SUCCESS){
 
     const plansArray = response.data.data;
     dispatch(setPlan(plansArray));
@@ -133,7 +142,7 @@ const fetchPaymentPlans=async()=>{
           <ThemeToggle/>
           {user.isAuthenticated ? (
             <> 
-              <button onClick={logout} className="text-primary h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
+              <button onClick={logout} className="text-primary h-[38px] rounded w-12 font-normal text-sm hover:text-gray-300 transition duration-200">
                Logout
               </button>
               <button onClick={handleDashboard} className="bg-primary text-primary-foreground hover:bg-primary/90 h-[32px] rounded w-24  font-light text-sm hover:bg-gray-200 transition duration-200">
@@ -143,12 +152,12 @@ const fetchPaymentPlans=async()=>{
             ) : (
               <>
               <Link href="/login" prefetch={true}>
-              <button className="text-primary-foreground h-[38px] rounded w-12 font-extralight text-sm hover:text-gray-300 transition duration-200">
+              <button className="text-primary h-[38px] rounded w-12 font-normal text-sm hover:text-white transition duration-200">
                  Login
               </button>
               </Link>
               <Link href="/signup" prefetch={true}> 
-              <button className="bg-primary text-black h-[32px] rounded w-20 font-extralight text-sm hover:bg-gray-200 transition duration-200">
+              <button className="bg-primary text-black h-[32px] rounded w-20 font-normal text-sm hover:bg-gray-200 transition duration-200">
                 Signup
               </button>
               </Link>

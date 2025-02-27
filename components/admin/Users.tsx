@@ -1,7 +1,9 @@
 "use client";
 import { ADMIN_API } from "@/app/api/handle-token-expire";
 import { baseUrl } from '@/app/api/urlconfig';
+import { ResponseStatus } from "@/enums/responseStatus";
 import usersInterface from "@/interfaces/adminUsers";
+import getResponseStatus from "@/lib/responseStatus";
 import axios from "axios";
 import { Search, Users as UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -23,7 +25,14 @@ const Users = () => {
         }
     
         const response = await ADMIN_API.get(`/users`);
-        setUsers(response.data.users);
+
+        const responseStatus=getResponseStatus(response.status)
+
+        if(responseStatus==ResponseStatus.SUCCESS){
+  
+          setUsers(response.data.users);
+  
+        }
       } catch (error) {
         console.error("Failed to fetch users:", error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -44,7 +53,10 @@ const Users = () => {
 
     try {
       let response=await ADMIN_API.post(`${baseUrl}/admin/block`,{userId})
-      if(response.status==200)
+
+      const responseStatus=getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
       {
         setUsers((prevUsers) => 
           prevUsers.map((user) => 
@@ -67,7 +79,10 @@ const Users = () => {
 
     try {
       let response=await ADMIN_API.post(`${baseUrl}/admin/unblock`,{userId})
-      if(response.status==200)
+
+      const responseStatus=getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
       {
         setUsers((prevUsers) => 
           prevUsers.map((user) => 

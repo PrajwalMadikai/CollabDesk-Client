@@ -1,5 +1,7 @@
 import SettingsModal from "@/components/Settings";
-import { addFolder, addWorkspace } from "@/store/slice/userSlice";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
+import { addFolder, addWorkspace, removeWorkspace } from "@/store/slice/userSlice";
 import { RootState } from "@/store/store";
 import { ChevronRight, File, Folder, Menu, MessageSquare, Plus, RefreshCcw, Settings, Trash } from "lucide-react";
 import Link from "next/link";
@@ -69,6 +71,8 @@ console.log('user',user);
   const fetchSpace = async () => {
     try {
       let response = await API.post("/workspace/fetch", { userId }, { withCredentials: true });
+      const responseStatus = getResponseStatus(response.status)
+      if(responseStatus==ResponseStatus.SUCCESS){
       const fetchedWorkspaces = response.data.workspace;
       setWorkspaces(fetchedWorkspaces);
 
@@ -76,6 +80,7 @@ console.log('user',user);
         const initialWorkspace = fetchedWorkspaces.find((w: { workspaceId: string | string[] | undefined }) => w.workspaceId === params.workspaceId) || fetchedWorkspaces[0];
        await setSelectedWorkspace(initialWorkspace);
 
+      }
       }
     } catch (error) {
       console.error("Error fetching workspaces:", error);
@@ -92,134 +97,136 @@ console.log('user',user);
       return
     }
 
-    if(user.planType==null && user.workspaceCount>=1)
-    {
-      toast.custom((t) => (
-        <div
-          className={`${
-            t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-        >
-          <div className="flex-1 w-0 p-4">
-            <div className="flex items-center">
-              {/* Replace image with an icon or text */}
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-red-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  Your subscription plan has reached the maximum number of workspaces.
-                </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  Please upgrade your subscription to create more workspaces.
-                </p>
-                {/* Add a link to the home page */}
-                <Link href='/'>
-                <p
-                  onClick={() => toast.dismiss(t.id)}
-                  className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
-                >
-                  Upgrade Subscription
-                </p>
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="flex border-l border-gray-200">
-            <button
-              onClick={() => toast.dismiss(t.id)}
-              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      ));
-      return
-    }
-    if (user.workspaceCount === userSelectedPlan?.WorkspaceNum) {
-      toast.custom((t) => (
-        <div
-          className={`${
-            t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-        >
-          <div className="flex-1 w-0 p-4">
-            <div className="flex items-center">
-              {/* Replace image with an icon or text */}
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-red-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  Your subscription plan has reached the maximum number of workspaces.
-                </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  Please upgrade your subscription to create more workspaces.
-                </p>
-                {/* Add a link to the home page */}
-                <Link href='/' >
-                <p
+    // if(user.planType==null && user.workspaceCount>=1)
+    // {
+    //   toast.custom((t) => (
+    //     <div
+    //       className={`${
+    //         t.visible ? 'animate-enter' : 'animate-leave'
+    //       } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+    //     >
+    //       <div className="flex-1 w-0 p-4">
+    //         <div className="flex items-center">
+    //           {/* Replace image with an icon or text */}
+    //           <div className="flex-shrink-0">
+    //             <svg
+    //               className="h-6 w-6 text-red-500"
+    //               xmlns="http://www.w3.org/2000/svg"
+    //               fill="none"
+    //               viewBox="0 0 24 24"
+    //               stroke="currentColor"
+    //               aria-hidden="true"
+    //             >
+    //               <path
+    //                 strokeLinecap="round"
+    //                 strokeLinejoin="round"
+    //                 strokeWidth={2}
+    //                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+    //               />
+    //             </svg>
+    //           </div>
+    //           <div className="ml-3 flex-1">
+    //             <p className="text-sm font-medium text-gray-900">
+    //               Your subscription plan has reached the maximum number of workspaces.
+    //             </p>
+    //             <p className="mt-1 text-sm text-gray-500">
+    //               Please upgrade your subscription to create more workspaces.
+    //             </p>
+    //             {/* Add a link to the home page */}
+    //             <Link href='/'>
+    //             <p
+    //               onClick={() => toast.dismiss(t.id)}
+    //               className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+    //             >
+    //               Upgrade Subscription
+    //             </p>
+    //             </Link>
+    //           </div>
+    //         </div>
+    //       </div>
+    //       <div className="flex border-l border-gray-200">
+    //         <button
+    //           onClick={() => toast.dismiss(t.id)}
+    //           className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    //         >
+    //           Close
+    //         </button>
+    //       </div>
+    //     </div>
+    //   ));
+    //   return
+    // }
+    // if (user.workSpaces.length === userSelectedPlan?.WorkspaceNum) {
+    //   toast.custom((t) => (
+    //     <div
+    //       className={`${
+    //         t.visible ? 'animate-enter' : 'animate-leave'
+    //       } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+    //     >
+    //       <div className="flex-1 w-0 p-4">
+    //         <div className="flex items-center">
+    //           {/* Replace image with an icon or text */}
+    //           <div className="flex-shrink-0">
+    //             <svg
+    //               className="h-6 w-6 text-red-500"
+    //               xmlns="http://www.w3.org/2000/svg"
+    //               fill="none"
+    //               viewBox="0 0 24 24"
+    //               stroke="currentColor"
+    //               aria-hidden="true"
+    //             >
+    //               <path
+    //                 strokeLinecap="round"
+    //                 strokeLinejoin="round"
+    //                 strokeWidth={2}
+    //                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+    //               />
+    //             </svg>
+    //           </div>
+    //           <div className="ml-3 flex-1">
+    //             <p className="text-sm font-medium text-gray-900">
+    //               Your subscription plan has reached the maximum number of workspaces.
+    //             </p>
+    //             <p className="mt-1 text-sm text-gray-500">
+    //               Please upgrade your subscription to create more workspaces.
+    //             </p>
+    //             {/* Add a link to the home page */}
+    //             <Link href='/' >
+    //             <p
                   
-                  className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
-                >
-                  Upgrade Subscription
-                </p>
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="flex border-l border-gray-200">
-            <button
-              onClick={() => toast.dismiss(t.id)}
-              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      ));
-      return;
-    }
+    //               className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+    //             >
+    //               Upgrade Subscription
+    //             </p>
+    //             </Link>
+    //           </div>
+    //         </div>
+    //       </div>
+    //       <div className="flex border-l border-gray-200">
+    //         <button
+    //           onClick={() => toast.dismiss(t.id)}
+    //           className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    //         >
+    //           Close
+    //         </button>
+    //       </div>
+    //     </div>
+    //   ));
+    //   return;
+    // }
 
       try {
         const response = await API.post("/workspace/create", {
           spaceName: newWorkspaceName,
           userId
         }, { withCredentials: true });
-        
-        if (response.status === 201) {
-          const newWorkspace = response.data.workspace;
-         dispatch(addWorkspace(newWorkspace))
 
+        const responseStatus = getResponseStatus(response.status)
+
+    if (responseStatus === ResponseStatus.CREATED) {
+        const newWorkspace = response.data.workspace;
+         setNewWorkspaceName("");
+         setWorkspaces((prevWorkspaces) => [...prevWorkspaces, {workspaceId:newWorkspace.id,workspaceName:newWorkspace.name}]);
           const roomResponse = await fetch("/api/create-room", {
             method: "POST",
             headers: {
@@ -237,11 +244,71 @@ console.log('user',user);
           if (!roomResponse.ok) {
             throw new Error("Failed to create room");
           }
-          setWorkspaces((prevWorkspaces) => [...prevWorkspaces, newWorkspace]);
-          setNewWorkspaceName("");
+          dispatch(addWorkspace(newWorkspace))
+          
         }
       } catch (error:any) {
-        if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
+
+        const responseStatus = getResponseStatus(error.response.status)
+        
+        if(responseStatus==ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Workspace limit exceeded"))
+        {
+          toast.custom((t) => (
+            <div
+              className={`${
+                t.visible ? 'animate-enter' : 'animate-leave'
+              } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+            >
+              <div className="flex-1 w-0 p-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-6 w-6 text-red-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Your subscription plan has reached the maximum number of workspace.
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Please upgrade your subscription to create more workspace.
+                    </p>
+                    <Link href='/' >
+                    <p
+                      
+                      className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                    >
+                      Upgrade Subscription
+                    </p>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div className="flex border-l border-gray-200">
+                <button
+                  onClick={() => toast.dismiss(t.id)}
+                  className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          ));
+          return
+        }
+        if (responseStatus==ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Subscription")) {
           router.push('/subscription-ended')
         } else {
           console.error("Error creating workspace:", error);
@@ -251,7 +318,8 @@ console.log('user',user);
   const fetchFolders = async () => {
     try {
       let response = await API.post("/folder/fetch", { workspaceId: selectedWorkspace?.workspaceId }, { withCredentials: true });
-      if (response.data.folders) {
+      const responseStatus = getResponseStatus(response.status)
+      if (responseStatus==ResponseStatus.SUCCESS) {
         const foldersWithFiles = response.data.folders.map((folder: any) => ({
           ...folder,
           files: folder.files || [],  
@@ -296,7 +364,9 @@ console.log('user',user);
           name: editingFolderName
         }, { withCredentials: true });
 
-        if (response.status === 200) {
+        const responseStatus = getResponseStatus(response.status)
+
+        if (responseStatus === ResponseStatus.SUCCESS) {
           setFolders(folders.map(folder =>
             folder.id === folderId
               ? { ...folder, name: editingFolderName }
@@ -311,143 +381,91 @@ console.log('user',user);
   };
 
   const handleAddFolder = async () => {
-
     if (!selectedWorkspace?.workspaceId) return;
-    if(user.planType==null && user.folderCount>=1)
-      {
-        toast.custom((t) => (
-          <div
-            className={`${
-              t.visible ? 'animate-enter' : 'animate-leave'
-            } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-          >
-            <div className="flex-1 w-0 p-4">
-              <div className="flex items-center">
-                {/* Replace image with an icon or text */}
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-6 w-6 text-red-500"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-gray-900">
-                    Your subscription plan has reached the maximum number of folders.
-                  </p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Please upgrade your subscription to create more folders.
-                  </p>
-                  <Link href='/'>
-                  <p
-                    onClick={() => toast.dismiss(t.id)}
-                    className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
-                  >
-                    Upgrade Subscription
-                  </p>
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="flex border-l border-gray-200">
-              <button
-                onClick={() => toast.dismiss(t.id)}
-                className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        ));
-        return
-      }
-    if (user.folderCount === userSelectedPlan?.WorkspaceNum) {
-      toast.custom((t) => (
-        <div
-          className={`${
-            t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-        >
-          <div className="flex-1 w-0 p-4">
-            <div className="flex items-center">
-              {/* Replace image with an icon or text */}
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-red-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  Your subscription plan has reached the maximum number of folders.
-                </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  Please upgrade your subscription to create more folders.
-                </p>
-                {/* Add a link to the home page */}
-                <Link href='/' >
-                <p
-                  
-                  className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
-                >
-                  Upgrade Subscription
-                </p>
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="flex border-l border-gray-200">
-            <button
-              onClick={() => toast.dismiss(t.id)}
-              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      ));
-      return;
-    }
-    try {
-      const response = await API.post("/folder/create", {
-        name: "Untitled",
-        workspaceId: selectedWorkspace.workspaceId,
-      }, { withCredentials: true });
-      if (response.status === 200) {
 
-        dispatch(addFolder(response.data.folder))
-        setFolders([...folders, { ...response.data.folder, files: [] }]);
+    try {
+        const response = await API.post("/folder/create", {
+            name: "Untitled",
+            workspaceId: selectedWorkspace.workspaceId,
+            userId: user.id,
+        }, { withCredentials: true });
         
-      }
-    } catch (error:any) {
-      if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
-        router.push('/subscription-ended')
-      } else {
-        console.error("Error creating workspace:", error);
-      }
+        const responseStatus = getResponseStatus(response.status)
+
+        if (responseStatus ===ResponseStatus.CREATED) {
+            dispatch(addFolder(response.data.folder));
+            setFolders([...folders, { ...response.data.folder, files: [] }]);
+        }
+    } catch (error: any) {
+      const responseStatus = getResponseStatus(error.response.status)
+
+        if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Folder limit exceeded")) {
+          toast.custom((t) => (
+            <div
+              className={`${
+                t.visible ? 'animate-enter' : 'animate-leave'
+              } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+            >
+              <div className="flex-1 w-0 p-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-6 w-6 text-red-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Your subscription plan has reached the maximum number of folders.
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Please upgrade your subscription to create more folders.
+                    </p>
+                    <Link href='/' >
+                    <p
+                      
+                      className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                    >
+                      Upgrade Subscription
+                    </p>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div className="flex border-l border-gray-200">
+                <button
+                  onClick={() => toast.dismiss(t.id)}
+                  className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          ));
+          return 
+        } 
+        if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Subscription")) {
+          router.push('/subscription-ended')
+        } else {
+            console.error("Error creating folder:", error);
+            toast.error("Failed to create folder. Please try again.", {
+                duration: 3000,
+                position: "top-right",
+            });
+        }
     }
-  };
+};
 
  
   const handleAddFile = async (folderId: string) => {
@@ -461,7 +479,9 @@ console.log('user',user);
         folderId 
       }, { withCredentials: true });
   
-      if (response.status === 201) {
+      const responseStatus = getResponseStatus(response.status)
+
+      if (responseStatus === ResponseStatus.CREATED) {
         const newFile = response.data.file;
         
         const roomResponse = await fetch("/api/create-room", {
@@ -561,8 +581,11 @@ console.log('user',user);
           name: editingFileName,
           folderId
         }, { withCredentials: true });
+
+        const responseStatus = getResponseStatus(response.status)
   
-        if (response.status === 200) {
+        if (responseStatus === ResponseStatus.SUCCESS) {
+
           setFolders(folders.map(folder => {
             if (folder.id === folderId) {
               return {
@@ -592,7 +615,10 @@ console.log('user',user);
     try {
 
       const response=await API.post(`/file/move-to-trash`,{fileId,folderId},{withCredentials:true})
-      if(response.status==200)
+
+      const responseStatus = getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
       {
         await fetchFolders()
         await fetchTrashItems()
@@ -627,8 +653,9 @@ console.log('user',user);
         },
         {withCredentials:true}
       )
+      const responseStatus = getResponseStatus(response.status)
       
-      if(response.data.result)
+      if(responseStatus==ResponseStatus.SUCCESS)
       {
         setTrashItems(response.data.result)
       }
@@ -644,7 +671,9 @@ console.log('user',user);
           {folderId,workspaceId:selectedWorkspace?.workspaceId},
           {withCredentials:true})
 
-         if(response.status==200)
+          const responseStatus = getResponseStatus(response.status)
+
+         if(responseStatus==ResponseStatus.SUCCESS)
          {
           toast.success("Folder has moved to trash", {
             duration: 3000,  
@@ -670,7 +699,9 @@ console.log('user',user);
   const handleRestoreFile=async(fileId:string)=>{
     try {
       const response=await API.post('/file/restore',{fileId},{withCredentials:true})
-      if(response.status==200)
+      const responseStatus = getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
         {
           setTrashItems((prevTrashItems) => ({
             ...prevTrashItems,
@@ -689,7 +720,10 @@ console.log('user',user);
     try {
 
       const response=await API.post('/folder/restore',{folderId},{withCredentials:true})
-      if(response.status==200)
+
+      const responseStatus = getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
       {
         setTrashItems((previousItems)=>({
           ...previousItems,
@@ -701,6 +735,32 @@ console.log('user',user);
     } catch (error) {
       console.log("Error during folder restore",error);
     }
+  }
+  const handleDeleteWorkspace=async(workspacesId:string)=>{
+     try {
+
+      const response=await API.post('/workspace/delete',
+        {workspaceId:workspacesId},
+        {withCredentials:true}
+      )
+      const responseStatus = getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
+      {
+        const deletedspace=response.data.data
+        dispatch(removeWorkspace(deletedspace))
+        setWorkspaces((prev)=> prev.filter((workspace)=>workspace.workspaceId!=deletedspace))
+        setSelectedWorkspace(workspaces[0])
+        toast.success('workspace deleted successfully',{
+          duration:2500,
+          position:'top-right'
+        })
+      }
+      
+     } catch (error) {
+      console.log('Error in workspace delete');
+      
+     }
   }
  
   return (
@@ -725,30 +785,40 @@ console.log('user',user);
         </div>
 
         {showWorkspaceList && isOpen && (
-          <div className="bg-gray-900 rounded-lg text-white mb-4">
-            {workspaces.map((workspace) => (
-              <div
-                key={workspace.workspaceId}
-                className="px-3 py-2 hover:bg-gray-700 cursor-pointer rounded-md transition duration-200"
-                onClick={() => handleWorkspaceSelect(workspace)}
-              >
-                {workspace.workspaceName}
+            <div className="bg-gray-900 rounded-lg text-white mb-4">
+              {workspaces.map((workspace) => (
+                <div
+                  key={workspace.workspaceId}
+                  className="group px-3 py-2 hover:bg-gray-700 cursor-pointer rounded-md transition duration-200 flex justify-between items-center"
+                  onClick={() => handleWorkspaceSelect(workspace)}
+                >
+                  <span>{workspace.workspaceName}</span>
+
+                  <button
+                    className="hidden group-hover:block text-gray-300 transition duration-200"
+                    onClick={(e) => {
+                      e.stopPropagation();  
+                      handleDeleteWorkspace(workspace.workspaceId);
+                    }}
+                  >
+                     <Trash className="w-4 h-4"/>
+                  </button>
+                </div>
+              ))}
+              <div className="px-3 py-2 border-t border-gray-800">
+                <input
+                  type="text"
+                  placeholder="New workspace..."
+                  className="w-full bg-transparent border-none focus:outline-none text-sm text-gray-300"
+                  value={newWorkspaceName}
+                  onChange={(e) => setNewWorkspaceName(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") handleCreateWorkspace(e);
+                  }}
+                />
               </div>
-            ))}
-            <div className="px-3 py-2 border-t border-gray-800">
-              <input
-                type="text"
-                placeholder="New workspace..."
-                className="w-full bg-transparent border-none focus:outline-none text-sm text-gray-300"
-                value={newWorkspaceName}
-                onChange={(e) => setNewWorkspaceName(e.target.value)}
-                onKeyPress={(e)=>{
-                  if(e.key==="Enter") handleCreateWorkspace(e)
-                }}
-              />
             </div>
-          </div>
-        )}
+          )}
         {isOpen&&(
 
        <div className="flex items-center justify-start my-4  text-[13px] uppercase font-semibold py-0">
@@ -942,7 +1012,7 @@ console.log('user',user);
           <div className="p-4  border-gray-800 mt-auto">
             <button
               onClick={handleWhiteboardClick}
-              className="flex items-center justify-center gap-2 w-full p-3 text-white hover:bg-gray-800 rounded-lg transition-colors duration-200"
+              className="flex items-center justify-center gap-2 w-full p-3 text-white  rounded-lg transition-colors duration-200"
             >
               <MessageSquare className="h-5 w-5" />
               <span className="text-sm">Open Whiteboard</span>
@@ -952,7 +1022,8 @@ console.log('user',user);
 
         {isOpen && (
           <div className="p-4 border-t border-gray-800 mt-auto flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0"></div>
+            <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0">
+            </div>
 
             <div className="flex-1">
               <p className="text-[12px] font-medium text-gray-300">{user.email}</p>

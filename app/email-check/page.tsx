@@ -35,7 +35,9 @@ export default function VerifyEmail() {
           setStatus('error');
           const message = error.response?.data?.message || 'Verification failed';
           setErrorMessage(message);
-          toast.error(message);
+          toast.error(message,{
+            position:'top-right'
+          });
         }
       }
     };

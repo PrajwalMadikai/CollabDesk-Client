@@ -1,5 +1,7 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import { setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
@@ -60,11 +62,14 @@ export default function Home() {
           password,
         }, { withCredentials: true });
 
-        if (response.status === 200) {
+        const responseStatus=getResponseStatus(response.status)
+
+        if (responseStatus === ResponseStatus.SUCCESS) {
                     
           const userData = response.data.user;
           const accessToken = response.data.accessToken;
           const refreshToken=response.data.refreshToken
+          
           localStorage.setItem('user', JSON.stringify(userData));
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
@@ -73,8 +78,12 @@ export default function Home() {
             id: userData.id,
             fullname: userData.fullname,
             email: userData.email,
-            workSpaces: userData.workSpaces ,  
-            isAuthenticated: true
+            workSpaces: userData.workSpaces,
+            isAuthenticated: true,
+            planType: null,
+            workspaceCount: 0,
+            folders: [],
+            folderCount: 0
           }));
           
           toast.success("Login successful!", {
@@ -100,7 +109,10 @@ export default function Home() {
           });
         }
       } catch (error:any) {
-         if(error.response?.status==403 && error.response?.data?.message === "Your account is blocked")
+      
+        const responseStatus=getResponseStatus(error.response.status)
+
+         if(responseStatus==ResponseStatus.FORBIDDEN && error.response?.data?.message === "Your account is blocked")
           {
             router.push('/')
             toast.error("Your account has been blocked", {
@@ -112,8 +124,7 @@ export default function Home() {
               },
           });
           } 
-        console.error("Error during login:", error);
-        if (error.response && error.response.status === 404 && error.response.data.message === "No User Found!") {
+        if (responseStatus === ResponseStatus.NOT_FOUND && error.response.data.message === "No User Found!") {
           toast.error("!", {
             position: 'top-right',
             duration: 3000,
@@ -134,18 +145,22 @@ export default function Home() {
   };
 
   const handleGoogleLoginSuccess = async (credentialResponse: any) => {
+
     const idToken = credentialResponse.credential; // google ID token
 
     try {
       const response = await API.post(`/google-login`, { idToken }, { withCredentials: true });
       
-      toast.success(response.data.message, {
+       const responseStatus=getResponseStatus(response.status)
+    
+       if(responseStatus==ResponseStatus.SUCCESS)
+       {
+        toast.success(response.data.message, {
         duration: 2000,
         position: "top-right",
         style: { background: "#4caf50", color: "#fff" },
-    });
-       if(response.data)
-       {
+         });
+
          const userData=response.data.user
          const accessToken=response.data.accessToken
          console.log('user data:',userData);
@@ -161,7 +176,11 @@ export default function Home() {
           fullname: userData.fullname,
           email: userData.email,
           workSpaces: userData.workSpaces,
-          isAuthenticated:true
+          isAuthenticated: true,
+          planType: null,
+          workspaceCount: 0,
+          folders: [],
+          folderCount: 0
         }))
        }
 
@@ -169,8 +188,11 @@ export default function Home() {
         router.push('/');   
       }, 2000);
     } catch (error:any) {
+
+      const responseStatus=getResponseStatus(error.response.status)
+
       console.error("Login error:", error.response?.data?.message || error.message);
-      if(error.response?.status==403 && error.response?.data?.message === "Your account is blocked")
+      if(responseStatus==ResponseStatus.FORBIDDEN && error.response?.data?.message === "Your account is blocked")
         {
           router.push('/')
           toast.error("Your account has been blocked", {
@@ -207,7 +229,6 @@ export default function Home() {
     <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(98,51,238,1)_0,rgba(0,0,0,0.8)_50%,rgba(0,0,0,1)_100%)] flex items-center justify-center p-4">
     <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl w-full flex-grow"> {/* Add flex-grow here */}
       
-      {/* Left Section: login */}
       <div className="flex flex-1 flex-col items-center text-center md:text-left space-y-28 p-14 rounded-lg">
         <img
           src="/3682888-Photoroom.png"
@@ -222,12 +243,10 @@ export default function Home() {
         </div>
       </div>
   
-      {/* Right Section: Login Form */}
       <div className="flex flex-1 flex-col md:mt-[110px] space-y-6 p-6 rounded-lg">
         <h2 className="text-2xl font-bold text-white text-center md:text-left">Login to Your Account</h2>
       
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Field */}
           <div className="space-y-2">
             <TextField
               id="email"

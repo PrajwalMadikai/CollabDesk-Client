@@ -1,6 +1,8 @@
 "use client";
 import { API } from "@/app/api/handle-token-expire";
 import ProtectedRoute from "@/components/Providers/ProtectedRoute";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import { addWorkspace } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { workspaceSchema } from "@/validations/workspace";
@@ -72,7 +74,10 @@ export default function CreateWorkspace() {
         },
         { withCredentials: true }
       );
-      if(workspaceResponse.status==201){
+
+      const responseStatus=getResponseStatus(workspaceResponse.status)
+
+      if(responseStatus == ResponseStatus.CREATED){
 
         toast.success("Workspace created successfully!", {
           duration: 2000,
@@ -109,8 +114,8 @@ export default function CreateWorkspace() {
       }
     } catch (error: any) {
       console.error("Workspace creation error:", error);
-
-      if (error.response?.status === 409) {   
+      const responseStatus=getResponseStatus(error.response.status)
+      if (responseStatus === ResponseStatus.CONFLICT) {   
         toast.error(error.response.data.message || "Workspace name already exists", {
           duration: 3000,
           position: 'top-right',
@@ -119,7 +124,7 @@ export default function CreateWorkspace() {
             color: '#fff',
           },
         });
-      }else if (error.response?.status === 403 && error.response?.data?.message.includes("Subscription")) {
+      }else if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Subscription")) {
         router.push('/subscription-ended')
       }
       else {

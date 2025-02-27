@@ -44,9 +44,6 @@ const userSlice = createSlice({
       state.email = action.payload.email;
       state.isAuthenticated = true;
       state.workSpaces = action.payload.workSpaces;
-      state.workspaceCount=action.payload.workspaceCount ||0;
-      state.folders = action.payload.folders || []; 
-      state.folderCount = action.payload.folders?.length || 0; 
     },
     clearUser(state) {
       state.id = null;
@@ -58,6 +55,9 @@ const userSlice = createSlice({
       state.workspaceCount=0;
       state.folders = []; 
       state.folderCount = 0; 
+    },
+    updateName(state,action:PayloadAction<string>){
+      state.fullname=action.payload
     },
     setPlanType(state,action:PayloadAction<string>){
        state.planType=action.payload
@@ -76,7 +76,7 @@ const userSlice = createSlice({
         state.folderCount -= 1;  
       }
     },
-    
+      
     addFolder(state, action: PayloadAction<Folder>) {
       state.folders.push(action.payload); 
       state.folderCount += 1;  
@@ -95,6 +95,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, clearUser, addFolder, removeFolder,addWorkspace,removeWorkspace,setPlanType  } = userSlice.actions;
+export const { setUser, clearUser, addFolder, removeFolder,addWorkspace,removeWorkspace,setPlanType ,updateName } = userSlice.actions;
 
 export default userSlice.reducer;

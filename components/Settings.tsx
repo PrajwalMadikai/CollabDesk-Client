@@ -10,7 +10,9 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet";
-import { setUser } from "@/store/slice/userSlice";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
+import { updateName } from "@/store/slice/userSlice";
 import { RootState } from "@/store/store";
 import { Briefcase, User } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -33,6 +35,7 @@ const SettingsModal = ({
 }) => {
   const dispatch=useDispatch()
   const mainUser=useSelector((state:RootState)=>state.user)
+  const [addingUser, setAddingUser] = useState<string | null>(null);
   const [collaborators, setCollaborators] = useState<{ id: string; email: string }[]>([]);
   const [availableUsers, setAvailableUsers] = useState<{ id: string; fullname: string; email: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,7 +51,10 @@ const SettingsModal = ({
         withCredentials: true,
       });
 
-      if (response.status === 200) {
+      const responseStatus=getResponseStatus(response.status)
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+
         const userDetails = response.data.user?.userDetails;
         const newCollaborators = userDetails.map((user: any) => ({
           id: user.userId,
@@ -63,21 +69,28 @@ const SettingsModal = ({
 
   const handleAddCollaborator = async (email: string) => {
     try {
+      setAddingUser(email)
       const response = await API.post(
         "/workspace/add-collaborator",
-        { email, workspaceId },
+        { email, workspaceId ,invitedEmail:mainUser.email},
         { withCredentials: true }
       );
 
-      if (response.status === 200) {
+      const responseStatus=getResponseStatus(response.status)
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+
         toast.success('collaborator added',{
           duration:1500,
           position:'top-right'
         })
         fetchInitialCollaborators()
+       
       }
     } catch (error) {
       console.error("Error adding collaborator:", error);
+    }finally{
+      setAddingUser(null)
     }
   };
 
@@ -85,7 +98,11 @@ const SettingsModal = ({
     const fetchAvailableUsers = async () => {
       try {
         const response = await API.get("/fetch-user", { withCredentials: true });
-        if (response.status === 200) {
+
+        const responseStatus=getResponseStatus(response.status)
+
+        if (responseStatus === ResponseStatus.SUCCESS) {
+
           const users = response.data.user
             .filter((user: any) => 
               user.id !== mainUser.id && 
@@ -114,7 +131,10 @@ const SettingsModal = ({
         {email,workspaceId},
         {withCredentials:true}
       )
-      if(response.status==200)
+
+      const responseStatus=getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
       {
         fetchInitialCollaborators()
       }
@@ -138,7 +158,11 @@ const SettingsModal = ({
         { workspaceId, newName },
         { withCredentials: true }
       );
-      if (response.status === 200) {
+
+      const responseStatus=getResponseStatus(response.status)
+      
+      if (responseStatus === ResponseStatus.SUCCESS) {
+
         setWorkspaceNameInput(response.data.space.name)
         setIsWorkspaceNameEditing(false);  
         onWorkspaceUpdate?.({
@@ -172,14 +196,12 @@ const SettingsModal = ({
         { userId: mainUser.id, newName },
         { withCredentials: true }
       );
-      if (response.status === 200) {
-          dispatch(setUser({
-            id: mainUser.id,
-            fullname: newName,  
-            email: mainUser.email, 
-            isAuthenticated: true,
-            workSpaces: mainUser.workSpaces,  
-          }));
+
+      const responseStatus=getResponseStatus(response.status)
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        dispatch(updateName(newName))
+          
         setIsUserNameEditing(false);  
       }
     } catch (error) {
@@ -285,13 +307,13 @@ const SettingsModal = ({
                           <p className="text-white text-xs">{user.fullname}</p>
                           <p className="text-gray-400 text-xs">{user.email}</p>
                         </div>
-                        <Button
-                          size="sm"
+                        <button
+                           className="w-[70px] h-7 rounded text-sm font-normal bg-primary text-primary-foreground"
                           onClick={() => handleAddCollaborator(user.email)}
                           aria-label={`Add ${user.fullname} as collaborator`}
                         >
-                          Add
-                        </Button>
+                       {addingUser === user.email ? "Adding..." : "Add"}
+                        </button>
                       </div>
                     ))
                 ) : (

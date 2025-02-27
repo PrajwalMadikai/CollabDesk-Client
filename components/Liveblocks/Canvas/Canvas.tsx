@@ -7,31 +7,31 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
 import { useDisableScrollBounce } from "@/hooks/useDisableScrollDenbounce";
 import {
-    colorToCss,
-    connectionIdToColor,
-    findIntersectingLayersWithRectangle,
-    penPointsToPathLayer,
-    pointerEventToCanvasPoint,
-    resizeBounds,
+  colorToCss,
+  connectionIdToColor,
+  findIntersectingLayersWithRectangle,
+  penPointsToPathLayer,
+  pointerEventToCanvasPoint,
+  resizeBounds,
 } from "@/lib/utils";
 import {
-    useCanRedo,
-    useCanUndo,
-    useHistory,
-    useMutation,
-    useOthersMapped,
-    useSelf,
-    useStorage,
+  useCanRedo,
+  useCanUndo,
+  useHistory,
+  useMutation,
+  useOthersMapped,
+  useSelf,
+  useStorage,
 } from "@/liveblocks.config";
 import {
-    Camera,
-    CanvasMode,
-    CanvasState,
-    Color,
-    LayerType,
-    Point,
-    Side,
-    XYWH,
+  Camera,
+  CanvasMode,
+  CanvasState,
+  Color,
+  LayerType,
+  Point,
+  Side,
+  XYWH,
 } from "@/Types/canvas";
 
 import { CursorsPresence } from "./cursor-presence";
@@ -436,7 +436,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         setCanvasState={setCanvasState}
         canRedo={canRedo}
         canUndo={canUndo}
-        undo={history.undo}
+        undo={history.undo} 
         redo={history.redo}
       />
       <SelectionTools camera={camera} setLastUsedColor={setLastUsedColor} />

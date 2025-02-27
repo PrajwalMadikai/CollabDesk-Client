@@ -84,3 +84,6 @@
     background: var(--background);
   }
 }
+.animate-progress {
+  animation: progress 2s ease-in-out infinite;
+}

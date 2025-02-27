@@ -4,6 +4,8 @@ import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeR
 import { CollaborativeEditor } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import ThemeToggle from "@/components/toggleTheme";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import { Button, Card, CardContent } from "@mui/material";
 import { Image, Trash2, Upload } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -65,7 +67,10 @@ export default function FileEditor() {
         withCredentials: true,
       });
       setIsUploadOpen(false);
-      if(response.data.status==200){
+
+      const responseStatus = getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS){
        fetchFileData()
        toast.success("File uploaded.",{
         duration:2000,

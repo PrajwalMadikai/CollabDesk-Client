@@ -1,5 +1,7 @@
 'use client';
 import { baseUrl } from "@/app/api/urlconfig";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import { emailSchema } from "@/validations/all validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, CircularProgress, TextField } from "@mui/material";
@@ -25,7 +27,8 @@ const EmailCheckForm = () => {
     try {
       const response = await axios.post(`${baseUrl}/send-mail`, { email }, );
 
-      if (response.status === 200) {
+      const responseStatus = getResponseStatus(response.status)
+      if (responseStatus === ResponseStatus.SUCCESS) {
         setEmailSent(true);  
         toast.success("Verification email has been sent", {
           duration: 2000,

@@ -65,7 +65,6 @@ export default function Home() {
     endDate: new Date().toISOString().split('T')[0]
   });
 
-  // Format data for charts
   const formattedMonthlyData: FormattedMonthlyData[] = monthlyData.map(data => ({
     month: data.month,
     revenue: data.revenue,
@@ -135,7 +134,7 @@ export default function Home() {
     <div className="p-4 md:p-6 bg-gray-900 min-h-screen">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0 text-white">Payment Analytics</h1>
-        <div className="flex items-center space-x-4 bg-gray-800 p-3 rounded-lg shadow">
+        <div className="flex items-center space-x-4   p-3 rounded-lg shadow">
           <Calendar className="text-gray-400" size={20} />
           <input
             type="date"

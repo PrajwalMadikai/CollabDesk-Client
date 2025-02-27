@@ -7,7 +7,9 @@ export type paymentPlans={
     amount:number,
     FolderNum:number,
     WorkspaceNum:number
-}|undefined
+}|undefined;
+
+
 const PaymentComponent=({basePlan,premiumPlan}:{ basePlan:paymentPlans ; premiumPlan: paymentPlans })=>{
 
  
@@ -15,7 +17,7 @@ const PaymentComponent=({basePlan,premiumPlan}:{ basePlan:paymentPlans ; premium
     return(
         <div className="flex flex-col md:flex-row gap-6">
         {/* Base Plan */}
-        <div className="flex-1 bg-gray-900 text-white p-6 rounded-lg shadow-md">
+        <div className="animate-fade-right flex-1 bg-gray-900 text-white p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold mb-4">
                 Base <span className="text-blue-800 font-bold">Plan</span>
             </h3>
@@ -41,7 +43,7 @@ const PaymentComponent=({basePlan,premiumPlan}:{ basePlan:paymentPlans ; premium
         </div>
 
         {/* Premium Plan */}
-        <div className="flex-1 bg-gray-900 text-white p-6 rounded-lg shadow-md">
+        <div className=" animate-fade-right flex-1 bg-gray-900 text-white p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold mb-4">
                 Premium <span className="text-blue-800">Plan</span>
             </h3>

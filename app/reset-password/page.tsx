@@ -1,5 +1,7 @@
 'use client';
 import { baseUrl } from "@/app/api/urlconfig";
+import { ResponseStatus } from "@/enums/responseStatus";
+import getResponseStatus from "@/lib/responseStatus";
 import passwordSchema from "@/validations/password";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, CircularProgress, TextField } from "@mui/material";
@@ -23,7 +25,9 @@ export default function ChangePassword() {
       setLoading(true);
       let response = await axios.post(`${baseUrl}/reset-password`, { email, password: data.newPassword });
 
-      if (response && response.status === 200) {
+      const responseStatus=getResponseStatus(response.status)
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
         toast.success('Password updated successfully!', {
           duration: 2000,
           position: 'top-right',

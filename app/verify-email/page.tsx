@@ -1,9 +1,12 @@
 "use client";
+import { ResponseStatus } from '@/enums/responseStatus';
+import getResponseStatus from '@/lib/responseStatus';
 import axios from 'axios';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { baseUrl } from '../api/urlconfig';
 
 export default function VerifyEmail() {
   const router = useRouter();
@@ -18,16 +21,21 @@ export default function VerifyEmail() {
     const verifyEmail = async () => {
       if (email && token) {
         try {
-          const response = await axios.post('http://localhost:5713/verify-email', {
+          const response = await axios.post(`${baseUrl}/verify-email`, {
             email,
             token
           });
+          const responseStatus=getResponseStatus(response.status)
+
+          if(responseStatus==ResponseStatus.SUCCESS){
           
-          setStatus('success');
+            setStatus('success');
           toast.success('Email verified successfully!');
           setTimeout(() => {
             router.push('/login');
           }, 2000);
+        
+        }
         } catch (error: any) {
           setStatus('error');
           const message = error.response?.data?.message || 'Verification failed';
