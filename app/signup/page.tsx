@@ -1,203 +1,20 @@
 "use client";
-import { API } from "@/app/api/handle-token-expire";
-import { baseUrl } from "@/app/api/urlconfig";
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { setUser } from "@/store/slice/userSlice";
-import { AppDispatch, RootState } from "@/store/store";
+import { useAuthSignup } from "@/hooks/Api call hook/useSignupHook";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
-import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from 'react-hot-toast';
-import { useDispatch, useSelector } from "react-redux";
 
 export default function Signup() {
 
-  const router=useRouter()
-  const dispath=useDispatch<AppDispatch>()
-  const user=useSelector((state:RootState)=>state.user)
-
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-   
-  const validate = () => {
-    let isValid = true;
-    const newErrors: any = {};
-  
-    if (!fullName.trim()) {
-      newErrors.fullName = "Full name is required.";
-      isValid = false;
-    }
-  
-    if (!email.trim()) {
-      newErrors.email = "Email is required.";
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Invalid email format.";
-      isValid = false;
-    }
-  
-    if (!password.trim()) {
-      newErrors.password = "Password is required.";
-      isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters.";
-      isValid = false;
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = "Password must contain at least one uppercase letter.";
-      isValid = false;
-    } else if (!/[0-9]/.test(password)) {
-      newErrors.password = "Password must contain at least one number.";
-      isValid = false;
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      newErrors.password = "Password must contain at least one special character.";
-      isValid = false;
-    }
-  
-    if (!confirmPassword.trim()) {
-      newErrors.confirmPassword = "Confirm password is required.";
-      isValid = false;
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match.";
-      isValid = false;
-    }
-  
-    setErrors(newErrors);
-    return isValid;
-  };
-  
-
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validate()) {
-       
-      toast.error("Please fix the errors in the form.", {
-        duration: 3000,  
-        position: 'top-right',
-        style: {
-            background: '#f44336',  
-            color: '#fff', 
-        },
-    });
-      return;
-    }
-
-    try {
-      
-      const isAdmin=false
-       const response =  await axios.post(`${baseUrl}/signup`, {
-                      fullName,
-                      email,
-                      password,
-                      isAdmin
-                    });
-       
-    const responseStatus=getResponseStatus(response.status)
-
-     if(responseStatus==ResponseStatus.CREATED){
-
-      router.push('/email-sent');
-        
-      setFullName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-     }
-    } catch (error:any) {
-      const responseStatus=getResponseStatus(error.response.status)
-
-      if(responseStatus==ResponseStatus.BAD_REQUEST)
-      {
-        const errorMessage = error.response.data.message
-        toast.error(errorMessage, {
-          duration: 3000,
-          position: 'top-right',
-          style: {
-            background: '#f44336',
-            color: '#fff',
-          },
-        });
-      }else{
-      toast.error("Signup failed. Please try again.", {
-        duration: 3000,  
-        position: 'top-right',
-        style: {
-            background: '#f44336',  
-            color: '#fff', 
-        },
-    });
-     }
-    }
-  };
-
-   
-  const handleGoogleLoginSuccess = async (credentialResponse: any) => {
-    const idToken = credentialResponse.credential;
-    
-    try {
-        const response = await API.post(`/google-signup`, { idToken }, { withCredentials: true });
-        const userData = response.data.user;
-        const accessToken = response.data.accessToken;
-
-        const responseStatus=getResponseStatus(response.status)
-
-        if (responseStatus === ResponseStatus.CREATED) {
-            if (userData) {
-                localStorage.setItem('user', JSON.stringify(userData));
-                localStorage.setItem('accessToken', accessToken);
-                dispath(setUser(userData));
-            }
-            
-            toast.success('User registered successfully!', {
-                duration: 2000,
-                position: 'top-right',
-                style: { background: '#4caf50', color: '#fff' },
-            });
-
-            setTimeout(() => {
-                router.push('/');
-            }, 2000);
-        }
-    } catch (error: any) {
-      const responseStatus=getResponseStatus(error.response.status)
-        const errorMessage = responseStatus === ResponseStatus.NOT_FOUND
-            ? 'Account already exists'
-            : 'Google signup failed. Please try again.';
-            
-        toast.error(errorMessage, {
-            duration: 2000,
-            position: 'top-right',
-            style: { background: '#f44336', color: '#fff' },
-        });
-    }
-};
- 
-   
-
-  
-  const handleGitHubLogin = (mode: 'login' | 'signup') => {
-    const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-    const redirectUri = `${baseUrl}/auth/github/callback`;
-    const state = encodeURIComponent(JSON.stringify({ mode }));
-    const scope = 'read:user user:email';
-    
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
-  };
-
+  const {
+    formData,
+    errors,
+    isLoading,
+    updateField,
+    handleSignup,
+    handleGoogleSignup,
+    handleGithubSignup
+  } = useAuthSignup();
 
   return (
     <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(98,51,238,1)_0,rgba(0,0,0,0.8)_50%,rgba(0,0,0,1)_100%)] flex items-center justify-center p-4">
@@ -222,7 +39,7 @@ export default function Signup() {
     <div className="flex flex-1 flex-col space-y-6 p-6 rounded-lg">
       <h2 className="text-2xl font-bold text-white text-center md:text-left">Create Your Account</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSignup} className="space-y-4">
         {/* Full Name Field */}
         <div className="space-y-2">
           <TextField
@@ -230,8 +47,8 @@ export default function Signup() {
             label="Full Name"
             variant="outlined"
             fullWidth
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            value={formData.fullName}
+            onChange={(e) =>  updateField('fullName', e.target.value)}
             error={!!errors.fullName}
             helperText={errors.fullName && <span className="text-red-600">{errors.fullName}</span>}
             InputProps={{
@@ -275,8 +92,8 @@ export default function Signup() {
             label="Email"
             variant="outlined"
             fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={(e) => updateField("email",e.target.value)}
             error={!!errors.email}
             helperText={errors.email && <span className="text-red-600">{errors.email}</span>}
             InputProps={{
@@ -313,7 +130,6 @@ export default function Signup() {
           />
         </div>
 
-        {/* Password Field */}
         <div className="space-y-2">
           <TextField
             id="password"
@@ -321,8 +137,8 @@ export default function Signup() {
             variant="outlined"
             type="password"
             fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={(e) => updateField("password",e.target.value)}
             error={!!errors.password}
             helperText={errors.password && <span className="text-red-600">{errors.password}</span>}
             InputProps={{
@@ -367,8 +183,8 @@ export default function Signup() {
             variant="outlined"
             type="password"
             fullWidth
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={formData.confirmPassword}
+            onChange={(e) => updateField("confirmPassword",e.target.value)}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword && <span className="text-red-600">{errors.confirmPassword}</span>}
             InputProps={{
@@ -405,12 +221,12 @@ export default function Signup() {
           />
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full bg-[#1a1744] hover:bg-[#15123a] text-white font-semibold text-md py-2 rounded-sm h-12"
+          disabled={isLoading}
         >
-          Sign Up
+          {isLoading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </form>
 
@@ -424,15 +240,15 @@ export default function Signup() {
 
       {/* Social Login Buttons */}
       <div className="grid grid-cols-2 gap-4">
-        <GoogleLogin
-          onSuccess={handleGoogleLoginSuccess}
-          useOneTap
-          shape="rectangular"
-          theme="outline"
-          width="auto"
-        />
+      <GoogleLogin
+        onSuccess={handleGoogleSignup}
+        useOneTap
+        shape="rectangular"
+        theme="outline"
+        width="auto"
+      />
         <button
-          onClick={() => handleGitHubLogin('signup')}
+          onClick={() => handleGithubSignup()}
           className="bg-white w-full md:w-[200px] hover:bg-gray-100 text-gray-800 flex items-center justify-center space-x-2 h-[40px] rounded-[4px] px-4"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" className="h-6  mr-2">
