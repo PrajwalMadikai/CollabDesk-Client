@@ -1,5 +1,5 @@
 'use client';
-import { useHandlePayment } from '@/hooks/Api call hook/useHandlePayment';
+import { useHandlePayment } from '@/hooks/useHandlePayment';
 import { RootState } from '@/store/store';
 import { CheckCircle2 as Loader2 } from 'lucide-react';
 import Link from 'next/link';

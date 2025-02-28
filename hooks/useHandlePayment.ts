@@ -1,5 +1,7 @@
 import { API } from '@/app/api/handle-token-expire';
 import { setPlanType } from '@/store/slice/userSlice';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -64,3 +66,35 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
 
     return { status, sessionDetails };
 }
+
+export const usePayment=()=> {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+  
+    const initiatePayment = async (planType: string, amount: number) => {
+      setLoading(true);
+      try {
+        const response = await axios.post(
+          '/api/create-checkout-session',
+          {
+            planType,
+            amount,
+          },
+          { withCredentials: true }
+        );
+  
+        if (response.data?.sessionUrl) {
+            router.push(response.data.sessionUrl)
+        } else {
+          throw new Error('Failed to create checkout session');
+        }
+      } catch (error) {
+        console.error('Error initiating payment:', error);
+        alert('An error occurred. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    return { loading, initiatePayment };
+  }

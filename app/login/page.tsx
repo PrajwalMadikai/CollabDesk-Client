@@ -1,6 +1,6 @@
 "use client";
 
-import { useEmailLogin, useGithubLogin, useGoogleLogin } from "@/hooks/Api call hook/useLoginHook";
+import { useEmailLogin, useGithubLogin, useGoogleLogin } from "@/hooks/useLoginHook";
 import { RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';

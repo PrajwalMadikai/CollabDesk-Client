@@ -164,8 +164,6 @@ export default function FileEditor() {
           </div>
         )}
       </div>
-
-      {/* Collaborative Editor */}
       <CollaborativeRoom roomId={fileId} fallback={<LoadingSpinner/>}>
         <CollaborativeEditor fileId={fileId} initialContent={fileData?.content} />
       </CollaborativeRoom>

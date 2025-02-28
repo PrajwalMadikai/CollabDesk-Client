@@ -18,20 +18,22 @@ import { Briefcase, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-
-
-const SettingsModal = ({
-  isOpen,
-  onClose,
-  workspaceId,
-  workspaceName,
-  onWorkspaceUpdate
-}: {
+interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspaceId: string;
   workspaceName: string;
   onWorkspaceUpdate?: (workspace: { workspaceId: string; workspaceName: string }) => void;
+  setIsSettingsModalOpen?: (value: React.SetStateAction<boolean>) => void;  
+}
+
+const SettingsModal: React.FC<SettingsModalProps> = ({
+  isOpen,
+  onClose,
+  workspaceId,
+  workspaceName,
+  onWorkspaceUpdate,
+  setIsSettingsModalOpen
 }) => {
   const dispatch=useDispatch()
   const mainUser=useSelector((state:RootState)=>state.user)

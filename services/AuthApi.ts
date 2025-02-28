@@ -53,3 +53,15 @@ export const googleSignUp=async(idToken:string)=>{
         return error.response.data
     }
 }
+
+export const resetPasswordFunc=async(email:string,password:string)=>{
+    try {
+
+        const response=await axios.post(`${baseUrl}/reset-password`,{email,password})
+
+        return response
+        
+    } catch (error:any) {
+        return error.response.data
+    }
+}

@@ -1,7 +1,7 @@
 import { baseUrl } from '@/app/api/urlconfig';
 import { ResponseStatus } from '@/enums/responseStatus';
 import getResponseStatus from '@/lib/responseStatus';
-import { googleLogin, loginEmail } from '@/services/AuthApi';
+import { googleLogin, loginEmail, resetPasswordFunc } from '@/services/AuthApi';
 import { setUser } from '@/store/slice/userSlice';
 import { AppDispatch } from '@/store/store';
 import { useRouter } from 'next/navigation';
@@ -249,3 +249,41 @@ const handleLoginError = (error: any, router: any) => {
   
   console.error("Login error:", error.response?.data?.message || error.message);
 };
+
+export const useResetPasswordHook = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const email = localStorage.getItem('resetEmail');
+
+  if (!email) return null;
+
+  const resetPassword = async (newPassword: string) => {
+    try {
+      setLoading(true);
+      const response = await resetPasswordFunc(email, newPassword);
+      const responseStatus = getResponseStatus(response.status);
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        toast.success('Password updated successfully!', {
+          duration: 2000,
+          position: 'top-right',
+          style: { background: '#4caf50', color: '#fff' },
+        });
+
+        localStorage.removeItem('resetEmail');
+
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
+    } catch (error: any) {
+      console.error('Error updating password:', error.response?.data || error.message);
+      toast.error(error.response?.data?.message || 'Failed to update password.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { loading, resetPassword };
+
+}

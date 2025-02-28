@@ -1,49 +1,15 @@
 "use client";
-import { baseUrl } from '@/app/api/urlconfig';
-import axios from 'axios';
+
+import { useEmailCheck } from '@/hooks/useEmailHook';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
+import { useSearchParams } from 'next/navigation';
 
 export default function VerifyEmail() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
   const token = searchParams.get('token');
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [errorMessage, setErrorMessage] = useState('');
- 
-
-  useEffect(() => {
-    const verifyEmail = async () => {
-      if (email && token) {
-        try {
-          const response = await axios.post(`${baseUrl}/email-check`, {
-            email,
-            token
-          });
-          console.log('user email storing:',response.data.userEmail);
-          
-          localStorage.setItem('resetEmail',response.data.userEmail)
-          setStatus('success');
-          toast.success('Email verified successfully!');
-          setTimeout(() => {
-            router.push('/reset-password');
-          }, 2000);
-        } catch (error: any) {
-          setStatus('error');
-          const message = error.response?.data?.message || 'Verification failed';
-          setErrorMessage(message);
-          toast.error(message,{
-            position:'top-right'
-          });
-        }
-      }
-    };
   
-    verifyEmail();
-  }, [email, token]);
+  const { status, errorMessage, redirectToEmailVerification } = useEmailCheck(email, token);
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-[#020817] text-white p-4">
@@ -70,7 +36,6 @@ export default function VerifyEmail() {
             )}
           </svg>
         </div>
-
         {/* Content */}
         <div className="space-y-6">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
@@ -84,7 +49,6 @@ export default function VerifyEmail() {
             {status === 'error' && errorMessage}
           </p>
         </div>
-
         {/* Action Button */}
         <div className="flex justify-center">
           {status === 'loading' && (
@@ -99,7 +63,7 @@ export default function VerifyEmail() {
           )}
           {status === 'error' && (
             <button
-              onClick={() => router.push('/email-verification')}
+              onClick={redirectToEmailVerification}
               className="group px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-2 min-w-[200px]"
             >
               Return to email verification page
@@ -108,7 +72,6 @@ export default function VerifyEmail() {
           )}
         </div>
       </div>
-
       {/* Decorative Elements */}
       <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]"></div>
     </div>
