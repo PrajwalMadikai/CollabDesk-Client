@@ -1,9 +1,9 @@
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
-import { fileCreateFunc, fileRestoreFunc, moveFileToTrashFunc, renameFileFunc } from "@/services/fileApi";
+import { fileCreateFunc, fileRestoreFunc, fileReviewFunc, makeDocPublish, moveFileToTrashFunc, renameFileFunc } from "@/services/fileApi";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
@@ -243,3 +243,70 @@ export function useFile(
     startEditingFile
   };
 }
+
+
+export const publishDocument=()=>{
+    const handleDocPublish=async(fileId:string)=>{
+        try {
+            const response=await makeDocPublish(fileId)
+            const responseStatus=getResponseStatus(response.status)
+
+            if(responseStatus==ResponseStatus.SUCCESS)
+            {
+                return response
+            }
+            
+        } catch (error) {
+            toast.error("Unable to publish document",{
+                position:'top-right'
+            })
+        }
+    }
+  
+    return {
+        handleDocPublish
+    }
+}
+
+
+export const previewFileData = () => {
+
+  const [content, setContent] = useState(null); 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string|null>(null);
+  const [fetchedFileIds, setFetchedFileIds] = useState(new Set());
+
+ 
+  const getFileData = useCallback(async (fileId:string) => {
+    if (content && fetchedFileIds.has(fileId)) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fileReviewFunc(fileId);
+      const responseData = response.data;
+
+      if (getResponseStatus(response.status) === ResponseStatus.SUCCESS && responseData.file) {
+        setContent(responseData.file.content);
+        setFetchedFileIds(prev => new Set([...prev, fileId]));
+      } else {
+        setError("Failed to fetch file content.");
+      }
+    } catch (err) {
+      console.error("Error fetching or deserializing content:", err);
+      setError("An error occurred while loading the content.");
+    } finally {
+      setLoading(false);
+    }
+  }, [content, fetchedFileIds]);  
+
+  return {
+    content,
+    loading,
+    error,
+    getFileData,
+  };
+};

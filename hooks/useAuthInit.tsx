@@ -17,7 +17,11 @@ export const useAuthInit = () => {
             fullname: user.fullname,
             email: user.email,
             workSpaces: user.workSpaces || [],
-            isAuthenticated: true
+            isAuthenticated: true,
+            planType: null,
+            workspaceCount: 0,
+            folders: [],
+            folderCount: 0
           }));
         } catch (error) {
           console.error('Error parsing user data:', error);
