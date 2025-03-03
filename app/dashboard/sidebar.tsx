@@ -1,5 +1,5 @@
 import SettingsModal from "@/components/Settings";
-import VideoCallButton from "@/components/VideoCallButton";
+import VideoCallButton from "@/components/Video Call/VideoCallButton";
 import { useFile } from "@/hooks/useFile";
 import { useFolder } from "@/hooks/useFolder";
 import { useWorkspace, Workspace } from "@/hooks/useWorkspaceHook";
@@ -375,7 +375,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
       </div>
-      <VideoCallButton workspaceId={params?.workspaceId as string} />
+      <VideoCallButton workspaceId={params?.workspaceId as string}  />
       {isOpen && (
         <div className="p-4 border-gray-800 mt-auto">
           <button
