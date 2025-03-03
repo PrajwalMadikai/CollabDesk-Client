@@ -131,7 +131,7 @@ const Sidebar: React.FC = () => {
 
   const handleWhiteboardClick = () => {
     if (selectedWorkspace) {
-      router.push(`/dashboard/${selectedWorkspace.workspaceId}`);
+      router.push(`/whiteboard/${selectedWorkspace.workspaceId}`);
     }
   };
 

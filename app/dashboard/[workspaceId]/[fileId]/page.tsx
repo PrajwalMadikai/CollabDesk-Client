@@ -1,133 +1,28 @@
 "use client";
-import { API } from "@/app/api/handle-token-expire";
 import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeRoom";
 import { CollaborativeEditor } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import ThemeToggle from "@/components/toggleTheme";
-import { ResponseStatus } from "@/enums/responseStatus";
-import { publishDocument } from "@/hooks/useFile";
-import getResponseStatus from "@/lib/responseStatus";
+import { useFileEditor } from "@/hooks/useFileEditorHook";
 import { Button, Card, CardContent } from "@mui/material";
 import { Copy, Image, Trash2, Upload } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
-interface FileData {
-  id: string;
-  name: string;
-  content: string;
-  coverImage?: string;
-  published?: boolean; // Add published property
-  url?: string; // Add URL property for published file
-}
+import { useState } from "react";
 
 export default function FileEditor() {
   const { workspaceId, fileId } = useParams() as { workspaceId: string; fileId: string };
-  const [fileData, setFileData] = useState<FileData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    fileData,
+    loading,
+    showPublishMessage,
+    setShowPublishMessage,
+    handleImageUpload,
+    handleRemoveCover,
+    handlePublishClick,
+    handleCopyLink,
+  } = useFileEditor(fileId);
+
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [showPublishMessage, setShowPublishMessage] = useState(false); // State for showing the message box
-
-  const { handleDocPublish } = publishDocument();
-
-  useEffect(() => {
-    if (fileId) {
-      fetchFileData();
-    }
-  }, [fileId]);
-
-  const fetchFileData = async () => {
-    try {
-      const response = await API.get(`/file/${fileId}`, { withCredentials: true });
-      console.log("content:", response.data.file);
-
-      setFileData(response.data.file);
-      console.log("file loca:", response.data.file.coverImage);
-
-      // Show the message box if the file is already published
-      if (response.data.file.published && response.data.file.url) {
-        setShowPublishMessage(true);
-      }
-    } catch (error) {
-      console.error("Error fetching file data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      console.log("No file selected");
-      toast.error("File is not selected!", {
-        duration: 2000,
-        position: "top-right",
-      });
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await API.put(`/file/uploadImage/${fileId}`, formData, {
-        withCredentials: true,
-      });
-      setIsUploadOpen(false);
-
-      const responseStatus = getResponseStatus(response.status);
-
-      if (responseStatus == ResponseStatus.SUCCESS) {
-        fetchFileData();
-        toast.success("File uploaded.", {
-          duration: 2000,
-          position: "bottom-right",
-        });
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image. Please try again.", {
-        duration: 2000,
-        position: "top-right",
-      });
-    }
-  };
-
-  const handleRemoveCover = () => {
-    if (fileData) {
-      setFileData({ ...fileData, coverImage: undefined });
-    }
-  };
-
-  const handlePublishClick = async () => {
-    try {
-      const response = await handleDocPublish(fileId);
-      const responseStatus = getResponseStatus(response.status);
-
-      if (responseStatus == ResponseStatus.SUCCESS) {
-        setShowPublishMessage(true); // Show the message box
-        toast.success("Published!", {
-          position: "top-right",
-        });
-      }
-    } catch (error) {
-      toast.error("Unable to publish document", {
-        position: "top-right",
-      });
-    }
-  };
-
-  const handleCopyLink = () => {
-    if (fileData?.url) {
-      navigator.clipboard.writeText(fileData.url).then(() => {
-        toast.success("Link copied to clipboard!", {
-          position: "top-right",
-        });
-      });
-    }
-  };
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading file...</div>;
@@ -136,9 +31,8 @@ export default function FileEditor() {
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="flex justify-between items-center p-3 border-b">
-        {/* Publish button */}
-        <button onClick={handlePublishClick} className="relative">
-          {fileData?.published ? 'Published':'Publish'}
+        <button onClick={handlePublishClick} className="relative bg-white rounded-[2px] text-black px-3 py-1 text-sm">
+          {fileData?.published ? "Published" : "Publish"}
           {showPublishMessage && fileData?.published && fileData?.url && (
             <div className="absolute top-full left-[165px] transform -translate-x-1/2 mt-2 bg-primary text-black p-4 rounded shadow-lg z-50 w-[270px]">
               <p className="text-sm mb-2">Your document has been published successfully!</p>
@@ -150,7 +44,7 @@ export default function FileEditor() {
                   className="w-full px-3 py-2 bg-gray-100 rounded text-sm focus:outline-none"
                 />
                 <button
-                  className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+                  className="bg-black text-white p-2 rounded  transition-colors"
                   onClick={handleCopyLink}
                 >
                   <Copy className="h-4 w-4" />

@@ -1,5 +1,6 @@
 import { liveblocks } from "@/lib/liveblocks-server";
 import { NextRequest, NextResponse } from "next/server";
+import { baseUrl } from "../urlconfig";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
     const token = authHeader.split(" ")[1];
-    const backendResponse = await fetch(`http://localhost:5713/verify-user`, {
+    const backendResponse = await fetch(`${baseUrl}/verify-user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

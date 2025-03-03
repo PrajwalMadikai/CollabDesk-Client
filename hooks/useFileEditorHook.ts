@@ -1,0 +1,126 @@
+// hooks/useFileEditor.ts
+import { API } from "@/app/api/handle-token-expire";
+import { ResponseStatus } from "@/enums/responseStatus";
+import { publishDocument } from "@/hooks/useFile";
+import getResponseStatus from "@/lib/responseStatus";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+interface FileData {
+  id: string;
+  name: string;
+  content: string;
+  coverImage?: string;
+  published?: boolean;
+  url?: string;
+}
+
+export const useFileEditor = (fileId: string) => {
+  const [fileData, setFileData] = useState<FileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showPublishMessage, setShowPublishMessage] = useState(false);
+
+  const fetchFileData = async () => {
+    try {
+      const response = await API.get(`/file/${fileId}`, { withCredentials: true });
+      setFileData(response.data.file);
+
+      if (response.data.file.published && response.data.file.url) {
+        setShowPublishMessage(true);
+      }
+    } catch (error) {
+      console.error("Error fetching file data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      toast.error("File is not selected!", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await API.put(`/file/uploadImage/${fileId}`, formData, {
+        withCredentials: true,
+      });
+
+      const responseStatus = getResponseStatus(response.status);
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        fetchFileData();
+        toast.success("File uploaded.", {
+          duration: 2000,
+          position: "bottom-right",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image. Please try again.", {
+        duration: 2000,
+        position: "top-right",
+      });
+    }
+  };
+
+  const handleRemoveCover = () => {
+    if (fileData) {
+      setFileData({ ...fileData, coverImage: undefined });
+    }
+  };
+
+  const handlePublishClick = async () => {
+    try {
+      const { handleDocPublish } = publishDocument();
+      const response = await handleDocPublish(fileId);
+      const responseStatus = getResponseStatus(response.status);
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        setShowPublishMessage(true);
+        toast.success("Published!", {
+          position: "top-right",
+        });
+      }
+    } catch (error) {
+      toast.error("Unable to publish document", {
+        position: "top-right",
+      });
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (fileData?.url) {
+      navigator.clipboard.writeText(fileData.url).then(() => {
+        toast.success("Link copied to clipboard!", {
+          position: "top-right",
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (fileId) {
+      fetchFileData();
+    }
+  }, [fileId]);
+
+  return {
+    fileData,
+    loading,
+    showPublishMessage,
+    setShowPublishMessage,
+    handleImageUpload,
+    handleRemoveCover,
+    handlePublishClick,
+    handleCopyLink,
+  };
+};

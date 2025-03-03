@@ -28,7 +28,6 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
     isLoading,
   } = VideoRoomHook({ workspaceId, userId, userName });
   
-  // Auto-join the call when component mounts
   useEffect(() => {
     joinCall();
   }, []);
@@ -44,7 +43,6 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
     }
   }, [serverUrl, setError]);
 
-  // Add LiveKit custom styles
   useEffect(() => {
     const styleElement = document.createElement('style');
     styleElement.innerHTML = `
