@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     console.log('room create SUCCESS');
 
     return NextResponse.json({ room }, { status: 200 });
+
   } catch (error) {
     console.error("Error creating room:", error);
     return NextResponse.json(

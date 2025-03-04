@@ -9,7 +9,7 @@ export const emailVerify=async(email:string,token:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+       throw error
     }
 }
 

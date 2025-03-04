@@ -8,7 +8,7 @@ export const workspaceCreateFunc=async(spaceName:string,userId:string)=>{
         return response 
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -16,9 +16,9 @@ export const workspaceFetch=async(userId:string)=>{
     try {
          const response=await API.post('/workspace/fetch',{userId},{withCredentials:true})
          return response
-    } catch (error:any) {
-        return error.response.data
-    }
+        } catch (error:any) {
+            throw error
+        }
 }
 
 export const deleteWorkspaceFunc=async(workspaceId:string)=>{
@@ -30,7 +30,7 @@ export const deleteWorkspaceFunc=async(workspaceId:string)=>{
           
           return response
         
-    } catch (error:any) {
-        return error.response.data
-    }
+        } catch (error:any) {
+            throw error
+        }
 }

@@ -107,13 +107,14 @@ function BlockNote({ doc, provider, fileId }: EditorProps) {
   const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
   const editorRef = useRef<any>(null);
-
+  const userPresence = useSelf();
+  
   const editor = useCreateBlockNote({
     collaboration: {
       provider,
       fragment: doc.getXmlFragment(fileId),
       user: {
-        name: currentUser?.name || "Anonymous",
+        name:userPresence.presence.user?.name || currentUser?.name || "Anonymous",
         color: connectionIdToColor(connectionId),
       },
     },

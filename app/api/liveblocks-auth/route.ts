@@ -49,7 +49,16 @@ export async function POST(request: NextRequest) {
     
     console.log('Liveblocks authentication successful for user:', displayName);
     const parsedBody = JSON.parse(authResponse.body);
-    return NextResponse.json({ token: parsedBody.token });
+    return NextResponse.json({ 
+      token: parsedBody.token,
+      user: {
+        id: user.id,
+        name: displayName,
+        email: user.email,
+        avatar: user.avatar || "",
+        color: userColor
+      }
+    });
   } catch (error) {
     console.error("Liveblocks auth error:", error);
     return NextResponse.json(

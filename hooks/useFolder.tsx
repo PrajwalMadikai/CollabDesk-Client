@@ -1,9 +1,7 @@
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
 import { folderCreateFunc, folderFetchFunc, folderMovetoTrash, folderRestoreFunc, folderTrashFetchFun, folderUpdateFunc } from "@/services/folderApi";
-import { addFolder } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -104,7 +102,6 @@ export function useFolder() {
 
       if (responseStatus === ResponseStatus.CREATED) {
         const newFolder = response.data.folder;
-        dispatch(addFolder(newFolder));
         setFolders([...folders, { ...newFolder, files: [] }]);
         return newFolder;
       }
@@ -245,13 +242,14 @@ export function useFolder() {
       <div
         className={`${
           t.visible ? 'animate-enter' : 'animate-leave'
-        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 overflow-hidden`}
       >
         <div className="flex-1 w-0 p-4">
-          <div className="flex items-center">
+          <div className="flex items-start">
+            {/* Icon */}
             <div className="flex-shrink-0">
               <svg
-                className="h-6 w-6 text-red-500"
+                className="h-6 w-6 text-red-500 pr-2"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -266,25 +264,31 @@ export function useFolder() {
                 />
               </svg>
             </div>
+  
+            {/* Content */}
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-black">
                 Your subscription plan has reached the maximum number of {resourceType}s.
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 Please upgrade your subscription to create more {resourceType}s.
               </p>
-              <Link href="/">
-                <p className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium">
-                  Upgrade Subscription
-                </p>
-              </Link>
+              {/* Upgrade Link */}
+              <a
+                href="/subscription"
+                className="inline-block mt-2 text-black text-sm font-medium hover:underline focus:outline-none focus:ring-2 "
+              >
+               Click here for Upgrade Subscription
+              </a>
             </div>
           </div>
         </div>
+  
+        {/* Close Button */}
         <div className="flex border-l border-gray-200">
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full text-red-500 border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Close
           </button>

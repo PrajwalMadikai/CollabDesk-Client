@@ -19,6 +19,8 @@ const Sidebar: React.FC = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const user = useSelector((state: RootState) => state.user);
 
+console.log('user detail sidebar:',user);
+
   const workspace = useWorkspace();
   if (!workspace) {
     console.log('workspace is null in workspace hook');

@@ -8,6 +8,9 @@ type Presence = {
   isTyping: boolean;
   userName?: string;
   cursor: { x: number; y: number } | null;
+  user: {
+    name: string;
+  };
 };
 
 // Define storage structure

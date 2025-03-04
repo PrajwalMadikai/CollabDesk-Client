@@ -25,40 +25,53 @@ export default function FileEditor() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading file...</div>;
+    return <LoadingSpinner/>
   }
 
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="flex justify-between items-center p-3 border-b">
-        <button onClick={handlePublishClick} className="relative bg-white rounded-[2px] text-black px-3 py-1 text-sm">
-          {fileData?.published ? "Published" : "Publish"}
-          {showPublishMessage && fileData?.published && fileData?.url && (
-            <div className="absolute top-full left-[165px] transform -translate-x-1/2 mt-2 bg-primary text-black p-4 rounded shadow-lg z-50 w-[270px]">
-              <p className="text-sm mb-2">Your document has been published successfully!</p>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={fileData.url}
-                  readOnly
-                  className="w-full px-3 py-2 bg-gray-100 rounded text-sm focus:outline-none"
-                />
-                <button
-                  className="bg-black text-white p-2 rounded  transition-colors"
-                  onClick={handleCopyLink}
-                >
-                  <Copy className="h-4 w-4" />
-                </button>
-              </div>
+
+      {fileData?.published ? (
+      <button
+        onClick={() => setShowPublishMessage(true)}
+        className="relative bg-white rounded-[2px] text-black px-3 py-1 text-sm"
+      >
+        Published
+        {showPublishMessage && fileData?.url && (
+          <div className="absolute top-full left-[165px] transform -translate-x-1/2 mt-2 bg-primary text-black p-4 rounded shadow-lg z-50 w-[270px]">
+            <p className="text-sm mb-2">Your document has been published successfully!</p>
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={fileData.url}
+                readOnly
+                className="w-full px-3 py-2 bg-gray-100 rounded text-sm focus:outline-none"
+              />
               <button
-                className="mt-4 bg-black text-white px-2 py-1 rounded w-full hover:bg-gray-900 transition-colors"
-                onClick={() => setShowPublishMessage(false)}
+                className="bg-black text-white p-2 rounded transition-colors"
+                onClick={handleCopyLink}
               >
-                Close
+                <Copy className="h-4 w-4" />
               </button>
             </div>
-          )}
-        </button>
+            <button
+              className="mt-4 bg-black text-white px-2 py-1 rounded w-full hover:bg-gray-900 transition-colors"
+              onClick={() => setShowPublishMessage(false)}
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </button>
+    ) : (
+      <button
+        onClick={handlePublishClick}
+        className="relative bg-white rounded-[2px] text-black px-3 py-1 text-sm"
+      >
+        Publish
+      </button>
+    )}
         <ThemeToggle />
       </div>
 

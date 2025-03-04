@@ -9,7 +9,7 @@ export const TokenGenerate=async(workspaceId:string,userName:string|null,userId:
           } else {
             throw new Error("Invalid response format");
           }
-    } catch (error:any) {
-        return error.response.data
-    }
+        } catch (error:any) {
+          throw error
+      }
 }

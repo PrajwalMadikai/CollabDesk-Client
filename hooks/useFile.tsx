@@ -42,12 +42,9 @@ export function useFile(
             "Authorization": `Bearer ${token}`
         }})
 
-        if(!liveblockAuth)
-        {
-          console.log('liveblocks authentication failed');
-          
-        }
-         console.log('liveblocks auth success:',liveblockAuth);
+        
+        const authData = await liveblockAuth.json();
+        console.log('Liveblocks auth success:', authData);
             
         const roomResponse = await fetch("/api/create-room", {
           method: "POST",
@@ -268,7 +265,7 @@ export const publishDocument=()=>{
             {
                 return response
             }
-            
+            throw new Error("Failed to publish document");
         } catch (error) {
             toast.error("Unable to publish document",{
                 position:'top-right'

@@ -82,6 +82,9 @@ export const useFileEditor = (fileId: string) => {
     try {
       const { handleDocPublish } = publishDocument();
       const response = await handleDocPublish(fileId);
+      if (!response) {
+        throw new Error("Invalid response from server");
+      }
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.SUCCESS) {

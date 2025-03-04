@@ -11,7 +11,7 @@ export const fileCreateFunc=async(folderId:string)=>{
         return response
 
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -24,7 +24,7 @@ export const renameFileFunc=async(fileId:string,editingFileName:string,folderId:
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -38,7 +38,7 @@ export const moveFileToTrashFunc=async(fileId:string,folderId :string)=>{
         return response  
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -52,7 +52,7 @@ export const fileRestoreFunc=async(fileId:string)=>{
         return response  
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -61,7 +61,7 @@ export const makeDocPublish=async(fileId:string)=>{
         const response = await API.post(`/file/publish/${fileId}`,{withCredentials:true})
         return response
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -73,7 +73,7 @@ export const fileReviewFunc=async(fileId:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 export const grantRoomAccess = async (roomId: string) => {

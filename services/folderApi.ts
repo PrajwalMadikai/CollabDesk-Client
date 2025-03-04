@@ -5,7 +5,7 @@ export const folderFetchFunc=async(workspaceId:string)=>{
         const response=await API.post("/folder/fetch", { workspaceId }, { withCredentials: true });
         return response
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -19,7 +19,7 @@ export const folderTrashFetchFun=async(workspaceId:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 export const folderCreateFunc=async(workspaceId:string,userId:string)=>{
@@ -28,7 +28,7 @@ export const folderCreateFunc=async(workspaceId:string,userId:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -41,7 +41,7 @@ export const folderUpdateFunc=async(folderId:string,editingFolderName:string)=>{
         return response
 
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -56,7 +56,7 @@ export const folderMovetoTrash=async(folderId:string, workspaceId : string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -70,6 +70,6 @@ export const folderRestoreFunc=async(folderId:string)=>{
         return response
            
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }

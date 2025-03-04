@@ -1,4 +1,3 @@
-import { API } from "@/app/api/handle-token-expire";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,14 +9,11 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet";
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { updateName } from "@/store/slice/userSlice";
+import useSettings from "@/hooks/useSettings";
 import { RootState } from "@/store/store";
 import { Briefcase, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -35,201 +31,36 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   onWorkspaceUpdate,
   setIsSettingsModalOpen
 }) => {
-  const dispatch=useDispatch()
-  const mainUser=useSelector((state:RootState)=>state.user)
-  const [addingUser, setAddingUser] = useState<string | null>(null);
-  const [collaborators, setCollaborators] = useState<{ id: string; email: string }[]>([]);
-  const [availableUsers, setAvailableUsers] = useState<{ id: string; fullname: string; email: string }[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isWorkspaceNameEditing, setIsWorkspaceNameEditing] = useState(false);
-  const [workspaceNameInput, setWorkspaceNameInput] = useState(workspaceName);
-
-  const [isUserNameEditing, setIsUserNameEditing] = useState(false);
-  const [userNameInput, setUserNameInput] = useState(mainUser.fullname);
-
-  const fetchInitialCollaborators = async () => {
-    try {
-      let response = await API.post('/workspace/collaborators', { workspaceId }, {
-        withCredentials: true,
-      });
-
-      const responseStatus=getResponseStatus(response.status)
-
-      if (responseStatus === ResponseStatus.SUCCESS) {
-
-        const userDetails = response.data.user?.userDetails;
-        const newCollaborators = userDetails.map((user: any) => ({
-          id: user.userId,
-          email: user.userEmail,
-        }));
-        setCollaborators(newCollaborators);
-      }
-    } catch (error) {
-      console.error("Error fetching usersDetails:", error);
-    }
-  };
-
-  const handleAddCollaborator = async (email: string) => {
-    try {
-      setAddingUser(email)
-      const response = await API.post(
-        "/workspace/add-collaborator",
-        { email, workspaceId ,invitedEmail:mainUser.email},
-        { withCredentials: true }
-      );
-
-      const responseStatus=getResponseStatus(response.status)
-
-      if (responseStatus === ResponseStatus.SUCCESS) {
-
-        toast.success('collaborator added',{
-          duration:1500,
-          position:'top-right'
-        })
-        fetchInitialCollaborators()
-       
-      }
-    } catch (error) {
-      console.error("Error adding collaborator:", error);
-    }finally{
-      setAddingUser(null)
-    }
-  };
-
-  useEffect(() => {
-    const fetchAvailableUsers = async () => {
-      try {
-        const response = await API.get("/fetch-user", { withCredentials: true });
-
-        const responseStatus=getResponseStatus(response.status)
-
-        if (responseStatus === ResponseStatus.SUCCESS) {
-
-          const users = response.data.user
-            .filter((user: any) => 
-              user.id !== mainUser.id && 
-              !collaborators.some(collab => collab.id === user.id)
-            )
-            .map((user: any) => ({
-              id: user.id,
-              fullname: user.fullname,
-              email: user.email,
-            }));
-
-          setAvailableUsers(users);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchInitialCollaborators().then(() => fetchAvailableUsers());
-  }, [mainUser.id, workspaceId]);
-
-
-  const removeCollaborator=async(email:string)=>{
-    try {
-      const response=await API.post('/workspace/remove-collaborator',
-        {email,workspaceId},
-        {withCredentials:true}
-      )
-
-      const responseStatus=getResponseStatus(response.status)
-
-      if(responseStatus==ResponseStatus.SUCCESS)
-      {
-        fetchInitialCollaborators()
-      }
-    } catch (error) {
-      console.log("error in removing collaborator");
-      
-    }
-  }
-
-  function debounce(func: (...args: any[]) => void, delay: number) {
-    let timer: NodeJS.Timeout;
-    return function (this: any, ...args: any[]) {
-      clearTimeout(timer);
-      timer = setTimeout(() => func.apply(this, args), delay);
-    };
-  }
-  const renameWorkspace = async (newName: string) => {
-    try {
-      const response = await API.post(
-        "/workspace/rename",
-        { workspaceId, newName },
-        { withCredentials: true }
-      );
-
-      const responseStatus=getResponseStatus(response.status)
-      
-      if (responseStatus === ResponseStatus.SUCCESS) {
-
-        setWorkspaceNameInput(response.data.space.name)
-        setIsWorkspaceNameEditing(false);  
-        onWorkspaceUpdate?.({
-          workspaceId,
-          workspaceName: response.data.space.name
-        });
-
-      }
-    } catch (error) {
-      console.error("Error renaming workspace:", error);
-      toast.error("Failed to rename workspace", {
-        duration: 1500,
-        position: "top-right",
-      });
-    }
-  };
-  
-  const debouncedRenameWorkspace = debounce(renameWorkspace, 500);
+  const mainUser = useSelector((state: RootState) => state.user);
+   
+  const {
+    collaborators,
+    availableUsers,
+    searchQuery,
+    setSearchQuery,
+    isWorkspaceNameEditing,
+    setIsWorkspaceNameEditing,
+    workspaceNameInput,
+    setWorkspaceNameInput,
+    isUserNameEditing,
+    setIsUserNameEditing,
+    userNameInput,
+    setUserNameInput,
+    handleAddCollaborator,
+    removeCollaborator,
+    debouncedRenameWorkspace,
+    debouncedUpdateUserName,
+    addingUser,
+  } = useSettings(workspaceId, workspaceName);
   
   const handleRenameWorkspace = (newName: string) => {
-    if (newName.trim() && newName !== workspaceName) {
-      debouncedRenameWorkspace(newName);
-    } else {
-      setIsWorkspaceNameEditing(false);  
-    }
+    debouncedRenameWorkspace(newName);
   };
-  const updateUserName = async (newName: string) => {
-    try {
-      const response = await API.put(
-        "/update-name",
-        { userId: mainUser.id, newName },
-        { withCredentials: true }
-      );
 
-      const responseStatus=getResponseStatus(response.status)
-
-      if (responseStatus === ResponseStatus.SUCCESS) {
-        dispatch(updateName(newName))
-          
-        setIsUserNameEditing(false);  
-      }
-    } catch (error) {
-      console.error("Error updating username:", error);
-      toast.error("Failed to update username", {
-        duration: 1500,
-        position: "top-right",
-      });
-    }
-  };
-  
-  const debouncedUpdateUserName = debounce((newName: string) => {
-    console.log('Debounced function called with:', newName); 
-    updateUserName(newName);
-  }, 500);
-  
   const handleUpdateUserName = (newName: string) => {
-    if (newName.trim() && newName !== userNameInput) {
-      debouncedUpdateUserName(newName);
-      console.log('calling debounce');
-      
-    } else {
-      setIsUserNameEditing(false);  
-    }
+    debouncedUpdateUserName(newName);
   };
-  
+
   if (!isOpen) return null;
 
   return (
@@ -265,7 +96,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Add Collaborators Button and Sheet */}
         <div className="mb-4 py-3">
-          <Sheet >
+        <Sheet >
             <SheetTrigger asChild >
               <Button className="w-full my-3 bg-white text-black py-2 rounded-md">
                 + Add Collaborators
@@ -295,35 +126,39 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
                 {/* List of Available Users */}
                 <div className="max-h-60 overflow-y-auto">
-                {availableUsers.length > 0 ? (
-                  availableUsers
-                    .filter((user) =>
-                      user.fullname.toLowerCase().includes(searchQuery.toLowerCase())
-                    )
-                    .map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between bg-gray-800 border border-gray-700 p-2 rounded-[5px] mb-2"
-                      >
-                        <div>
-                          <p className="text-white text-xs">{user.fullname}</p>
-                          <p className="text-gray-400 text-xs">{user.email}</p>
-                        </div>
-                        <button
-                           className="w-[70px] h-7 rounded text-sm font-normal bg-primary text-primary-foreground"
-                          onClick={() => handleAddCollaborator(user.email)}
-                          aria-label={`Add ${user.fullname} as collaborator`}
-                        >
-                       {addingUser === user.email ? "Adding..." : "Add"}
-                        </button>
-                      </div>
-                    ))
+                {searchQuery.trim() === '' ? (
+                  <p className="text-gray-400 text-sm p-2">Enter a name to search for users.</p>
                 ) : (
-                  <p className="text-gray-400 text-sm p-2">No users available.</p>
+                  availableUsers.length > 0 ? (
+                    availableUsers
+                      .filter((user) =>
+                        user.email.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
+                      .map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center justify-between bg-gray-800 border border-gray-700 p-2 rounded-[5px] mb-2"
+                        >
+                          <div>
+                            <p className="text-white text-xs">{user.fullname}</p>
+                            <p className="text-gray-400 text-xs">{user.email}</p>
+                          </div>
+                          <button
+                             className="w-[70px] h-7 rounded text-sm font-normal bg-primary text-primary-foreground"
+                            onClick={() => handleAddCollaborator(user.email)}
+                            aria-label={`Add ${user.fullname} as collaborator`}
+                          >
+                         {addingUser === user.email ? "Adding..." : "Add"}
+                          </button>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-gray-400 text-sm p-2">No users available.</p>
+                  )
                 )}
 
-                {availableUsers.filter((user) =>
-                  user.fullname.toLowerCase().includes(searchQuery.toLowerCase())
+                {searchQuery.trim() !== '' && availableUsers.filter((user) =>
+                  user.email.toLowerCase().includes(searchQuery.toLowerCase())
                 ).length === 0 && availableUsers.length > 0 && (
                   <p className="text-gray-400 text-sm p-2">No users found.</p>
                 )}
@@ -332,7 +167,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </SheetContent>
           </Sheet>
 
-          {/* Display Collaborators */}
           <h3 className="text-gray-300 text-[16px]">Collaborators</h3>
           <div className="max-h-40 min-h-12 overflow-y-auto bg-gray-800 rounded-[3px] p-2 mt-2">
             {collaborators.length > 0 ? (

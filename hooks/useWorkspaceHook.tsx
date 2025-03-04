@@ -82,7 +82,7 @@ export function useCreateWorkspace() {
           },
         });
         
-        dispatch(addWorkspace(workspaceResponse.data.workspace));
+        dispatch(addWorkspace({workspaceId:workspaceResponse.data.workspace.id,workspaceName:workspaceResponse.data.workspace.name}));
         const workspaceId = workspaceResponse.data.workspace.id;
 
         const roomResponse = await fetch("/api/create-room", {
@@ -104,6 +104,9 @@ export function useCreateWorkspace() {
         }
 
         router.push(`/dashboard/${workspaceId}`);
+      }else if(responseStatus==ResponseStatus.FORBIDDEN)
+      {
+
       }
     } catch (error: any) {
       console.error("Workspace creation error:", error);
@@ -229,6 +232,7 @@ export function useWorkspace() :UseWorkspaceReturn|null{
       const response=await workspaceCreateFunc(newWorkspaceName,userId)
 
       const responseStatus = getResponseStatus(response.status);
+console.log('response status:',responseStatus);
 
       if (responseStatus === ResponseStatus.CREATED) {
         const newWorkspace = response.data.workspace;
@@ -259,7 +263,7 @@ export function useWorkspace() :UseWorkspaceReturn|null{
           throw new Error("Failed to create room");
         }
 
-        dispatch(addWorkspace(newWorkspace));
+        dispatch(addWorkspace({workspaceId:newWorkspace.id,workspaceName:newWorkspace.name}));
         return newWorkspace;
       }
     } catch (error: any) {
@@ -345,13 +349,14 @@ export function useWorkspace() :UseWorkspaceReturn|null{
       <div
         className={`${
           t.visible ? 'animate-enter' : 'animate-leave'
-        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+        } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 overflow-hidden`}
       >
         <div className="flex-1 w-0 p-4">
-          <div className="flex items-center">
+          <div className="flex items-start">
+            {/* Icon */}
             <div className="flex-shrink-0">
               <svg
-                className="h-6 w-6 text-red-500"
+                className="h-6 w-6 text-red-500 pr-2"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -366,23 +371,31 @@ export function useWorkspace() :UseWorkspaceReturn|null{
                 />
               </svg>
             </div>
+  
+            {/* Content */}
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-black">
                 Your subscription plan has reached the maximum number of {resourceType}s.
               </p>
               <p className="mt-1 text-sm text-gray-500">
                 Please upgrade your subscription to create more {resourceType}s.
               </p>
-              <a href="/" className="inline-block mt-2 text-indigo-600 hover:text-indigo-500 text-sm font-medium">
-                Upgrade Subscription
+              {/* Upgrade Link */}
+              <a
+                href="/"
+                className="inline-block mt-2 text-black text-sm font-medium hover:underline focus:outline-none focus:ring-2 "
+              >
+                Click here for Upgrade Subscription
               </a>
             </div>
           </div>
         </div>
+  
+        {/* Close Button */}
         <div className="flex border-l border-gray-200">
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full text-red-500 border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             Close
           </button>
