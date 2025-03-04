@@ -1,17 +1,19 @@
 import { clearUser } from "@/store/slice/userSlice";
 import { store } from "@/store/store";
 import axios from "axios";
-    const API = axios.create({
-      baseURL: `http://localhost:5713`,
+import { baseUrl } from "./urlconfig";
+
+const API = axios.create({
+      baseURL: `${baseUrl}`,
       withCredentials: true
-    });
+});
 
-
-    const ADMIN_API=axios.create({
-      baseURL:`http://localhost:5713/admin`,
+const ADMIN_API=axios.create({
+      baseURL:`${baseUrl}/admin`,
       withCredentials:true,
-    })
-    const refreshAccess = async (isAdmin = false) => {
+})
+
+const refreshAccess = async (isAdmin = false) => {
       try {
           const endPoint = isAdmin ? '/admin/refreshtoken' : '/refreshtoken';
           

@@ -25,25 +25,29 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await backendResponse.json();
-    console.log('user when auth:',user);
+    console.log('User from verification:', user);
     
+    const userColor = user.color || `#${Math.floor(Math.random()*16777215).toString(16)}`;
+    
+    const displayName = user.fullname || user.email.split('@')[0];
     
     const authResponse = await liveblocks.identifyUser(
       {
         userId: user.id,
-        groupIds: [],
+        groupIds: [],  
       },
       {
         userInfo: {
-          id:user.id,
-          name: user.name,
+          id: user.id,
+          name: displayName,
           email: user.email,
-          avatar: user.avatar || "",
-          color:'#000000'     
+          avatar: user.avatar || "", 
+          color: userColor,
         },
       }
     );
-    console.log('liveblocks auth SUCCESS');
+    
+    console.log('Liveblocks authentication successful for user:', displayName);
     const parsedBody = JSON.parse(authResponse.body);
     return NextResponse.json({ token: parsedBody.token });
   } catch (error) {

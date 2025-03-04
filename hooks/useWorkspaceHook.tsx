@@ -160,12 +160,11 @@ export function useWorkspace() :UseWorkspaceReturn|null{
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const userId = user.id;
- if(!userId)
- {
-  console.log('no user idf');
-  
-  return null
- }
+  if(!userId)
+  {
+    console.log('no user idf');
+    return null
+  }
  const fetchWorkspaces = async (): Promise<Workspace[]> => {
   try {
     setLoading(true);
@@ -294,9 +293,14 @@ export function useWorkspace() :UseWorkspaceReturn|null{
       if (responseStatus === ResponseStatus.SUCCESS) {
         const deletedWorkspaceId = response.data.data;
         dispatch(removeWorkspace(deletedWorkspaceId));
-  
+        
         setWorkspaces((prev) => prev.filter((workspace) => workspace.workspaceId !== deletedWorkspaceId));
-  
+        await fetch('/api/delete-room',{
+          method: "POST",
+          body:JSON.stringify({
+            roomId:workspaceId
+          })
+        })
         if (selectedWorkspace?.workspaceId === deletedWorkspaceId) {
           const remainingWorkspaces = workspaces.filter((w) => w.workspaceId !== deletedWorkspaceId);
           if (remainingWorkspaces.length > 0) {

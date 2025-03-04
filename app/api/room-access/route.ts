@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { roomId, userId, email } = body;
+    const { roomId, userId, email, title } = body;
    
     if (!roomId || !userId || !email) {
       return NextResponse.json(
@@ -13,10 +13,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "Unauthorized: Missing token" },
+        { status: 401 }
+      );
+    }
+    // const token = authHeader.split(" ")[1];
+    // const userResponse = await fetch(`${baseUrl}/verify-user`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
+
+    // if (!userResponse.ok) {
+    //   throw new Error("Failed to fetch user details");
+    // }
+
+    // const userData = await userResponse.json();
+    
     try {
       const room = await liveblocks.getRoom(roomId);
       
       await liveblocks.updateRoom(roomId, {
+        metadata: {
+          title: title || "Untitled",
+          createdBy: userId,
+          lastUpdated: new Date().toISOString(),
+        },
         usersAccesses: {
           [email]: ["room:write"],
         },
@@ -24,17 +51,20 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true }, { status: 200 });
     } catch (roomError) {
-      // If room doesn't exist, create it
       const newRoom = await liveblocks.createRoom(roomId, {
         metadata: {
+          title: title || "Untitled",
           createdBy: userId,
+          createdAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString(),
         },
         defaultAccesses: ["room:write"],
         usersAccesses: {
           [email]: ["room:write"],
         },
       });
-      console.log('room access SUCCESS');
+      
+      console.log('Room created successfully with ID:', roomId);
       return NextResponse.json({ success: true, room: newRoom }, { status: 200 });
     }
   } catch (error) {

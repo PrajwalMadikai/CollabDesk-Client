@@ -34,8 +34,21 @@ export function useFile(
 
       if (responseStatus === ResponseStatus.CREATED) {
         const newFile = response.data.file;
+        
+        const liveblockAuth=await fetch('/api/liveblocks-auth',{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }})
 
-        // Create a room for the new file
+        if(!liveblockAuth)
+        {
+          console.log('liveblocks authentication failed');
+          
+        }
+         console.log('liveblocks auth success:',liveblockAuth);
+            
         const roomResponse = await fetch("/api/create-room", {
           method: "POST",
           headers: {

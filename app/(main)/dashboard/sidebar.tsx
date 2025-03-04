@@ -79,17 +79,14 @@ const Sidebar: React.FC = () => {
         const fetchedWorkspaces = await fetchWorkspaces();
         
         if (fetchedWorkspaces && fetchedWorkspaces.length > 0) {
-          // If we have a workspaceId in the URL, try to select that workspace
           if (workspaceId) {
             const targetWorkspace = fetchedWorkspaces.find((w: Workspace) => w.workspaceId === workspaceId);
             if (targetWorkspace) {
               selectWorkspace(targetWorkspace);
             } else {
-              // If workspace in URL not found, select the first one
               selectWorkspace(fetchedWorkspaces[0]);
             }
           } else {
-            // No workspace in URL, select the first one
             selectWorkspace(fetchedWorkspaces[0]);
           }
         }
@@ -106,7 +103,6 @@ const Sidebar: React.FC = () => {
       fetchFolders(selectedWorkspace.workspaceId);
       fetchTrashItems(selectedWorkspace.workspaceId);
       
-      // Update URL to match selected workspace without causing a page reload
       const currentUrl = window.location.pathname;
       const targetUrl = `/dashboard/${selectedWorkspace.workspaceId}`;
       
@@ -131,7 +127,7 @@ const Sidebar: React.FC = () => {
 
   const handleWhiteboardClick = () => {
     if (selectedWorkspace) {
-      router.push(`/whiteboard/${selectedWorkspace.workspaceId}`);
+      router.push(`/dashboard/whiteboard/${selectedWorkspace.workspaceId}`);
     }
   };
 
@@ -381,7 +377,6 @@ const Sidebar: React.FC = () => {
           <button
             onClick={handleWhiteboardClick}
             className="flex items-center justify-center gap-2 w-full p-3 text-white rounded-lg transition-colors duration-200"
-            disabled={!selectedWorkspace}
           >
             <MessageSquare className="h-5 w-5" />
             <span className="text-sm">Open Whiteboard</span>

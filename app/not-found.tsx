@@ -68,7 +68,7 @@ const NotFound=()=> {
           >
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Page Not Found</h1>
             <p className="text-gray-300 mb-8 text-lg">
-              The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+              The page you are looking for is not available. Please go to home
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
