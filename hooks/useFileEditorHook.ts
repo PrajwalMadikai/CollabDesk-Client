@@ -88,6 +88,11 @@ export const useFileEditor = (fileId: string) => {
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.SUCCESS) {
+
+         await fetchFileData()
+  
+        setShowPublishMessage(true);
+
         setShowPublishMessage(true);
         toast.success("Published!", {
           position: "top-right",

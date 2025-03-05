@@ -1,7 +1,6 @@
 import { liveblocks } from "@/lib/liveblocks-server";
 import { NextRequest, NextResponse } from "next/server";
 
-const processedRooms = new Set<string>();
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,26 +14,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (processedRooms.has(roomId)) {
-      return NextResponse.json({ success: true, cached: true }, { status: 200 });
-    }
+   
 
     try {
       const room = await liveblocks.getRoom(roomId);
       
       await liveblocks.updateRoom(roomId, {
-        defaultAccesses: ["room:read", "room:presence:write"],  
+        defaultAccesses: ["room:read", "room:presence:write"],
       });
       
-      processedRooms.add(roomId);
       return NextResponse.json({ success: true }, { status: 200 });
     } catch (roomError) {
       const newRoom = await liveblocks.createRoom(roomId, {
-        defaultAccesses: ["room:read", "room:presence:write"], 
+        defaultAccesses: ["room:read", "room:presence:write"],
       });
 
-      processedRooms.add(roomId);
-      console.log("Room created with read-only access for anonymous users");
+      console.log("Room created with strict read-only access");
       return NextResponse.json({ success: true, room: newRoom }, { status: 200 });
     }
   } catch (error) {

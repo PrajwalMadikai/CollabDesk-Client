@@ -24,61 +24,75 @@ export default function FileEditor() {
 
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
+
+  const makePublish=async()=>{
+     await handlePublishClick()
+     setShowPublishMessage(true)
+  }
+
   if (loading) {
-    return <LoadingSpinner/>
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="flex justify-between items-center p-3 border-b">
+        <div className="relative">
+          {fileData?.published?(
+          <button
+            onClick={() => setShowPublishMessage((prev) => !prev)}
+            className="bg-white rounded-[2px] text-black px-3 py-1 text-sm"
+          >
+            Published
+          </button>
 
-      {fileData?.published ? (
-      <button
-        onClick={() => setShowPublishMessage(true)}
-        className="relative bg-white rounded-[2px] text-black px-3 py-1 text-sm"
-      >
-        Published
-        {showPublishMessage && fileData?.url && (
-          <div className="absolute top-full left-[165px] transform -translate-x-1/2 mt-2 bg-primary text-black p-4 rounded shadow-lg z-50 w-[270px]">
-            <p className="text-sm mb-2">Your document has been published successfully!</p>
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={fileData.url}
-                readOnly
-                className="w-full px-3 py-2 bg-gray-100 rounded text-sm focus:outline-none"
-              />
+          ):(
+            <button
+            onClick={() => makePublish()}
+            className="bg-white rounded-[2px] text-black px-3 py-1 text-sm"
+           >
+            Publish
+          </button>
+          )}
+
+          {showPublishMessage && fileData?.url && (
+            <div className="absolute top-full left-0 mt-2 bg-primary text-black p-4 rounded shadow-lg z-50 w-[270px]">
+              <p className="text-sm mb-2">Your document has been published successfully!</p>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={fileData.url}
+                  readOnly
+                  className="w-full px-3 py-2 bg-gray-100 rounded text-sm focus:outline-none"
+                />
+                <button
+                  className="bg-black text-white p-2 rounded transition-colors"
+                  onClick={handleCopyLink}
+                >
+                  <Copy className="h-4 w-4" />
+                </button>
+              </div>
               <button
-                className="bg-black text-white p-2 rounded transition-colors"
-                onClick={handleCopyLink}
+                className="mt-4 bg-black text-white px-2 py-1 rounded w-full hover:bg-gray-900 transition-colors"
+                onClick={() => setShowPublishMessage(false)}
               >
-                <Copy className="h-4 w-4" />
+                Close
               </button>
             </div>
-            <button
-              className="mt-4 bg-black text-white px-2 py-1 rounded w-full hover:bg-gray-900 transition-colors"
-              onClick={() => setShowPublishMessage(false)}
-            >
-              Close
-            </button>
-          </div>
-        )}
-      </button>
-    ) : (
-      <button
-        onClick={handlePublishClick}
-        className="relative bg-white rounded-[2px] text-black px-3 py-1 text-sm"
-      >
-        Publish
-      </button>
-    )}
+          )}
+        </div>
+
         <ThemeToggle />
       </div>
 
       <div className="relative h-48">
         {fileData?.coverImage ? (
           <>
-            <img src={fileData?.coverImage} alt="Cover" className="w-full h-full object-cover" />
+            <img
+              src={fileData.coverImage}
+              alt="Cover"
+              className="w-full h-full object-cover"
+            />
             <div className="absolute bottom-4 left-4 flex gap-2">
               <Button
                 className="bg-white/70 hover:bg-white/90"
@@ -122,7 +136,9 @@ export default function FileEditor() {
                   />
                   <label htmlFor="image-upload" className="cursor-pointer">
                     <Upload className="mx-auto h-12 w-12 text-white" />
-                    <p className="mt-2 text-white">Click or drag file to this area to upload</p>
+                    <p className="mt-2 text-white">
+                      Click or drag file to this area to upload
+                    </p>
                   </label>
                 </div>
               </CardContent>
@@ -130,8 +146,9 @@ export default function FileEditor() {
           </div>
         )}
       </div>
+
       <CollaborativeRoom roomId={fileId} fallback={<LoadingSpinner />}>
-        <CollaborativeEditor fileId={fileId} initialContent={fileData?.content} />
+        <CollaborativeEditor fileId={fileId} initialContent={fileData?.content} edit={true} />
       </CollaborativeRoom>
     </div>
   );

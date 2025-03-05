@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // const userData = await userResponse.json();
     
-    try {
+    try { 
       const room = await liveblocks.getRoom(roomId);
       
       await liveblocks.updateRoom(roomId, {
