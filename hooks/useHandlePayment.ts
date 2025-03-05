@@ -52,12 +52,12 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
         };
 
         try {
-            const response = await API.post(
+                 await API.post(
                 '/payment-details',
                 { userData },
                 { withCredentials: true }
             );
-
+            
             dispatch(setPlanType(userData.paymentType));
         } catch (error) {
             console.error("Error storing payment details:", error);

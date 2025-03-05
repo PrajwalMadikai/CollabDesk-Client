@@ -1,11 +1,11 @@
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
 import { folderCreateFunc, folderFetchFunc, folderMovetoTrash, folderRestoreFunc, folderTrashFetchFun, folderUpdateFunc } from "@/services/folderApi";
-import { AppDispatch, RootState } from "@/store/store";
+import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 interface Folder {
   id: string;
@@ -29,7 +29,6 @@ export function useFolder() {
   
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch<AppDispatch>();
  
 
   const fetchFolders = async (workspaceId: string | undefined) => {
@@ -106,10 +105,14 @@ export function useFolder() {
         return newFolder;
       }
     } catch (error: any) {
+      
       const responseStatus = getResponseStatus(error.response?.status);
-
-      if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Folder limit exceeded")) {
-        showLimitExceededToast("folder");
+      if(responseStatus === ResponseStatus.FORBIDDEN&&user.planType=="premium" && error.response?.data?.message.includes("Folder limit exceeded")){
+        showLimitExceededToast("folder",true);
+        
+      }
+     else if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Folder limit exceeded")) {
+        showLimitExceededToast("folder",false);
       } else if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Subscription")) {
         router.push('/subscription-ended');
       } else {
@@ -232,12 +235,27 @@ export function useFolder() {
     return false;
   };
 
+  const updateFileNameInFolder=(fileId:string,folderId:string,newName:string)=>{
+    console.log('inside of updateFileNameFunc');
+    
+    setFolders((prevFolder)=>
+       prevFolder.map((folder)=>
+        folder.id==folderId ?{
+          ...folder,
+          files:folder.files.map((file)=>
+            file.fileId==fileId ?{...file,fileName:newName} : file
+          ),
+        }:folder
+      )
+    );
+  }
+
   const startEditingFolder = (folderId: string, currentName: string) => {
     setEditingFolderId(folderId);
     setEditingFolderName(currentName);
   };
 
-  const showLimitExceededToast = (resourceType: string) => {
+  const showLimitExceededToast = (resourceType: string,isMax:boolean) => {
     toast.custom((t) => (
       <div
         className={`${
@@ -270,16 +288,21 @@ export function useFolder() {
               <p className="text-sm font-medium text-black">
                 Your subscription plan has reached the maximum number of {resourceType}s.
               </p>
+              {!isMax?(
+              <>
               <p className="mt-1 text-sm text-gray-500">
                 Please upgrade your subscription to create more {resourceType}s.
               </p>
-              {/* Upgrade Link */}
               <a
-                href="/subscription"
+                href="/"
                 className="inline-block mt-2 text-black text-sm font-medium hover:underline focus:outline-none focus:ring-2 "
               >
-               Click here for Upgrade Subscription
+                Click here for Upgrade Subscription
               </a>
+              </>
+              ):(
+                <p className="mt-1 text-sm text-gray-500">Your out of your monthly subscription {resourceType} limit</p>
+              )}
             </div>
           </div>
         </div>
@@ -313,6 +336,7 @@ export function useFolder() {
     updateFolderName,
     moveToTrash,
     restoreFolder,
-    startEditingFolder
+    startEditingFolder,
+    updateFileNameInFolder
   };
 }

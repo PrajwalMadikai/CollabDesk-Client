@@ -177,7 +177,14 @@ export const useAuthSignup = () => {
         if (userData) {
           localStorage.setItem('user', JSON.stringify(userData));
           localStorage.setItem('accessToken', accessToken);
-          dispatch(setUser(userData));
+          dispatch(setUser({
+            id: userData.id,
+            fullname: userData.fullname,
+            email: userData.email,
+            workSpaces: userData.workSpaces,
+            isAuthenticated: true,
+            planType: null,
+          }));
         }
         
         toast.success('User registered successfully!', {

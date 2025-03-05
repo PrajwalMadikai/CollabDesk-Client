@@ -3,16 +3,19 @@ import VideoCallButton from "@/components/Video Call/VideoCallButton";
 import { useFile } from "@/hooks/useFile";
 import { useFolder } from "@/hooks/useFolder";
 import { useWorkspace, Workspace } from "@/hooks/useWorkspaceHook";
+import { setUser } from "@/store/slice/userSlice";
 import { RootState } from "@/store/store";
 import { ChevronRight, File, Folder, Menu, MessageSquare, Plus, RefreshCcw, Settings, Trash } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Sidebar: React.FC = () => {
+
   const router = useRouter();
   const params = useParams();
+  const dispatch=useDispatch()
   const [isOpen, setIsOpen] = useState(true);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
@@ -58,6 +61,7 @@ console.log('user detail sidebar:',user);
     moveToTrash: moveFolderToTrash,
     restoreFolder,
     startEditingFolder,
+    updateFileNameInFolder
   } = useFolder();
 
   const {
@@ -72,7 +76,7 @@ console.log('user detail sidebar:',user);
     moveToTrash: moveFileToTrash,
     restoreFile,
     startEditingFile,
-  } = useFile(selectedWorkspace, fetchFolders);
+  } = useFile(selectedWorkspace, fetchFolders,updateFileNameInFolder,fetchTrashItems);
 
   useEffect(() => {
     const initializeWorkspace = async () => {
@@ -99,6 +103,22 @@ console.log('user detail sidebar:',user);
 
     initializeWorkspace();
   }, [isInitialLoad, params?.workspaceId]);
+
+  useEffect(()=>{
+    const userData=localStorage.getItem('user')
+    if(userData){
+    const user=JSON.parse(userData)
+    
+    dispatch(setUser({
+      id: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      isAuthenticated: true,
+      planType: user.paymentDetail.paymentType,
+      workSpaces: user.workSpaces
+    }))
+  }
+  },[])
 
   useEffect(() => {
     if (selectedWorkspace?.workspaceId) {
@@ -142,7 +162,7 @@ console.log('user detail sidebar:',user);
               className="flex items-center gap-2 text-white text-lg font-semibold cursor-pointer" 
               onClick={() => setShowWorkspaceList(!showWorkspaceList)}
             >
-              <span>{selectedWorkspace?.workspaceName || "Select Workspace"}</span>
+              <span>{selectedWorkspace?.workspaceName}</span>
               <ChevronRight 
                 className={`h-4 w-4 transition-transform ${showWorkspaceList ? 'rotate-90' : ''}`}
               />
@@ -373,6 +393,7 @@ console.log('user detail sidebar:',user);
           </div>
         )}
       </div>
+      {}
       <VideoCallButton workspaceId={params?.workspaceId as string}  />
       {isOpen && (
         <div className="p-4 border-gray-800 mt-auto">

@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Folder {
-  id: string;
-  name: string;
-}
+ 
 
 interface Workspace {
   workspaceId: string;

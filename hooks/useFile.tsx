@@ -9,7 +9,9 @@ import { useSelector } from "react-redux";
 
 export function useFile(
     selectedWorkspace: { workspaceId: string } | null,
-    fetchFolders: (workspaceId: string) => Promise<void>
+    fetchFolders: (workspaceId: string) => Promise<void>,
+    updateFileNameInFolder:(fileId:string,folderId:string,newName:string)=>void,
+    fetchTrashItems: (workspaceId: string ) => Promise<void> 
 ) {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [editingFileId, setEditingFileId] = useState<string | null>(null);
@@ -147,7 +149,14 @@ export function useFile(
         const responseStatus = getResponseStatus(response.status);
   
         if (responseStatus === ResponseStatus.SUCCESS) {
-          return true;
+
+          updateFileNameInFolder(fileId,folderId,editingFileName)
+          setEditingFileId(null);
+          return true
+
+          // if (selectedWorkspace?.workspaceId) {
+          //   await fetchFolders(selectedWorkspace.workspaceId);
+          // }
         }
       } catch (error) {
         console.error("Error updating file name:", error);
@@ -177,6 +186,9 @@ export function useFile(
       if (responseStatus === ResponseStatus.SUCCESS) {
         if (updateFolderFn) {
           await updateFolderFn();
+          if(selectedWorkspace?.workspaceId){
+          await fetchTrashItems(selectedWorkspace?.workspaceId)
+          }
         }
         
         toast.success("File has moved to trash", {
@@ -191,7 +203,6 @@ export function useFile(
             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
           },
         });
-        
         return true;
       }
     } catch (error) {
@@ -217,6 +228,9 @@ export function useFile(
       if (responseStatus === ResponseStatus.SUCCESS) {
         if (updateFnCallback) {
           await updateFnCallback();
+          if(selectedWorkspace?.workspaceId){
+            await fetchTrashItems(selectedWorkspace?.workspaceId)
+            }
         }
         
         return true;

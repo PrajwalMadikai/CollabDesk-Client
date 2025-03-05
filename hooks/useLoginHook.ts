@@ -95,10 +95,7 @@ export const useEmailLogin = () => {
           email: userData.email,
           workSpaces: userData.workSpaces,
           isAuthenticated: true,
-          planType: null,
-          workspaceCount: 0,
-          folders: [],
-          folderCount: 0
+          planType: userData.paymentDetail.paymentType,
         }));
         
         toast.success('Login successful!', {
@@ -171,10 +168,7 @@ export const useGoogleLogin = () => {
           email: userData.email,
           workSpaces: userData.workSpaces,
           isAuthenticated: true,
-          planType: null,
-          workspaceCount: 0,
-          folders: [],
-          folderCount: 0
+          planType: userData.paymentDetail.paymentType,
         }));
 
         setTimeout(() => {

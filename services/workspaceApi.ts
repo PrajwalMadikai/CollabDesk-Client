@@ -16,7 +16,7 @@ export const workspaceFetch=async(userId:string)=>{
     try {
          const response=await API.post('/workspace/fetch',{userId},{withCredentials:true})
          return response
-        } catch (error:any) {
+        } catch (error) {
             throw error
         }
 }

@@ -16,13 +16,11 @@ const PaymentForm = ({ plan }: { plan: any }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white p-6">
       <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-2xl p-8">
-        {/* Header Section */}
         <div className="text-center mb-8">
           <h3 className="text-3xl font-bold mb-2">{paymentType} Plan</h3>
           <p className="text-gray-400">Complete your subscription</p>
         </div>
 
-        {/* Plan Details */}
         <div className="bg-gray-700 rounded-lg p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
             <span className="text-lg">Subscription</span>
@@ -52,7 +50,6 @@ const PaymentForm = ({ plan }: { plan: any }) => {
           </ul>
         </div>
 
-        {/* Payment Section */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center mb-4">
             <CreditCard className="mr-2 text-blue-400" />
@@ -64,7 +61,6 @@ const PaymentForm = ({ plan }: { plan: any }) => {
           </div>
         </div>
 
-        {/* Checkout Button */}
         <button
           onClick={handlePayment}
           disabled={loading}

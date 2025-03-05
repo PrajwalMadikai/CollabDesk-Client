@@ -165,7 +165,7 @@ export function useWorkspace() :UseWorkspaceReturn|null{
   const userId = user.id;
   if(!userId)
   {
-    console.log('no user idf');
+    console.log('no user id');
     return null
   }
  const fetchWorkspaces = async (): Promise<Workspace[]> => {
@@ -232,7 +232,6 @@ export function useWorkspace() :UseWorkspaceReturn|null{
       const response=await workspaceCreateFunc(newWorkspaceName,userId)
 
       const responseStatus = getResponseStatus(response.status);
-console.log('response status:',responseStatus);
 
       if (responseStatus === ResponseStatus.CREATED) {
         const newWorkspace = response.data.workspace;
@@ -268,9 +267,11 @@ console.log('response status:',responseStatus);
       }
     } catch (error: any) {
       const responseStatus = getResponseStatus(error.response?.status);
-      
-      if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Workspace limit exceeded")) {
-        showLimitExceededToast("workspace");
+      if(responseStatus === ResponseStatus.FORBIDDEN&&user.planType=="premium" && error.response?.data?.message.includes("Workspace limit exceeded")){
+        showLimitExceededToast("workspace",true);
+      }
+      else if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Workspace limit exceeded")) {
+        showLimitExceededToast("workspace",false);
       } else if (responseStatus === ResponseStatus.FORBIDDEN && error.response?.data?.message.includes("Subscription")) {
         router.push('/subscription-ended');
       } else {
@@ -290,21 +291,19 @@ console.log('response status:',responseStatus);
   const deleteWorkspace = async (workspaceId: string): Promise<void> => {
     try {
       setLoading(true);
-      const response = await deleteWorkspaceFunc(workspaceId)
-
+  
+      const response = await deleteWorkspaceFunc(workspaceId);
       const responseStatus = getResponseStatus(response.status);
   
       if (responseStatus === ResponseStatus.SUCCESS) {
         const deletedWorkspaceId = response.data.data;
+  
         dispatch(removeWorkspace(deletedWorkspaceId));
-        
+  
         setWorkspaces((prev) => prev.filter((workspace) => workspace.workspaceId !== deletedWorkspaceId));
-        await fetch('/api/delete-room',{
-          method: "POST",
-          body:JSON.stringify({
-            roomId:workspaceId
-          })
-        })
+       
+     
+  
         if (selectedWorkspace?.workspaceId === deletedWorkspaceId) {
           const remainingWorkspaces = workspaces.filter((w) => w.workspaceId !== deletedWorkspaceId);
           if (remainingWorkspaces.length > 0) {
@@ -314,9 +313,15 @@ console.log('response status:',responseStatus);
           }
         }
   
+        fetchWorkspaces()  
         toast.success('Workspace deleted successfully', {
           duration: 2500,
           position: 'top-right',
+        });
+         // Delete the associated room
+        await fetch('/api/delete-room', {
+          method: "POST",
+          body: JSON.stringify({ roomId: workspaceId }),
         });
       }
     } catch (error) {
@@ -344,7 +349,7 @@ console.log('response status:',responseStatus);
     }
   };
 
-  const showLimitExceededToast = (resourceType: string) => {
+const showLimitExceededToast = (resourceType: string,isMax:boolean) => {
     toast.custom((t) => (
       <div
         className={`${
@@ -377,21 +382,25 @@ console.log('response status:',responseStatus);
               <p className="text-sm font-medium text-black">
                 Your subscription plan has reached the maximum number of {resourceType}s.
               </p>
+              {!isMax?(
+              <>
               <p className="mt-1 text-sm text-gray-500">
                 Please upgrade your subscription to create more {resourceType}s.
               </p>
-              {/* Upgrade Link */}
               <a
                 href="/"
                 className="inline-block mt-2 text-black text-sm font-medium hover:underline focus:outline-none focus:ring-2 "
               >
                 Click here for Upgrade Subscription
               </a>
+              </>
+              ):(
+                <p className="mt-1 text-sm text-gray-500">Your out of your monthly subscription {resourceType} limit</p>
+              )}
             </div>
           </div>
         </div>
   
-        {/* Close Button */}
         <div className="flex border-l border-gray-200">
           <button
             onClick={() => toast.dismiss(t.id)}

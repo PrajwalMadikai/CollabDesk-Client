@@ -3,7 +3,8 @@ interface usersInterface{
     name:string,
     email:string,
     avatar?:string,
-    isBlock:boolean
+    isBlock:boolean,
+    role:string
 }
 
 export default usersInterface
