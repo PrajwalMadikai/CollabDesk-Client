@@ -1,6 +1,7 @@
-import { API } from "@/app/api/handle-token-expire";
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
+import { fetchAllusersFunc, renameUserFunc } from "@/services/AuthApi";
+import { collaboratorsAddFunct, fetchCollaboratorsFunc, removeCollaboratorsFunc, renameWorkspaceFunct } from "@/services/workspaceApi";
 import { updateName } from "@/store/slice/userSlice";
 import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ interface User {
 const useSettings = (workspaceId: string, workspaceName: string) => {
   const dispatch = useDispatch();
   const mainUser = useSelector((state: RootState) => state.user);
+ 
 
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
@@ -34,11 +36,8 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
 
   const fetchInitialCollaborators = async () => {
     try {
-      const response = await API.post(
-        "/workspace/collaborators",
-        { workspaceId },
-        { withCredentials: true }
-      );
+     
+      const response = await fetchCollaboratorsFunc(workspaceId)
 
       const responseStatus = getResponseStatus(response.status);
 
@@ -55,10 +54,9 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
     }
   };
 
-  // Fetch available users
   const fetchAvailableUsers = async () => {
     try {
-      const response = await API.get("/fetch-user", { withCredentials: true });
+      const response = await fetchAllusersFunc()
 
       const responseStatus = getResponseStatus(response.status);
 
@@ -82,16 +80,11 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
     }
   };
 
-  // Add collaborator
   const handleAddCollaborator = async (email: string) => {
     try {
       setAddingUser(email);
-      const response = await API.post(
-        "/workspace/add-collaborator",
-        { email, workspaceId, invitedEmail: mainUser.email },
-        { withCredentials: true }
-      );
-
+ 
+      const response = await collaboratorsAddFunct(email,workspaceId,mainUser.email)
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.SUCCESS) {
@@ -110,11 +103,8 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
 
   const removeCollaborator = async (email: string) => {
     try {
-      const response = await API.post(
-        "/workspace/remove-collaborator",
-        { email, workspaceId },
-        { withCredentials: true }
-      );
+   
+      const response = await removeCollaboratorsFunc(email,workspaceId)
 
       const responseStatus = getResponseStatus(response.status);
 
@@ -128,11 +118,8 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
 
   const renameWorkspace = async (newName: string) => {
     try {
-      const response = await API.post(
-        "/workspace/rename",
-        { workspaceId, newName },
-        { withCredentials: true }
-      );
+ 
+      const response=await renameWorkspaceFunct(workspaceId,newName)
 
       const responseStatus = getResponseStatus(response.status);
 
@@ -151,11 +138,8 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
 
   const updateUserName = async (newName: string) => {
     try {
-      const response = await API.put(
-        "/update-name",
-        { userId: mainUser.id, newName },
-        { withCredentials: true }
-      );
+     
+      const response = await renameUserFunc(mainUser.id,newName)
 
       const responseStatus = getResponseStatus(response.status);
 

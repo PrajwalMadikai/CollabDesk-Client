@@ -184,6 +184,7 @@ export const useAuthSignup = () => {
             workSpaces: userData.workSpaces,
             isAuthenticated: true,
             planType: null,
+            avatar:userData.avatar
           }));
         }
         

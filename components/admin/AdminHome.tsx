@@ -1,6 +1,5 @@
-import { ADMIN_API } from '@/app/api/handle-token-expire';
+import { usePaymentAnalytics } from '@/hooks/usePaymentAnalytics';
 import { Calendar, CircleDollarSign, TrendingUp, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import {
   Bar, BarChart, CartesianGrid,
   Cell,
@@ -52,84 +51,14 @@ const COLORS = ['#0088FE', '#00C49F'];
  
 
 export default function Home() {
-  const [stats, setStats] = useState<Stats>({
-    totalRevenue: 0,
-    monthlyGrowth: 0,
-    activeSubscribers: 0
-  });
-  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
-  const [planDistribution, setPlanDistribution] = useState<PlanData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0]
-  });
-
-  const formattedMonthlyData: FormattedMonthlyData[] = monthlyData.map(data => ({
-    month: data.month,
-    revenue: data.revenue,
-    subscribers: data.subscribers
-  }));
-
-  const formattedPlanDistribution: FormattedPlanData[] = planDistribution.map(data => ({
-    plan: data.plan,
-    count: data.count,
-    revenue: data.revenue
-  }));
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const queryParams = `startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`;
-  
-      const [statsRes, monthlyRes, plansRes] = await Promise.all([
-        ADMIN_API.get(`/payment-stats?${queryParams}`, { withCredentials: true }),
-        ADMIN_API.get(`/monthly-payments?${queryParams}`, { withCredentials: true }),
-        ADMIN_API.get(`/plan-distribution?${queryParams}`, { withCredentials: true })
-      ]);
-  
-  
-      const statsData = statsRes.data.data || { totalRevenue: 0, monthlyGrowth: 0, activeSubscribers: 0 };
-      setStats({
-        totalRevenue: statsData.totalRevenue || 0,
-        monthlyGrowth: statsData.monthlyGrowth || 0,
-        activeSubscribers: statsData.activeSubscribers || 0
-      });
-  
-      const months: MonthlyData[] = monthlyRes.data.data.map((item: any) => ({
-        month: item.month,
-        revenue: item.revenue,
-        subscribers: item.subscribers
-      }));
-  
-      setMonthlyData(months);
-  
-      const plans = plansRes.data.data.map((item: any) => ({
-        plan: item.plan,
-        count: item.count,
-        revenue: item.revenue
-      }));
-  
-      setPlanDistribution(plans);
-    } catch (error) {
-      console.error('Error in data fetching:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [dateRange]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-      </div>
-    );
-  }
-
+ const{
+  stats,
+  formattedMonthlyData,
+  formattedPlanDistribution,
+  loading,
+  dateRange,
+  setDateRange,
+ }=usePaymentAnalytics()
   return (
     <div className="p-4 md:p-6 bg-gray-900 min-h-screen">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">

@@ -23,7 +23,10 @@ const Sidebar: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
 
 console.log('user detail sidebar:',user);
-
+  if(!user.email)
+  {
+    return
+  }
   const workspace = useWorkspace();
   if (!workspace) {
     console.log('workspace is null in workspace hook');
@@ -108,6 +111,7 @@ console.log('user detail sidebar:',user);
     const userData=localStorage.getItem('user')
     if(userData){
     const user=JSON.parse(userData)
+    console.log('json:',user);
     
     dispatch(setUser({
       id: user.id,
@@ -115,7 +119,8 @@ console.log('user detail sidebar:',user);
       email: user.email,
       isAuthenticated: true,
       planType: user.paymentDetail.paymentType,
-      workSpaces: user.workSpaces
+      workSpaces: user.workSpaces,
+      avatar:user.googleId
     }))
   }
   },[])
@@ -249,7 +254,7 @@ console.log('user detail sidebar:',user);
                     {editingFolderId === folder.id ? (
                       <input
                         type="text"
-                        className="bg-transparent border-none focus:outline-none text-sm text-gray-300"
+                        className="bg-transparent w-[100px]  border-none focus:outline-none text-sm text-gray-300"
                         value={editingFolderName}
                         onChange={(e) => setEditingFolderName(e.target.value)}
                         onBlur={() => updateFolderName(folder.id)}
@@ -366,7 +371,7 @@ console.log('user detail sidebar:',user);
                 )}
 
                 {trashItems.files.length > 0 && (
-                  <div className="mt-2">
+                  <div className="mt-2 ">
                     <h4 className="text-sm font-semibold text-gray-300">Files</h4>
                     {trashItems.files.map((file) => (
                       <div key={file._id} className="flex items-center justify-between gap-2 text-gray-400">
@@ -409,7 +414,12 @@ console.log('user detail sidebar:',user);
 
       {isOpen && (
         <div className="p-4 border-t border-gray-800 mt-auto flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0"></div>
+         
+            <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center">
+              <span className="text-[12px] font-medium text-white">
+                {user?.email.substring(0, 2).toUpperCase()}
+              </span>
+            </div>
           <div className="flex-1">
             <p className="text-[12px] font-medium text-gray-300">{user.email}</p>
           </div>

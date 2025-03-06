@@ -14,6 +14,7 @@ interface UserState {
   isAuthenticated: boolean;
   planType:string|null;
   workSpaces: Workspace[];
+  avatar:string|null;
   
 }
 
@@ -24,6 +25,7 @@ const initialState: UserState = {
   isAuthenticated: false,
   planType:null,
   workSpaces: [],
+  avatar:null
  
 };
 
@@ -37,7 +39,8 @@ const userSlice = createSlice({
       state.email = action.payload.email;
       state.isAuthenticated = true;
       state.workSpaces = action.payload.workSpaces;
-      state.planType=action.payload.planType
+      state.planType=action.payload.planType,
+      state.avatar=action.payload.avatar
     },
     clearUser(state) {
       state.id = null;
@@ -46,7 +49,7 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.planType=null;
       state.workSpaces = [];
-      
+      state.avatar=null
     },
     updateName(state,action:PayloadAction<string>){
       state.fullname=action.payload

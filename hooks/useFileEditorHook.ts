@@ -1,8 +1,7 @@
-// hooks/useFileEditor.ts
-import { API } from "@/app/api/handle-token-expire";
 import { ResponseStatus } from "@/enums/responseStatus";
 import { publishDocument } from "@/hooks/useFile";
 import getResponseStatus from "@/lib/responseStatus";
+import { FileData, imageUpload } from "@/services/fileApi";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -19,15 +18,21 @@ export const useFileEditor = (fileId: string) => {
   const [fileData, setFileData] = useState<FileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPublishMessage, setShowPublishMessage] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const fetchFileData = async () => {
     try {
-      const response = await API.get(`/file/${fileId}`, { withCredentials: true });
+      const response = await FileData(fileId)
+
+     const responseStatus=getResponseStatus(response.status)
+     if(responseStatus==ResponseStatus.SUCCESS){
+
       setFileData(response.data.file);
 
       if (response.data.file.published && response.data.file.url) {
         setShowPublishMessage(true);
       }
+    }
     } catch (error) {
       console.error("Error fetching file data:", error);
     } finally {
@@ -45,23 +50,23 @@ export const useFileEditor = (fileId: string) => {
       });
       return;
     }
-
+    setIsUploadOpen(true)
     try {
       const formData = new FormData();
       formData.append("image", file);
 
-      const response = await API.put(`/file/uploadImage/${fileId}`, formData, {
-        withCredentials: true,
-      });
+    
+      const response = await imageUpload(fileId,formData)
 
       const responseStatus = getResponseStatus(response.status);
-
+     
       if (responseStatus === ResponseStatus.SUCCESS) {
         fetchFileData();
         toast.success("File uploaded.", {
           duration: 2000,
           position: "bottom-right",
         });
+        setIsUploadOpen(false)
       }
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -72,11 +77,7 @@ export const useFileEditor = (fileId: string) => {
     }
   };
 
-  const handleRemoveCover = () => {
-    if (fileData) {
-      setFileData({ ...fileData, coverImage: undefined });
-    }
-  };
+ 
 
   const handlePublishClick = async () => {
     try {
@@ -110,6 +111,7 @@ export const useFileEditor = (fileId: string) => {
       navigator.clipboard.writeText(fileData.url).then(() => {
         toast.success("Link copied to clipboard!", {
           position: "top-right",
+          
         });
       });
     }
@@ -127,8 +129,9 @@ export const useFileEditor = (fileId: string) => {
     showPublishMessage,
     setShowPublishMessage,
     handleImageUpload,
-    handleRemoveCover,
     handlePublishClick,
     handleCopyLink,
+    isUploadOpen, 
+    setIsUploadOpen
   };
 };

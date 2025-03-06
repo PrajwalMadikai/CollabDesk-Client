@@ -16,21 +16,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar";
-import { clearAdmin, setAdmin } from "@/store/slice/adminSlice";
-import { AppDispatch, RootState } from "@/store/store";
-import axios from "axios";
+import { useAdminSidebar } from "@/hooks/useAdminhook";
 import { Home, LogOut, Plus, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
 
-const user = {
-  name: "Admin User",
-  email: "admin@example.com",
-  avatar: "/path/to/avatar.jpg",
-};
-
+ 
  
 
 const items = [
@@ -40,44 +29,8 @@ const items = [
 ];
 
 const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) => {
-  const dispatch=useDispatch<AppDispatch>()
-   const router=useRouter()
-   const admin=useSelector((state:RootState)=>state.admin)
-   useEffect(()=>{
-     const admin=localStorage.getItem('admin')
-     if(admin)
-     {
-       let data=JSON.parse(admin)
-       dispatch(setAdmin({id:data.id,email:data.email}))
-     }
-   },[])
-  const Logout=async()=>{
-    
-    try {
-  
-      const response= await axios.post(`http://localhost:5713/admin/logout`, {}, { withCredentials: true })
-       
-  
-        if (response.status === 200) {
-          toast.success("Logout successful!", {
-            duration: 2000,
-            position: "top-right",
-            style: { background: "#28a745", color: "#fff" },
-            
-          });
-           localStorage.removeItem('admin');
-           localStorage.removeItem('adminAccessToken');
-           dispatch(clearAdmin())
-           router.replace('/admin/login')
-        }
-    } catch (error) {
-      console.log(error);
-      toast.error("Error during logout", {
-        duration: 2000,
-        position: "top-right",
-      });
-    }
-  }
+ 
+  const {admin, handleLogout}=useAdminSidebar()
 
   return (
     <Sidebar className="h-screen w-[260px] bg-black text-white shadow-xl rounded-r-3xl flex flex-col items-center">
@@ -120,7 +73,7 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
             <DropdownMenuSeparator />
             {/* <DropdownMenuItem className="text-white hover:bg-gray-700">Subscription</DropdownMenuItem> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={Logout} className="text-red-600 text-md font-semibold">
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600 text-md font-semibold">
               <LogOut className="mr-2 "  /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>

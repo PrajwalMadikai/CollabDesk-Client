@@ -96,3 +96,28 @@ export const grantRoomAccess = async (roomId: string) => {
       throw error;
     }
   };
+
+
+  export const FileData=async(fileId:string)=>{
+    try {
+        const response = await API.get(`/file/${fileId}`, { withCredentials: true });
+
+        return response
+        
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  export const imageUpload=async(fileId:string,formData:FormData)=>{
+    try {
+        const response = await API.put(`/file/uploadImage/${fileId}`, formData, {
+            withCredentials: true,
+          });
+
+        return response
+        
+    } catch (error) {
+        throw error;
+    }
+  }

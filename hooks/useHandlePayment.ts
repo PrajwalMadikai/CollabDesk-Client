@@ -17,6 +17,8 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
             try {
                 if (!sessionId || isPaymentStored) return;
 
+                //nextjs api request
+
                 const response = await fetch(`/api/payment/session?session_id=${sessionId}`);
                 const data = await response.json();
 
@@ -52,6 +54,7 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
         };
 
         try {
+           //nextjs api request
                  await API.post(
                 '/payment-details',
                 { userData },
@@ -74,6 +77,7 @@ export const usePayment=()=> {
     const initiatePayment = async (planType: string, amount: number) => {
       setLoading(true);
       try {
+        //nextjs api request
         const response = await axios.post(
           '/api/create-checkout-session',
           {

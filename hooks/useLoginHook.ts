@@ -96,6 +96,7 @@ export const useEmailLogin = () => {
           workSpaces: userData.workSpaces,
           isAuthenticated: true,
           planType: userData.paymentDetail.paymentType,
+          avatar:userData.avatar
         }));
         
         toast.success('Login successful!', {
@@ -161,7 +162,7 @@ export const useGoogleLogin = () => {
         
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('accessToken', accessToken);
-
+      
         dispatch(setUser({
           id: userData.id,
           fullname: userData.fullname,
@@ -169,6 +170,7 @@ export const useGoogleLogin = () => {
           workSpaces: userData.workSpaces,
           isAuthenticated: true,
           planType: userData.paymentDetail.paymentType,
+          avatar:userData.avatar
         }));
 
         setTimeout(() => {

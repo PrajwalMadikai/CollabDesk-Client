@@ -10,7 +10,7 @@ export const loginEmail=async(email:string,password:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -20,7 +20,7 @@ export const googleLogin=async(idToken:string)=>{
       
         return response
     } catch (error:any) {
-        throw error.response.data
+        throw error
     }
 }
 
@@ -38,7 +38,7 @@ export const signupEmail=async(fullName:string,email:string,password:string)=>
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -50,7 +50,7 @@ export const googleSignUp=async(idToken:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
 
@@ -62,6 +62,31 @@ export const resetPasswordFunc=async(email:string,password:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+        throw error
     }
 }
+
+export const fetchAllusersFunc=async()=>{
+    try {
+        const response = await API.get("/fetch-user", { withCredentials: true });
+        return response
+        
+    } catch (error:any) {
+        throw error
+    }
+}
+
+export const renameUserFunc=async(userId:string|null,newName:string)=>{
+    try {
+        const response = await API.put(
+            "/update-name",
+            { userId, newName },
+            { withCredentials: true }
+          );
+        return response
+        
+    } catch (error:any) {
+        throw error
+    }
+}
+

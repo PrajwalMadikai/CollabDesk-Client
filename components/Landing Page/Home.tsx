@@ -186,7 +186,7 @@ const fetchPaymentPlans=async()=>{
   
           {/* Button under Big Text */}
           <div className="text-center mt-3">
-          <button onClick={handleDashboard} className="bg-transparent font-medium hover:bg-gray-100 hover:text-foreground border border-gray-400 w-[140px] rounded-[8px] text-[16px] text-foreground h-9">
+          <button onClick={handleDashboard} className="bg-transparent font-medium  hover:text-foreground border border-gray-400 w-[140px] rounded-[8px] text-[16px] text-foreground h-9">
             Get Started
           </button>
           

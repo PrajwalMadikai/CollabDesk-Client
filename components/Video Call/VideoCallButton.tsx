@@ -29,9 +29,7 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
     router.push(`/conference/${workspaceId}`);  
   };
 
-  if (isLoading) {
-    return <div className="text-center p-4">Loading...</div>;
-  }
+ 
 
   if (error) {
     return (
