@@ -14,6 +14,7 @@ interface User {
   }
   
   interface Collaborator {
+    fullname: string;
     id: string;
     email: string;
   }
@@ -91,6 +92,13 @@ const useSettings = (workspaceId: string, workspaceName: string) => {
         toast.success("Collaborator added", {
           duration: 1500,
           position: "top-right",
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
         fetchInitialCollaborators();
       }

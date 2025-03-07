@@ -103,8 +103,11 @@ export const useEmailLogin = () => {
           duration: 2000,
           position: 'top-right',
           style: {
-            background: '#28a745',
-            color: '#fff',
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
           },
         });
 
@@ -154,7 +157,13 @@ export const useGoogleLogin = () => {
         toast.success(response.data.message, {
           duration: 2000,
           position: 'top-right',
-          style: { background: '#4caf50', color: '#fff' },
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
 
         const userData = response.data.user;
@@ -263,7 +272,13 @@ export const useResetPasswordHook = () => {
         toast.success('Password updated successfully!', {
           duration: 2000,
           position: 'top-right',
-          style: { background: '#4caf50', color: '#fff' },
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
 
         localStorage.removeItem('resetEmail');

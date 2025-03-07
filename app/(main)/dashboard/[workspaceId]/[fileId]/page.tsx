@@ -135,14 +135,14 @@ export default function FileEditor() {
           {fileData?.published ? (
             <button
               onClick={() => setShowPublishMessage((prev) => !prev)}
-              className="bg-primary rounded-[2px] text-primary-foreground px-3 py-1 text-sm"
+              className="bg-primary rounded-[2px] text-primary-foreground px-3 py-1 text-[15px] font-semibold"
             >
               Published
             </button>
           ) : (
             <button
               onClick={() => makePublish()}
-              className="bg-black rounded-[2px] text-white px-3 py-1 text-sm"
+              className="bg-primary rounded-[2px] text-primary-foreground px-3 py-1 text-[15px] font-semibold"
             >
               Publish
             </button>
@@ -199,7 +199,7 @@ export default function FileEditor() {
         ) : (
           <div className="w-full h-full relative bg-gray-900">
             <button
-              className="absolute top-[160px] left-2 text-gray-400 text-[11px] font-semibold uppercase flex items-center gap-1"
+              className="absolute top-[210px] left-2 text-gray-400 text-[11px] font-semibold uppercase flex items-center gap-1"
               onClick={handleOpenUpload}
             >
               <Upload className="h-4 w-4" />

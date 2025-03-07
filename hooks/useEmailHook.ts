@@ -55,7 +55,13 @@ export function useSendVerificationEmail() {
           toast.success('Verification email has been sent', {
             duration: 2000,
             position: 'top-right',
-            style: { background: '#4caf50', color: '#fff' },
+            style: {
+              background: '#166534',  
+              color: '#d1fae5',    
+              borderRadius: '8px',    
+              padding: '12px',        
+              fontSize: '14px',      
+            },
           });
         }
       } catch (error: any) {
@@ -84,7 +90,16 @@ export function useEmailCheck(email: string | null, token: string | null) {
           
           localStorage.setItem('resetEmail', response.data.userEmail);
           setStatus('success');
-          toast.success('Email verified successfully!');
+          toast.success('Email verified successfully!',{
+            position:'top-right',
+            style: {
+              background: '#166534',  
+              color: '#d1fae5',    
+              borderRadius: '8px',    
+              padding: '12px',        
+              fontSize: '14px',      
+            },
+          });
           setTimeout(() => {
             router.push('/reset-password');
           }, 2000);

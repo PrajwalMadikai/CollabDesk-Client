@@ -30,14 +30,22 @@ export default function GitHubCallback() {
           throw new Error('No user data received');
         }
 
-        // Simulate loading delay
         setTimeout(() => {
           const userData = JSON.parse(decodeURIComponent(data));
-          if (!userData.workSpaces||!userData.isAuthenticated) {
+
+         const {accessToken,...restUserData}=userData
+         if(accessToken)
+         {
+          localStorage.setItem('accessToken',accessToken)
+         }
+
+          if (!restUserData.workSpaces||!restUserData.isAuthenticated) {
             userData.workSpaces = [];
             userData.isAuthenticated=true
           }
           dispatch(setUser(userData));
+          
+          localStorage.setItem('user',JSON.stringify(restUserData))
 
           setStatus('success');
           toast.success('Login successful!');

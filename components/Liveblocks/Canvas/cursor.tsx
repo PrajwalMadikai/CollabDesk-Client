@@ -4,7 +4,7 @@ import { MousePointer2 } from "lucide-react";
 import { memo } from "react";
 
 import { connectionIdToColor } from "@/lib/utils";
-import { useOther } from "@/liveblocks.config";
+import { useOther, useSelf } from "@/liveblocks.config";
 
 interface CursorProps { 
   connectionId: number;
@@ -14,10 +14,11 @@ export const Cursor = memo(({
   connectionId,
 }: CursorProps) => {
     
-    const info = useOther(connectionId, (user) => user?.info);
+    const currentUser = useSelf();
     const cursor = useOther(connectionId, (user) => user.presence.cursor)
-
-  const name = info?.name || "Teammate";
+    console.log('current user:',currentUser);
+  
+  const name = currentUser.presence?.user?.name || "Teammate";
 
   if (!cursor) {
     return null;

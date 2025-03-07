@@ -122,6 +122,18 @@ export const useAuthSignup = () => {
       const responseStatus = getResponseStatus(response.status);
       
       if (responseStatus === ResponseStatus.CREATED) {
+        toast.success('Email verification sented!',{
+                duration:2000,
+                position:'top-right',
+                style: {
+                  background: '#166534',  
+                  color: '#d1fae5',    
+                  borderRadius: '8px',    
+                  padding: '12px',        
+                  fontSize: '14px',      
+                },
+              });
+        setIsLoading(false);
         router.push('/email-sent');
         
         setFormData({
@@ -191,7 +203,13 @@ export const useAuthSignup = () => {
         toast.success('User registered successfully!', {
           duration: 2000,
           position: 'top-right',
-          style: { background: '#4caf50', color: '#fff' },
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
         
         setTimeout(() => {

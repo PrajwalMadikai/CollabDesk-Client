@@ -74,6 +74,13 @@ export function useFile(
         toast.success("File created successfully", {
           duration: 2000,
           position: "top-right",
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
 
         return newFile;
@@ -195,12 +202,11 @@ export function useFile(
           duration: 3000,
           position: "bottom-right",
           style: {
-            background: "white",
-            color: "black",
-            borderRadius: "8px",
-            padding: "12px",
-            fontSize: "14px",
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
           },
         });
         return true;

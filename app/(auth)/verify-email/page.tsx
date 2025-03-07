@@ -2,7 +2,7 @@
 import { useVerifyEmail } from "@/hooks/useEmailHook";
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function VerifyEmail() {
@@ -12,10 +12,22 @@ export default function VerifyEmail() {
   const token = searchParams.get('token');
 
   const { status, errorMessage } = useVerifyEmail(email, token);
+  const toastShown=useRef(false)
 
   useEffect(() => {
-    if (status === 'success') {
-      toast.success('Email verified successfully!');
+    if (status === 'success'&&!toastShown.current) {
+      toast.success('Email verified successfully!',{
+        duration:2000,
+        position:'top-right',
+        style: {
+          background: '#166534',  
+          color: '#d1fae5',    
+          borderRadius: '8px',    
+          padding: '12px',        
+          fontSize: '14px',      
+        },
+      });
+      toastShown.current=true
       setTimeout(() => {
         router.push('/login');
       }, 2000);

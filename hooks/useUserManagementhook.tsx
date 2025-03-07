@@ -56,6 +56,13 @@ export const useUsersManagement = () => {
         toast.success("User blocked successfully", {
           duration: 2000,
           position: "top-right",
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
       }
     } catch (error: any) {

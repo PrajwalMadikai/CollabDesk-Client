@@ -77,8 +77,11 @@ export function useCreateWorkspace() {
           duration: 2000,
           position: 'top-right',
           style: {
-            background: '#28a745',
-            color: '#fff',
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
           },
         });
         
@@ -296,6 +299,7 @@ export function useWorkspace() :UseWorkspaceReturn|null{
       const responseStatus = getResponseStatus(response.status);
   
       if (responseStatus === ResponseStatus.SUCCESS) {
+
         const deletedWorkspaceId = response.data.data;
   
         dispatch(removeWorkspace(deletedWorkspaceId));
@@ -317,6 +321,13 @@ export function useWorkspace() :UseWorkspaceReturn|null{
         toast.success('Workspace deleted successfully', {
           duration: 2500,
           position: 'top-right',
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
          // Delete the associated room
         await fetch('/api/delete-room', {

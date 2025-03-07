@@ -5,7 +5,7 @@ export const TokenGenerate=async(workspaceId:string,userName:string|null,userId:
         const response = await axios.get(`/api/video-token?room=${workspaceId}&username=${userName}`);
         
           if (response.data && response.data.token) {
-            return response.data; // Return the entire response object
+            return response.data; 
           } else {
             throw new Error("Invalid response format");
           }

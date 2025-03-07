@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { RootState } from "@/store/store";
+import { ArrowLeftToLine } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { TooltipComponent } from "../global/tooltip";
@@ -18,17 +19,17 @@ export const Info = ({ boardId }: InfoProps) => {
   const router = useRouter();
   const user=useSelector((state:RootState)=>state.user)
   const workspace:any=user.workSpaces.find(space=> space.workspaceId==boardId)
-  const workspaceName=workspace.workspaceName
+  // const workspaceName=workspace.workspaceName
   
   const onClick = () => {
     router.back()
   };
-  if (!workspaceName) return <InfoSkeleton />;
+  // if (!workspaceName) return <InfoSkeleton />;
 
   return (
-    <div className="absolute top-2 left-2 bg-black rounded-md px-1.5 h-12 flex items-center shadow-md">
+    <div className="absolute top-2 left-2 bg-black rounded-md px-1.5 w-14 h-12 flex items-center shadow-md">
       <TooltipComponent message="Go to boards" side="bottom" sideOffset={10}>
-        <Button asChild variant="board" className="px-2">
+        {/* <Button asChild className="px-2">
            
             <img
               src="/collabdesk white logo.png"
@@ -36,16 +37,15 @@ export const Info = ({ boardId }: InfoProps) => {
               className="h-[90px] "
             />
             
-        </Button>
-      </TooltipComponent>
-      <TabSeparator />
+        </Button> */}
       <Button
-        variant="board"
         onClick={onClick}
-        className="text-base px-2 font-black" 
+        className="h-10 w-10 px-2 font-black bg-black text-white" 
       >
-        {workspaceName }
+        <ArrowLeftToLine />
       </Button>
+      </TooltipComponent>
+      {/* <TabSeparator /> */}
     </div>
   );
 };

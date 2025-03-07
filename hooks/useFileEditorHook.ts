@@ -65,6 +65,13 @@ export const useFileEditor = (fileId: string) => {
         toast.success("File uploaded.", {
           duration: 2000,
           position: "bottom-right",
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
         setIsUploadOpen(false)
       }
@@ -97,6 +104,13 @@ export const useFileEditor = (fileId: string) => {
         setShowPublishMessage(true);
         toast.success("Published!", {
           position: "top-right",
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
       }
     } catch (error) {
@@ -111,7 +125,13 @@ export const useFileEditor = (fileId: string) => {
       navigator.clipboard.writeText(fileData.url).then(() => {
         toast.success("Link copied to clipboard!", {
           position: "top-right",
-          
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
         });
       });
     }

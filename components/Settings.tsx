@@ -64,8 +64,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-gray-900 h-[600px] rounded-[4px] p-6 w-[500px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+      <div className="bg-gray-950 h-[600px] rounded-[4px] p-6 w-[500px] relative">
         <h2 className="text-white text-lg font-semibold mb-4">Settings</h2>
 
         {/* Workspace Section */}
@@ -168,35 +168,55 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           </Sheet>
 
           <h3 className="text-gray-300 text-[16px]">Collaborators</h3>
-          <div className="max-h-40 min-h-12 overflow-y-auto bg-gray-800 rounded-[3px] p-2 mt-2">
-            {collaborators.length > 0 ? (
-              collaborators.map((collaborator) => (
-                <div
-                  key={collaborator.email}
-                  className="flex items-center justify-between bg-gray-800 border border-gray-700 p-2 rounded-[5px] mb-2"
-                >
-                  <div>
-                    <p className="text-white text-xs">{collaborator.email}</p>
+          <div className="max-h-[100px] min-h-2  bg-gray-800 rounded-[3px] p-2 mt-2  overflow-y-auto custom-scrollbar"
+            >
+              {collaborators.length > 0 ? (
+                collaborators.map((collaborator) => (
+                  <div
+                    key={collaborator.email}
+                    className="flex items-center justify-between bg-gray-800 border border-gray-700 p-2 rounded-[5px] mb-2 transition duration-200 hover:bg-gray-700"
+                  >
+                    {/* Collaborator Details */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center">
+                        <span className="text-[12px] font-medium text-white">
+                          {collaborator?.email.substring(0, 2).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-white text-sm">{collaborator.email}</p>
+                        <p className="text-gray-400 text-xs">{collaborator.fullname}</p>
+                      </div>
+                    </div>
+
+                    {/* Remove Button */}
+                    <button
+                      className="text-red-600 text-sm font-medium hover:text-red-500 transition duration-200"
+                      onClick={() => removeCollaborator(collaborator.email)}
+                      aria-label={`Remove ${collaborator.email}`}
+                    >
+                      Remove
+                    </button>
                   </div>
-                  <button className="text-red-600 text-sm" onClick={()=>removeCollaborator(collaborator.email)}>Remove</button>
-                  
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 text-sm">No collaborators added yet.</p>
-            )}
-          </div>
+                ))
+              ) : (
+                <p className="text-gray-400 text-sm min-h-[50px]">No collaborators added yet.</p>
+              )}
+            </div>
         </div>
 
-        {/* Profile Section */}
-        <div className="mb-4 border-t border-gray-700 pt-4">
+        <div className={`${collaborators.length<1? `mt-14`:'mt-0'} border-t border-gray-700 pt-4`}>
           <h3 className="text-gray-300 flex items-center gap-2">
             <User className="h-5 w-5" />
             Profile
           </h3>
-          <label className="text-gray-400 text-sm block mt-2">Preferred Name</label>
-          <div className="flex items-center bg-gray-800 p-2 rounded-md">
-            <User className="h-5 w-5 text-gray-300" />
+          <label className="text-gray-400 text-sm block mt-2 py-2">Preferred Name</label>
+          <div className="flex items-center bg-gray-800  pl-5 rounded-[3px]">
+          <div className="w-7 h-7 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center">
+            <span className="text-[12px] font-medium text-white">
+              {mainUser?.email?.substring(0, 2).toUpperCase()}
+            </span>
+          </div>
             {isUserNameEditing ? (
             <input
               type="text"
@@ -208,7 +228,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           ) : (
             <div
               onClick={() => setIsUserNameEditing(true)}
-              className="w-full p-2 bg-gray-800 text-white rounded-[2px] mt-1 h-10 pl-5 cursor-pointer"
+              className="w-full p-2 bg-transparent text-white rounded-[2px]  h-10 pl-5 cursor-pointer"
             >
               {userNameInput}
             </div>
@@ -217,7 +237,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <p className="text-gray-400 mt-2 ">{mainUser.email}</p>
         </div>
 
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white transition duration-200"

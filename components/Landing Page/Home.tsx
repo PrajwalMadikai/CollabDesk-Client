@@ -4,7 +4,7 @@ import ThemeToggle from '@/components/toggleTheme';
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
 import { setPlan } from "@/store/slice/planSlice";
-import { clearUser } from "@/store/slice/userSlice";
+import { clearUser, setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -16,6 +16,8 @@ import PaymentComponent, { paymentPlans } from "./PaymentComponent";
 
 
 function HeaderAndLandingHome() {
+
+  
   useEffect(()=>{
     fetchPaymentPlans()
   },[])
@@ -27,24 +29,27 @@ function HeaderAndLandingHome() {
   const [premiumPlan,setPremiumPlan]=useState<paymentPlans>()
 
   const {theme}=useTheme()
-console.log('user redux:',user);
 
-  // useEffect(() => {
-  //   const userFetch = localStorage.getItem('user');
+  console.log('user redux:',user);
+
+  useEffect(() => {
+    const userFetch = localStorage.getItem('user');
     
-  //   if (userFetch) {
-  //     const userData = JSON.parse(userFetch);
-  //     if (userData) {
-  //       dispatch(setUser({
-  //         id: userData.id,
-  //         fullname: userData.fullname,
-  //         email: userData.email,
-  //         workSpaces: userData.workSpaces,
-  //         isAuthenticated: true,
-  //       }));
-  //     }
-  //   }
-  // }, [dispatch]);
+    if (userFetch) {
+      const userData = JSON.parse(userFetch);
+      if (userData) {
+        dispatch(setUser({
+          id: userData.id,
+          fullname: userData.fullname,
+          email: userData.email,
+          workSpaces: userData.workSpaces,
+          isAuthenticated: true,
+          planType: userData.paymentDetail.paymentType,
+          avatar:userData.avatar
+        }));
+      }
+    }
+  }, [dispatch]);
   
 
   const logout=async()=>{
@@ -235,7 +240,7 @@ const fetchPaymentPlans=async()=>{
                 <path fill="#63e" d="M320 0C213.1 0 128 85.1 128 192s85.1 192 192 192 192-85.1 192-192S426.9 0 320 0zM64 512H576c35.3 0 64-28.7 64-64H0C0 483.3 28.7 512 64 512z"/>
               </svg>
             </div>
-            <h3 className="text-xl md:text-lg font-semibold mb-2 mt-4 text-foreground">AI Auto-completion</h3>
+            <h3 className="text-xl md:text-lg font-semibold mb-2 mt-4 text-foreground">Monthly Subscription</h3>
             <p className="text-[18px] md:text-[14px] font-light dark:text-gray-200">Ensure data privacy with secure access controls.</p>
           </div>
           
