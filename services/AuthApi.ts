@@ -90,3 +90,22 @@ export const renameUserFunc=async(userId:string|null,newName:string)=>{
     }
 }
 
+export const userData=async(userId:string)=>{
+    try {
+        const response =  await axios.get(`${baseUrl}/user/${userId}`)
+        return response
+        
+    } catch (error:any) {
+        throw error
+    }
+}
+
+export const profileUpload=async(formData:FormData,userId:string|null)=>{
+    try {
+        const response = await API.post('/profile-upload' ,{formData,userId}, { withCredentials: true })
+        return response
+        
+    } catch (error) {
+        throw error
+    }
+}

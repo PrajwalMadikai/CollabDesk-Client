@@ -13,3 +13,14 @@ export const TokenGenerate=async(workspaceId:string,userName:string|null,userId:
           throw error
       }
 }
+
+// export const videoCallStatus=async(workspaceId:string)=>{
+//   try {
+     
+//     const response = await axios.get(`/api/livekit/room-status?room=${workspaceId}`)
+//     return response
+    
+//   } catch (error) {
+//     throw error
+//   }
+// }

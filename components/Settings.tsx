@@ -137,18 +137,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                       .map((user) => (
                         <div
                           key={user.id}
-                          className="flex items-center justify-between bg-gray-800 border border-gray-700 p-2 rounded-[5px] mb-2"
+                          className="flex items-center justify-between p-2 rounded-[5px] mb-2   transition-colors"
                         >
-                          <div>
-                            <p className="text-white text-xs">{user.fullname}</p>
-                            <p className="text-gray-400 text-xs">{user.email}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center text-white  w-8 h-8 rounded-full border border-gray-500 text-xs font-semibold bg-gray-600">
+                              {user.email.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="text-white text-xs">{user.email}</p>
+                            </div>
                           </div>
+
+                          {/* Add Button */}
                           <button
-                             className="w-[70px] h-7 rounded text-sm font-normal bg-primary text-primary-foreground"
+                            className="w-[70px] h-7 rounded text-sm font-medium bg-gray-700 text-white hover:bg-blue-700 transition-colors"
                             onClick={() => handleAddCollaborator(user.email)}
-                            aria-label={`Add ${user.fullname} as collaborator`}
+                            aria-label={`Add ${user.email} as collaborator`}
+                            disabled={addingUser === user.email}
                           >
-                         {addingUser === user.email ? "Adding..." : "Add"}
+                            {addingUser === user.email ? "Adding..." : "Add"}
                           </button>
                         </div>
                       ))

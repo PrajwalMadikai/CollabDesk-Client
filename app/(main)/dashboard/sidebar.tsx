@@ -2,6 +2,7 @@ import SettingsModal from "@/components/Settings";
 import VideoCallButton from "@/components/Video Call/VideoCallButton";
 import { useFile } from "@/hooks/useFile";
 import { useFolder } from "@/hooks/useFolder";
+import { useProfile } from "@/hooks/useProfile";
 import { useWorkspace, Workspace } from "@/hooks/useWorkspaceHook";
 import { setUser } from "@/store/slice/userSlice";
 import { RootState } from "@/store/store";
@@ -20,10 +21,11 @@ const Sidebar: React.FC = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const user = useSelector((state: RootState) => state.user);
 
 console.log('user detail sidebar:',user);
-  if(!user.email)
+  if(!user.email||!user.id)
   {
     return
   }
@@ -81,6 +83,14 @@ console.log('user detail sidebar:',user);
     startEditingFile,
   } = useFile(selectedWorkspace, fetchFolders,updateFileNameInFolder,fetchTrashItems);
 
+  const {
+    fetchUserDetils,
+    userProfile,
+    handleImageUpload
+  }=useProfile()
+
+  
+
   useEffect(() => {
     const initializeWorkspace = async () => {
       if (isInitialLoad) {
@@ -105,13 +115,13 @@ console.log('user detail sidebar:',user);
     };
 
     initializeWorkspace();
+  
   }, [isInitialLoad, params?.workspaceId]);
 
   useEffect(()=>{
     const userData=localStorage.getItem('user')
     if(userData){
     const user=JSON.parse(userData)
-    console.log('json:',user);
     
     dispatch(setUser({
       id: user.id,
@@ -122,6 +132,9 @@ console.log('user detail sidebar:',user);
       workSpaces: user.workSpaces,
       avatar:user.googleId
     }))
+  }
+  if(user.id){
+  fetchUserDetils(user.id)
   }
   },[])
 
@@ -414,34 +427,39 @@ console.log('user detail sidebar:',user);
 
       {isOpen && (
         <div className="p-4 border-t border-gray-800 mt-auto flex items-center gap-2">
-         
-            <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center">
-              <span className="text-[12px] font-medium text-white">
-                {user?.email.substring(0, 2).toUpperCase()}
-              </span>
-            </div>
-          <div className="flex-1">
-            <p className="text-[12px] font-medium text-gray-300">{user.email}</p>
+        <button
+          onClick={() => setIsProfileModalOpen(true)}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center">
+            <span className="text-[12px] font-medium text-white">
+              {user?.email.substring(0, 2).toUpperCase()}
+            </span>
           </div>
-          <Link href="/">
-            <button className="text-gray-400 hover:text-red-500 transition">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-            </button>
-          </Link>
-        </div>
+          <div className="flex-1">
+            <p className="text-[12px] font-medium text-gray-300">Profile</p>
+          </div>
+        </button>
+        <span className="text-gray-600">|</span>
+        <Link href="/">
+          <button className="text-gray-400 hover:text-red-500 transition">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+          </button>
+        </Link>
+      </div>
       )}
 
       {isSettingsModalOpen && (
@@ -452,6 +470,124 @@ console.log('user detail sidebar:',user);
           workspaceName={selectedWorkspace?.workspaceName || ""}
           onWorkspaceUpdate={handleWorkspaceUpdate}
         />
+      )}
+      {isProfileModalOpen && (
+        <div
+        className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+        onClick={() => setIsProfileModalOpen(false)}  
+      >
+        <div
+          className="bg-gray-900 p-6 rounded-[4px] h-[550px] w-[650px] relative flex flex-col justify-between overflow-hidden"
+          onClick={(e) => e.stopPropagation()}  
+        >
+          <button
+            className="absolute top-2 right-2 text-gray-400 hover:text-white transition"
+            onClick={() => setIsProfileModalOpen(false)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          {/* Profile Image Upload */}
+          <div className="flex flex-col items-center justify-center flex-grow">
+            <label
+              htmlFor="profile-image"
+              className="w-20 h-20 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-700 transition overflow-hidden"
+            >
+              {userProfile?.avatar ? (
+                <img
+                  src={userProfile.avatar}  
+                  alt="User Avatar"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              )}
+            </label>
+            <input
+              id="profile-image"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleImageUpload(e,user.id)}
+            />
+            <p className="text-sm text-gray-400 mt-2">Upload Profile Image</p>
+          </div>
+
+          {/* Email Field */}
+          <div className="mb-2">
+            <label className="block text-xs text-gray-400">Email</label>
+            <input
+              type="text"
+              value={userProfile?.email }
+              readOnly
+              className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex gap-4 mt-4">
+            <div className="flex-1">
+              <label className="block text-xs text-gray-400">Payment Plan</label>
+              <input
+                type="text"
+                value={userProfile?.paymentPlan }  
+                readOnly
+                className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
+              />
+            </div>
+            {userProfile?.paymentPlan !== 'Non' && (
+            <div className="flex-1">
+              <label className="block text-xs text-gray-400">Expiration Date</label>
+              <input
+                type="password"
+                value={userProfile?.expireDate ? new Date(userProfile.expireDate).toLocaleDateString() : "N/A"}
+                readOnly
+                className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
+              />
+            </div>
+          )}
+          </div>
+
+          {/* Change Password Section */}
+          <div className="flex-grow mt-7">
+            <label className="block text-xs text-gray-400">Change Password</label>
+            <input
+              type="password"
+              placeholder="New Password"
+              value={userProfile?.password}
+              className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
+            />
+            <button className="mt-6 w-full bg-green-600 text-white text-sm py-2 rounded hover:bg-green-700 transition">
+              Save Password
+            </button>
+          </div>
+        </div>
+      </div>
       )}
     </div>
   );

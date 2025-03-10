@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   if (!apiKey || !apiSecret || !wsUrl) {
     return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
   }
+  
 
   const at = new AccessToken(apiKey, apiSecret, { identity: username });
   at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true });

@@ -73,17 +73,7 @@ export function useCreateWorkspace() {
       const responseStatus = getResponseStatus(workspaceResponse.status);
 
       if (responseStatus === ResponseStatus.CREATED) {
-        toast.success("Workspace created successfully!", {
-          duration: 2000,
-          position: 'top-right',
-          style: {
-            background: '#166534',  
-            color: '#d1fae5',    
-            borderRadius: '8px',    
-            padding: '12px',        
-            fontSize: '14px',      
-          },
-        });
+        
         
         dispatch(addWorkspace({workspaceId:workspaceResponse.data.workspace.id,workspaceName:workspaceResponse.data.workspace.name}));
         const workspaceId = workspaceResponse.data.workspace.id;
@@ -105,11 +95,20 @@ export function useCreateWorkspace() {
         if (!roomResponse.ok) {
           throw new Error("Failed to create room");
         }
+        setLoading(false);
+        toast.success("Workspace created successfully!", {
+          duration: 2000,
+          position: 'top-right',
+          style: {
+            background: '#166534',  
+            color: '#d1fae5',    
+            borderRadius: '8px',    
+            padding: '12px',        
+            fontSize: '14px',      
+          },
+        });
 
         router.push(`/dashboard/${workspaceId}`);
-      }else if(responseStatus==ResponseStatus.FORBIDDEN)
-      {
-
       }
     } catch (error: any) {
       console.error("Workspace creation error:", error);
