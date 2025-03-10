@@ -20,7 +20,7 @@ export const sendVerificationEmailAPI=async(email:string)=>{
         return response
         
     } catch (error:any) {
-        return error.response.data
+       throw error
     }
 }
 

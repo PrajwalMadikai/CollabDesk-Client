@@ -65,8 +65,19 @@ export function useSendVerificationEmail() {
           });
         }
       } catch (error: any) {
-        console.error('Error sending email:', error.response?.data || error.message);
-        toast.error('Failed to send email');
+        console.log('rtt:',error);
+        
+        if(error.response.status==404&&error.response.data.message=='user email is not exists!')
+        {
+          toast.error(error.response.data.message,{
+            position:'top-right'
+          });
+        }else{
+        console.error('Error sending email:', error.response?.data );
+        toast.error('Failed to send email',{
+          position:'top-right'
+        });
+        }
       } finally {
         setLoading(false);
       }
