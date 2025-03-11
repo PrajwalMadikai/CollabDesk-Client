@@ -129,12 +129,12 @@ export function useFolder() {
     return null;
   };
 
-  const updateFolderName = async (folderId: string) => {
+  const updateFolderName = async (folderId: string,email:string|null) => {
     if (editingFolderName.trim()) {
       try {
         setLoading(true);
        
-        const response = await folderUpdateFunc(folderId,editingFolderName)
+        const response = await folderUpdateFunc(folderId,editingFolderName,email)
         const responseStatus = getResponseStatus(response.status);
 
         if (responseStatus === ResponseStatus.SUCCESS) {
@@ -162,13 +162,13 @@ export function useFolder() {
     return false;
   };
 
-  const moveToTrash = async (folderId: string, workspaceId: string | undefined) => {
-    if (!workspaceId) return false;
+  const moveToTrash = async (folderId: string, workspaceId: string | undefined,email:string|null) => {
+    if (!workspaceId||!email) return false;
     
     try {
       setLoading(true);
      
-      const response = await folderMovetoTrash(folderId,workspaceId)
+      const response = await folderMovetoTrash(folderId,workspaceId,email)
       
       const responseStatus = getResponseStatus(response.status);
 
@@ -202,10 +202,10 @@ export function useFolder() {
     return false;
   };
 
-  const restoreFolder = async (folderId: string, workspaceId: string | undefined) => {
+  const restoreFolder = async (folderId: string, workspaceId: string | undefined,email:string|null) => {
     try {
       setLoading(true);
-      const response = await folderRestoreFunc(folderId)
+      const response = await folderRestoreFunc(folderId,email)
 
       const responseStatus = getResponseStatus(response.status);
 

@@ -102,9 +102,26 @@ export const userData=async(userId:string)=>{
 
 export const profileUpload=async(formData:FormData,userId:string|null)=>{
     try {
-        const response = await API.post('/profile-upload' ,{formData,userId}, { withCredentials: true })
+        if (userId) {
+            formData.append('userId', userId);
+          }
+
+        const response = await API.post('/profile-upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            withCredentials: true,
+          });
+
         return response
         
+    } catch (error) {
+        throw error
+    }
+}
+export const ChangePassword=async(userId:string|null,password:string)=>
+{
+    try {
+        const response = await API.put('/change-password',{userId,password},{withCredentials:true})
+        return response
     } catch (error) {
         throw error
     }

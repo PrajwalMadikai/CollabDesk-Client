@@ -32,10 +32,10 @@ export const folderCreateFunc=async(workspaceId:string,userId:string)=>{
     }
 }
 
-export const folderUpdateFunc=async(folderId:string,editingFolderName:string)=>{
+export const folderUpdateFunc=async(folderId:string,editingFolderName:string,email:string|null)=>{
     try {
         const response= await API.put(`/folder/update/${folderId}`, {
-            name: editingFolderName
+            name: editingFolderName,email
           }, { withCredentials: true });
 
         return response
@@ -45,11 +45,11 @@ export const folderUpdateFunc=async(folderId:string,editingFolderName:string)=>{
     }
 }
 
-export const folderMovetoTrash=async(folderId:string, workspaceId : string)=>{
+export const folderMovetoTrash=async(folderId:string, workspaceId : string,email:string)=>{
     try {
         const response = await API.post(
             '/folder/move-to-trash',
-            { folderId, workspaceId },
+            { folderId, workspaceId,email },
             { withCredentials: true }
           );
 
@@ -60,11 +60,11 @@ export const folderMovetoTrash=async(folderId:string, workspaceId : string)=>{
     }
 }
 
-export const folderRestoreFunc=async(folderId:string)=>{
+export const folderRestoreFunc=async(folderId:string,email:string|null)=>{
     try {
         const response =  await API.post(
             '/folder/restore',
-            { folderId },
+            { folderId ,email},
             { withCredentials: true })
 
         return response

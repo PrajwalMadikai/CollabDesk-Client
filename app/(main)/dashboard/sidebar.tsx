@@ -22,6 +22,7 @@ const Sidebar: React.FC = () => {
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+ 
   const user = useSelector((state: RootState) => state.user);
 
 console.log('user detail sidebar:',user);
@@ -86,7 +87,11 @@ console.log('user detail sidebar:',user);
   const {
     fetchUserDetils,
     userProfile,
-    handleImageUpload
+    handleImageUpload,
+    handleChange,
+    handleSubmit,
+    error,
+    newPassword
   }=useProfile()
 
   
@@ -170,7 +175,7 @@ console.log('user detail sidebar:',user);
       router.push(`/dashboard/whiteboard/${selectedWorkspace.workspaceId}`);
     }
   };
-
+  
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
@@ -270,8 +275,8 @@ console.log('user detail sidebar:',user);
                         className="bg-transparent w-[100px]  border-none focus:outline-none text-sm text-gray-300"
                         value={editingFolderName}
                         onChange={(e) => setEditingFolderName(e.target.value)}
-                        onBlur={() => updateFolderName(folder.id)}
-                        onKeyPress={(e) => e.key === 'Enter' && updateFolderName(folder.id)}
+                        onBlur={() => updateFolderName(folder.id,user.email)}
+                        onKeyPress={(e) => e.key === 'Enter' && updateFolderName(folder.id,user.email)}
                         autoFocus
                       />
                     ) : (
@@ -288,13 +293,13 @@ console.log('user detail sidebar:',user);
                       className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
                       onClick={(e) => {
                         e.stopPropagation();
-                        moveFolderToTrash(folder.id, selectedWorkspace?.workspaceId);
+                        moveFolderToTrash(folder.id, selectedWorkspace?.workspaceId,user.email);
                       }}
                     >
                       <Trash className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => createFile(folder.id)}
+                      onClick={() => createFile(folder.id,user.email)}
                       className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
                     >
                       <Plus className="h-4 w-4" />
@@ -318,8 +323,8 @@ console.log('user detail sidebar:',user);
                             className="bg-transparent border-none focus:outline-none text-sm text-gray-300 w-full"
                             value={editingFileName}
                             onChange={(e) => setEditingFileName(e.target.value)}
-                            onBlur={() => renameFile(file.fileId, folder.id)}
-                            onKeyPress={(e) => e.key === 'Enter' && renameFile(file.fileId, folder.id)}
+                            onBlur={() => renameFile(file.fileId, folder.id,user.email)}
+                            onKeyPress={(e) => e.key === 'Enter' && renameFile(file.fileId, folder.id,user.email)}
                             autoFocus
                           />
                         ) : (
@@ -337,7 +342,7 @@ console.log('user detail sidebar:',user);
                           className="ml-auto hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
                           onClick={(e) => {
                             e.stopPropagation();
-                            moveFileToTrash(file.fileId, folder.id, () => fetchFolders(selectedWorkspace?.workspaceId));
+                            moveFileToTrash(file.fileId, folder.id,user.email, () => fetchFolders(selectedWorkspace?.workspaceId));
                           }}
                         >
                           <Trash className="h-4 w-4" />
@@ -373,7 +378,7 @@ console.log('user detail sidebar:',user);
                           <span>{folder.name}</span>
                         </div>
                         <button
-                          onClick={() => restoreFolder(folder._id, selectedWorkspace?.workspaceId)}
+                          onClick={() => restoreFolder(folder._id, selectedWorkspace?.workspaceId,user.email)}
                           className="text-gray-400 hover:text-white transition duration-200"
                         >
                           <RefreshCcw className="h-4 w-4" />
@@ -393,7 +398,7 @@ console.log('user detail sidebar:',user);
                           <span>{file.name}</span>
                         </div>
                         <button
-                          onClick={() => restoreFile(file._id, () => fetchFolders(selectedWorkspace?.workspaceId))}
+                          onClick={() => restoreFile(file._id,user.email, () => fetchFolders(selectedWorkspace?.workspaceId))}
                           className="text-gray-400 hover:text-white transition duration-200"
                         >
                           <RefreshCcw className="h-4 w-4" />
@@ -426,40 +431,49 @@ console.log('user detail sidebar:',user);
       )}
 
       {isOpen && (
-        <div className="p-4 border-t border-gray-800 mt-auto flex items-center gap-2">
-        <button
-          onClick={() => setIsProfileModalOpen(true)}
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <div className="w-8 h-8 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center">
-            <span className="text-[12px] font-medium text-white">
-              {user?.email.substring(0, 2).toUpperCase()}
-            </span>
-          </div>
-          <div className="flex-1">
-            <p className="text-[12px] font-medium text-gray-300">Profile</p>
-          </div>
-        </button>
-        <span className="text-gray-600">|</span>
-        <Link href="/">
-          <button className="text-gray-400 hover:text-red-500 transition">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
+        <div className="p-4 border-t border-gray-800 mt-auto flex justify-center items-center gap-[35px]">
+          {/* Profile Section */}
+          <button
+            onClick={() => setIsProfileModalOpen(true)}
+            className="flex items-center gap-2 cursor-pointer  "
+          >
+            {/* Profile Image */}
+            <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden flex-shrink-0">
+              {userProfile?.avatar && (
+                <img
+                  src={userProfile.avatar}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+            {/* Profile Text */}
+            <div className="flex-1">
+              <p className="text-[14px] font-semibold text-white">Profile</p>
+            </div>
           </button>
-        </Link>
-      </div>
+
+          <span className="text-white">|</span>
+
+          <Link href="/">
+            <button className="text-white hover:text-white transition">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </button>
+          </Link>
+        </div>
       )}
 
       {isSettingsModalOpen && (
@@ -477,7 +491,7 @@ console.log('user detail sidebar:',user);
         onClick={() => setIsProfileModalOpen(false)}  
       >
         <div
-          className="bg-gray-900 p-6 rounded-[4px] h-[550px] w-[650px] relative flex flex-col justify-between overflow-hidden"
+          className="bg-gray-950 p-6 rounded-[4px] h-[550px] w-[650px] relative flex flex-col justify-between overflow-hidden"
           onClick={(e) => e.stopPropagation()}  
         >
           <button
@@ -504,38 +518,49 @@ console.log('user detail sidebar:',user);
           <div className="flex flex-col items-center justify-center flex-grow">
             <label
               htmlFor="profile-image"
-              className="w-20 h-20 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-700 transition overflow-hidden"
+              className="w-20 h-20 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-700 transition overflow-hidden relative"
             >
               {userProfile?.avatar ? (
                 <img
-                  src={userProfile.avatar}  
+                  src={userProfile.avatar}
                   alt="User Avatar"
                   className="w-full h-full object-cover rounded-full"
                 />
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
+                <div className="relative">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
               )}
             </label>
+
+            {/* Hidden Input for File Upload */}
             <input
               id="profile-image"
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => handleImageUpload(e,user.id)}
+              onChange={(e) => handleImageUpload(e, user.id)}
             />
+
             <p className="text-sm text-gray-400 mt-2">Upload Profile Image</p>
           </div>
 
@@ -555,7 +580,13 @@ console.log('user detail sidebar:',user);
               <label className="block text-xs text-gray-400">Payment Plan</label>
               <input
                 type="text"
-                value={userProfile?.paymentPlan }  
+                value={
+                  userProfile?.paymentPlan === 'Non'
+                    ? 'No Plan Purchased'
+                    : userProfile?.paymentPlan
+                    ? `${userProfile.paymentPlan[0].toLocaleUpperCase()}${userProfile.paymentPlan.slice(1)} Subscription`
+                    : 'No Plan Selected'
+                }
                 readOnly
                 className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
               />
@@ -564,7 +595,7 @@ console.log('user detail sidebar:',user);
             <div className="flex-1">
               <label className="block text-xs text-gray-400">Expiration Date</label>
               <input
-                type="password"
+                type="text"
                 value={userProfile?.expireDate ? new Date(userProfile.expireDate).toLocaleDateString() : "N/A"}
                 readOnly
                 className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
@@ -573,19 +604,28 @@ console.log('user detail sidebar:',user);
           )}
           </div>
 
-          {/* Change Password Section */}
-          <div className="flex-grow mt-7">
-            <label className="block text-xs text-gray-400">Change Password</label>
+          <form onSubmit={()=>handleSubmit(user.id)} className="flex-grow mt-7">
+            <label className="block text-xs text-gray-400">New Password</label>
             <input
               type="password"
               placeholder="New Password"
-              value={userProfile?.password}
-              className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
+              value={newPassword}
+              onChange={handleChange}
+              className={`w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none ${
+                error ? 'border border-red-500' : ''
+              }`}
             />
-            <button className="mt-6 w-full bg-green-600 text-white text-sm py-2 rounded hover:bg-green-700 transition">
+            {error && (
+              <p className="text-red-500 text-xs mt-1">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              className="mt-6 w-full bg-green-600 text-white text-sm py-2 rounded hover:bg-green-700 transition"
+            >
               Save Password
             </button>
-          </div>
+          </form>
         </div>
       </div>
       )}

@@ -21,7 +21,7 @@ export function useFile(
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
 
-  const createFile = async (folderId: string) => {
+  const createFile = async (folderId: string,email:string|null) => {
     if (!folderId) {
       console.error("Missing folderId");
       return null;
@@ -31,7 +31,7 @@ export function useFile(
       setLoading(true);
       const token = localStorage.getItem("accessToken");
 
-      const response = await fileCreateFunc(folderId);
+      const response = await fileCreateFunc(folderId,email);
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.CREATED) {
@@ -146,12 +146,12 @@ export function useFile(
     return false;
   };
 
-  const renameFile = async (fileId: string, folderId: string) => {
+  const renameFile = async (fileId: string, folderId: string,email:string|null) => {
     if (editingFileName.trim()) {
       try {
         setLoading(true);
         
-        const response = await renameFileFunc(fileId,editingFileName,folderId)
+        const response = await renameFileFunc(fileId,editingFileName,folderId,email)
 
         const responseStatus = getResponseStatus(response.status);
   
@@ -182,11 +182,11 @@ export function useFile(
     return false;
   };
 
-  const moveToTrash = async (fileId: string, folderId: string, updateFolderFn?: () => Promise<void>) => {
+  const moveToTrash = async (fileId: string, folderId: string,email:string|null, updateFolderFn?: () => Promise<void>) => {
     try {
       setLoading(true);
        
-      const response = await moveFileToTrashFunc(fileId,folderId)
+      const response = await moveFileToTrashFunc(fileId,folderId,email)
 
       const responseStatus = getResponseStatus(response.status);
 
@@ -224,10 +224,10 @@ export function useFile(
     return false;
   };
 
-  const restoreFile = async (fileId: string, updateFnCallback?: () => Promise<void>) => {
+  const restoreFile = async (fileId: string,email:string|null, updateFnCallback?: () => Promise<void>) => {
     try {
       setLoading(true);
-      const response = await fileRestoreFunc(fileId)
+      const response = await fileRestoreFunc(fileId,email)
       
       const responseStatus = getResponseStatus(response.status);
 

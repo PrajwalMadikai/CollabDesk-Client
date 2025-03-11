@@ -67,10 +67,14 @@ const userSlice = createSlice({
         (ws) => ws.workspaceId !== workspaceId
       );
     },
+    updateAvatar(state,action:PayloadAction<string>)
+    {
+      state.avatar=action.payload
+    }
     
   },
 });
 
-export const { setUser, clearUser,addWorkspace,removeWorkspace,setPlanType ,updateName } = userSlice.actions;
+export const { setUser, clearUser,addWorkspace,removeWorkspace,setPlanType ,updateName,updateAvatar} = userSlice.actions;
 
 export default userSlice.reducer;

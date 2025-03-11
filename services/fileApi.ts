@@ -2,10 +2,10 @@ import { API } from "@/app/api/handle-token-expire";
 import { baseUrl } from "@/app/api/urlconfig";
 import axios from "axios";
 
-export const fileCreateFunc=async(folderId:string)=>{
+export const fileCreateFunc=async(folderId:string,email:string|null)=>{
     try {
         const response = await API.post("/file/create", { 
-            folderId 
+            folderId,email
           }, { withCredentials: true });
 
         return response
@@ -15,11 +15,12 @@ export const fileCreateFunc=async(folderId:string)=>{
     }
 }
 
-export const renameFileFunc=async(fileId:string,editingFileName:string,folderId:string)=>{
+export const renameFileFunc=async(fileId:string,editingFileName:string,folderId:string,email:string|null)=>{
     try {
         const response = await API.put(`/file/update/${fileId}`, {
             name: editingFileName,
-            folderId
+            folderId,
+            email
           }, { withCredentials: true });
         return response
         
@@ -28,11 +29,11 @@ export const renameFileFunc=async(fileId:string,editingFileName:string,folderId:
     }
 }
 
-export const moveFileToTrashFunc=async(fileId:string,folderId :string)=>{
+export const moveFileToTrashFunc=async(fileId:string,folderId :string,email:string|null)=>{
     try {
         const response = await API.post(
             `/file/move-to-trash`,
-            { fileId, folderId },
+            { fileId, folderId,email},
             { withCredentials: true }
           );
         return response  
@@ -42,11 +43,11 @@ export const moveFileToTrashFunc=async(fileId:string,folderId :string)=>{
     }
 }
 
-export const fileRestoreFunc=async(fileId:string)=>{
+export const fileRestoreFunc=async(fileId:string,email:string|null)=>{
     try {
         const response = await API.post(
             '/file/restore',
-            { fileId },
+            { fileId,email },
             { withCredentials: true }
           );
         return response  
