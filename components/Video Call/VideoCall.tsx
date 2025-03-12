@@ -16,7 +16,7 @@ interface VideoProps {
 
 const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
   const router = useRouter();
-  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL
+  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
 
   const {
     joinCall,
@@ -76,10 +76,10 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64 w-full">
-        <div className="flex flex-col items-center">
-          <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-600">Connecting to video call...</p>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center p-8 bg-gray-100 rounded-lg shadow">
+          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg">Connecting to video call...</p>
         </div>
       </div>
     );
@@ -87,11 +87,11 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
 
   if (error) {
     return (
-      <div className="p-4 bg-red-100 text-red-800 rounded mb-4 shadow-sm">
-        <div className="flex items-center justify-between">
-          <p>{error}</p>
-          <button
-            className="ml-2 px-3 py-1 bg-red-200 text-red-800 rounded hover:bg-red-300 transition-colors"
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center p-8 bg-red-50 rounded-lg shadow max-w-md">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button 
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             onClick={() => setError(null)}
           >
             Dismiss
@@ -100,15 +100,13 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
       </div>
     );
   }
- 
 
   return (
-    <div className="video-conferencing-container h-[calc(100vh-80px)] w-full flex flex-col overflow-hidden">
+    <div className="h-full">
       {token && (
         <LiveKitRoom
           token={token}
           serverUrl={serverUrl}
-          connectOptions={{ autoSubscribe: true }}
           onDisconnected={leaveCall}
           onError={(error) => {
             console.error('LiveKit connection error:', error);
@@ -118,8 +116,8 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
           className="h-full"
           data-lk-theme="default"
         >
-          <div className="flex flex-col h-full">
-            <div className="flex-grow overflow-auto">
+          <div className="h-full flex flex-col">
+            <div className="flex-1 overflow-auto">
               <VideoConference />
             </div>
           </div>

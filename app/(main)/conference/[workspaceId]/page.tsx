@@ -10,14 +10,16 @@ function Page() {
   const user = useSelector((state: RootState) => state.user);
 
   return (
-    <div className="flex flex-col h-screen bg-black p-4">
-      <h1 className="text-2xl font-semibold mb-4 text-white">Meeting Room</h1>
-      <div className="flex-grow w-full overflow-hidden rounded-lg border border-gray-800">
-        <VideoCall
-          workspaceId={workspaceId}
-          userId={user.id}
-          userName={user.fullname}
-        />
+    <div className="w-full h-full">
+      <div className="h-full flex flex-col">
+        <h1 className="text-xl font-bold p-4">Meeting Room</h1>
+        <div className="flex-1">
+          <VideoCall 
+            workspaceId={workspaceId} 
+            userId={user?.id || null} 
+            userName={user?.fullname || null} 
+          />
+        </div>
       </div>
     </div>
   );
