@@ -53,9 +53,6 @@ export const VideoRoomHook=({workspaceId,userName,userId}:hookProps)=>{
           const apiKey = process.env.NEXT_PUBLIC_LIVEKIT_API_KEY;
           const apiSecret = process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET;
           const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
-          console.log('api',apiKey);
-          console.log('secret',apiSecret);
-          console.log('kit',livekitUrl);
           
           
           if (!apiKey || !apiSecret || !livekitUrl) {

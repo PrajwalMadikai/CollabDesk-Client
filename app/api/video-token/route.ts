@@ -11,9 +11,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Missing "username" query parameter' }, { status: 400 });
   }
 
-  const apiKey = process.env.LIVEKIT_API_KEY;
-  const apiSecret = process.env.LIVEKIT_API_SECRET;
-  const wsUrl = process.env.LIVEKIT_URL;
+  const apiKey = process.env.NEXT_PUBLIC_LIVEKIT_API_KEY
+  const apiSecret = process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET;
+  const wsUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
 
   if (!apiKey || !apiSecret || !wsUrl) {
     return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
