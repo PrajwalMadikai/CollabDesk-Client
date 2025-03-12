@@ -2,7 +2,7 @@
 
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
-import { deleteWorkspaceFunc, workspaceCreateFunc, workspaceFetch } from "@/services/workspaceApi";
+import { deleteWorkspaceFunc, userActivityLogs, workspaceCreateFunc, workspaceFetch } from "@/services/workspaceApi";
 import { addWorkspace, removeWorkspace } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { workspaceSchema } from "@/validations/workspace";
@@ -16,11 +16,17 @@ import { useDispatch, useSelector } from "react-redux";
 interface CreateWorkspaceFormData {
   workspaceName: string;
 }
+interface useractivity{
+  email:string,
+  action:string,
+  time:Date
+}
 interface UseWorkspaceReturn {
   workspaces: Workspace[];
   selectedWorkspace: Workspace | null;
   loading: boolean;
   newWorkspaceName: string;
+  userLogs:useractivity[];
   setNewWorkspaceName: React.Dispatch<React.SetStateAction<string>>;
   fetchWorkspaces: () => Promise<Workspace[]>; 
   selectWorkspace: (workspace: Workspace) => void;
@@ -28,6 +34,7 @@ interface UseWorkspaceReturn {
   createWorkspace: () => Promise<void>;
   deleteWorkspace: (workspaceId: string) => Promise<void>;
   updateWorkspaceName: (updatedWorkspace: Workspace) => void;
+  userAction:(workspaceId:string)=>Promise<void>
 }
 
 export function useCreateWorkspace() {
@@ -96,6 +103,7 @@ export function useCreateWorkspace() {
           throw new Error("Failed to create room");
         }
         setLoading(false);
+        
         toast.success("Workspace created successfully!", {
           duration: 2000,
           position: 'top-right',
@@ -155,16 +163,20 @@ export interface Workspace {
   workspaceName: string;
 }
 
+
 export function useWorkspace() :UseWorkspaceReturn|null{
+
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(false);
   const [newWorkspaceName, setNewWorkspaceName] = useState<string>("");
+  const [userLogs,setuserLogs]=useState<useractivity[]>([])
   
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const userId = user.id;
+
   if(!userId)
   {
     console.log('no user id');
@@ -359,6 +371,25 @@ export function useWorkspace() :UseWorkspaceReturn|null{
     }
   };
 
+  const userAction=async(workspaceId:string)=>{
+
+    try {
+
+      const response =await userActivityLogs(workspaceId)
+      const responseStatus=getResponseStatus(response.status)
+
+      if(responseStatus==ResponseStatus.SUCCESS)
+      {
+        const newLogs: useractivity[] = response.data.data.activity;
+        setuserLogs(newLogs);
+      }
+      
+    } catch (error) {
+      console.log('error in user activity log');
+      
+    }
+  }
+
 const showLimitExceededToast = (resourceType: string,isMax:boolean) => {
     toast.custom((t) => (
       <div
@@ -434,6 +465,8 @@ const showLimitExceededToast = (resourceType: string,isMax:boolean) => {
     findAndSelectWorkspace,
     createWorkspace,
     deleteWorkspace,
-    updateWorkspaceName
+    updateWorkspaceName,
+    userAction,
+    userLogs
   };
 }

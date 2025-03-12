@@ -16,7 +16,7 @@ interface VideoProps {
 
 const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
   const router = useRouter();
-  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
+  const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL
 
   const {
     joinCall,

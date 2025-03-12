@@ -96,3 +96,18 @@ export const renameWorkspaceFunct=async(workspaceId:string,newName:string)=>{
         }
 }
 
+export const userActivityLogs=async(workspaceId:string)=>{
+    try {
+        
+        const response = await API.post(
+            "/workspace/user-logs",
+            { workspaceId },
+            { withCredentials: true }
+          );
+          
+          return response
+        
+        } catch (error:any) {
+            throw error
+        }
+}

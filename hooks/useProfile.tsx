@@ -26,7 +26,6 @@ export const useProfile=()=>{
       try {
         const response = await userData(userId)
         const responseStatus=getResponseStatus(response.status)
-        console.log('suer:',response.data.user);
         
         if(responseStatus==ResponseStatus.SUCCESS)
         {

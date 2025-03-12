@@ -25,7 +25,6 @@ const Sidebar: React.FC = () => {
  
   const user = useSelector((state: RootState) => state.user);
 
-console.log('user detail sidebar:',user);
   if(!user.email||!user.id)
   {
     return
