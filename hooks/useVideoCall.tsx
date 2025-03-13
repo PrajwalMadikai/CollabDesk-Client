@@ -1,5 +1,5 @@
-import { TokenGenerate } from "@/services/VideocallApi";
 import { useState } from "react";
+import { TokenGenerate } from "../services/VideocallApi";
 
 interface hookProps {
   workspaceId: string;

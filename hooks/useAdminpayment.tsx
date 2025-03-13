@@ -1,8 +1,8 @@
-import { ADMIN_API } from "@/app/api/handle-token-expire";
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ADMIN_API } from "../app/api/handle-token-expire";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
 
 export const useAdminPaymentPlans = () => {
   const [open, setOpen] = useState(false);

@@ -3,7 +3,7 @@
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 
-// Define presence for each user in the room
+//presence for each user in the room
 type Presence = {
   isTyping: boolean;
   userName?: string;
@@ -13,7 +13,7 @@ type Presence = {
   };
 };
 
-// Define storage structure
+// storage structure
 type Storage = {
   content: string;
   version: number;

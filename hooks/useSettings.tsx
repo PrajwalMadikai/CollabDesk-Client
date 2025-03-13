@@ -1,12 +1,12 @@
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { fetchAllusersFunc, renameUserFunc } from "@/services/AuthApi";
-import { collaboratorsAddFunct, fetchCollaboratorsFunc, removeCollaboratorsFunc, renameWorkspaceFunct } from "@/services/workspaceApi";
-import { updateName } from "@/store/slice/userSlice";
-import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { fetchAllusersFunc, renameUserFunc } from "../services/AuthApi";
+import { collaboratorsAddFunct, fetchCollaboratorsFunc, removeCollaboratorsFunc, renameWorkspaceFunct } from "../services/workspaceApi";
+import { updateName } from "../store/slice/userSlice";
+import { RootState } from "../store/store";
 interface User {
     id: string;
     fullname: string;

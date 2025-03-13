@@ -1,11 +1,11 @@
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { folderCreateFunc, folderFetchFunc, folderMovetoTrash, folderRestoreFunc, folderTrashFetchFun, folderUpdateFunc } from "@/services/folderApi";
-import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { folderCreateFunc, folderFetchFunc, folderMovetoTrash, folderRestoreFunc, folderTrashFetchFun, folderUpdateFunc } from "../services/folderApi";
+import { RootState } from "../store/store";
 
 interface Folder {
   id: string;

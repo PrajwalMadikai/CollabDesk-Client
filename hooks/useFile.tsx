@@ -1,11 +1,11 @@
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { fileCreateFunc, fileRestoreFunc, fileReviewFunc, makeDocPublish, moveFileToTrashFunc, renameFileFunc } from "@/services/fileApi";
-import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { fileCreateFunc, fileRestoreFunc, fileReviewFunc, makeDocPublish, moveFileToTrashFunc, renameFileFunc } from "../services/fileApi";
+import { RootState } from "../store/store";
 
 export function useFile(
     selectedWorkspace: { workspaceId: string } | null,

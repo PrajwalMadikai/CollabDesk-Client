@@ -13,7 +13,7 @@ export interface Presence {
 }
 
 interface CursorProps {
-    cursor: { x: number; y: number } | null;  
+    cursor?: { x: number; y: number } | null;  
     userInfo?: UserInfo;
   }
 const Cursor: React.FC<CursorProps> = ({ cursor, userInfo }) => (
@@ -71,8 +71,8 @@ export function LiveCursors() {
         return (
           <Cursor 
             key={user.connectionId} 
-            cursor={user.presence.cursor}
-            userInfo={user.info}
+            // cursor={user.presence.cursor}
+            // userInfo={user.info}
           />
         );
       })}

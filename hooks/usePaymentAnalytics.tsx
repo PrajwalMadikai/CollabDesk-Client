@@ -1,5 +1,5 @@
-import { ADMIN_API } from '@/app/api/handle-token-expire';
 import { useEffect, useState } from 'react';
+import { ADMIN_API } from '../app/api/handle-token-expire';
 
 interface Stats {
   totalRevenue: number;

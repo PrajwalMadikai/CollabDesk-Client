@@ -1,7 +1,7 @@
 "use client";
-import { setUser } from '@/store/slice/userSlice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { setUser } from '../store/slice/userSlice';
 
 export const useAuthInit = () => {
   const dispatch = useDispatch();

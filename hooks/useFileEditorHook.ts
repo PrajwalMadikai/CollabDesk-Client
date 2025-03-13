@@ -1,9 +1,9 @@
-import { ResponseStatus } from "@/enums/responseStatus";
-import { publishDocument } from "@/hooks/useFile";
-import getResponseStatus from "@/lib/responseStatus";
-import { FileData, imageUpload } from "@/services/fileApi";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { FileData, imageUpload } from "../services/fileApi";
+import { publishDocument } from "./useFile";
 
 interface FileData {
   id: string;

@@ -1,11 +1,11 @@
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { ChangePassword, profileUpload, userData } from "@/services/AuthApi";
-import { updateAvatar } from "@/store/slice/userSlice";
-import passwordChangeSchema from "@/validations/passwordChange";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { ChangePassword, profileUpload, userData } from "../services/AuthApi";
+import { updateAvatar } from "../store/slice/userSlice";
+import passwordChangeSchema from "../validations/passwordChange";
 
 interface userData1{
     email:string,

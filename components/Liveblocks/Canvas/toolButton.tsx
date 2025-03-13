@@ -1,8 +1,7 @@
 "use client";
 
 import { LucideIcon } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { Button } from "../../ui/button";
 import { TooltipComponent } from "../global/tooltip";
 
 interface ToolButtonProps {
@@ -26,7 +25,6 @@ export const ToolButton = ({
         disabled={isDisabled}
         onClick={onClick}
         size="icon"
-        variant={isActive ? "boardActive" : "board"}
       >
         <Icon />
       </Button>

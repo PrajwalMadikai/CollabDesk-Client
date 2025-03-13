@@ -2,12 +2,11 @@
 
 import { BringToFront, SendToBack, Trash2 } from "lucide-react";
 import { memo } from "react";
-
-import { Camera, Color } from "@/Types/canvas";
-import { Button } from "@/components/ui/button";
-import { useDeleteLayers } from "@/hooks/useDeleteLayers";
-import { useSelectionBounds } from "@/hooks/useSelectionBonds";
-import { useMutation, useSelf } from "@/liveblocks.config";
+import { useDeleteLayers } from "../../../hooks/useDeleteLayers";
+import { useSelectionBounds } from "../../../hooks/useSelectionBonds";
+import { useMutation, useSelf } from "../../../liveblocks.config";
+import { Camera, Color } from "../../../Types/canvas";
+import { Button } from "../../ui/button";
 import { TooltipComponent as Hint } from "../global/tooltip";
 
 import { ColorPicker } from "./color-picker";
@@ -100,19 +99,19 @@ export const SelectionTools = memo(
         <ColorPicker onChange={setFill} />
         <div className="flex flex-col gap-y-0.5">
           <Hint message="Bring to front">
-            <Button onClick={moveToFront} variant="board" size="icon">
+            <Button onClick={moveToFront}  size="icon">
               <BringToFront />
             </Button>
           </Hint>
           <Hint message="Send to back" side="bottom">
-            <Button onClick={moveToBack} variant="board" size="icon">
+            <Button onClick={moveToBack} size="icon">
               <SendToBack />
             </Button>
           </Hint>
         </div>
         <div className="flex items-center pl-2 ml-2 border-l border-neutral-200">
           <Hint message="Delete">
-            <Button variant="board" size="icon" 
+            <Button  size="icon" 
             onClick={deleteLayers}
             >
               <Trash2 />

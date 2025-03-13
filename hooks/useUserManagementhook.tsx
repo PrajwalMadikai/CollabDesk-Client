@@ -1,10 +1,10 @@
-import { ADMIN_API } from "@/app/api/handle-token-expire";
-import { baseUrl } from '@/app/api/urlconfig';
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ADMIN_API } from "../app/api/handle-token-expire";
+import { baseUrl } from '../app/api/urlconfig';
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
 
 export const useUsersManagement = () => {
   const [users, setUsers] = useState<any[]>([]);
