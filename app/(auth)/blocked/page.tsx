@@ -1,5 +1,4 @@
 "use client";
-import logo from '@/public/collabdesk white logo.png';
 import Image from 'next/image';
 
 import { useRouter } from "next/navigation";
@@ -12,7 +11,7 @@ const Blocked = () => {
       <div className="flex flex-col md:flex-row items-center gap-8 max-w-5xl w-full">
         <div className="flex-1 flex justify-center">
           <Image
-          src={logo}  
+          src="./collabdesk white logo.png"
           alt="Blocked" 
           width={500}  
           height={200} 
