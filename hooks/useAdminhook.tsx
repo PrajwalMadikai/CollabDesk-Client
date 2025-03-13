@@ -1,12 +1,12 @@
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { adminLogoutFunc } from "@/services/adminApi";
-import { clearAdmin, setAdmin } from "@/store/slice/adminSlice";
-import { AppDispatch, RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { adminLogoutFunc } from "../services/adminApi";
+import { clearAdmin, setAdmin } from "../store/slice/adminSlice";
+import { AppDispatch, RootState } from "../store/store";
 
 export const useAdminSidebar = () => {
   const dispatch = useDispatch<AppDispatch>();

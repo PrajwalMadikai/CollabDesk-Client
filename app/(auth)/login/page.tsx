@@ -1,10 +1,10 @@
 "use client";
 
-import { useEmailLogin, useGithubLogin, useGoogleLogin } from "@/hooks/useLoginHook";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
 import Image from "next/image";
 import Link from "next/link";
+import { useEmailLogin, useGithubLogin, useGoogleLogin } from "../../../hooks/useLoginHook";
 
 export default function Home() {
 

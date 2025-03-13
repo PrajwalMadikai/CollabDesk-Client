@@ -1,9 +1,9 @@
 'use client';
-import { useResetPasswordHook } from '@/hooks/useLoginHook';
-import passwordSchema from '@/validations/password';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, CircularProgress, TextField } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import { useResetPasswordHook } from '../../../hooks/useLoginHook';
+import passwordSchema from '../../../validations/password';
 
 interface PasswordFormData {
   newPassword: string;

@@ -1,15 +1,15 @@
 "use client";
-import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeRoom";
-import { CollaborativeEditor } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-import ThemeToggle from "@/components/toggleTheme";
-import { useFileEditor } from "@/hooks/useFileEditorHook";
 import { Button, Card, CardContent } from "@mui/material";
 import { Copy, Image, Upload, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import ReactCrop, { PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import { CollaborativeRoom } from "../../../../../components/Liveblocks/Editor/CollaborativeRoom";
+import { CollaborativeEditor } from "../../../../../components/Liveblocks/Editor/CollaborativeTextEditor";
+import { LoadingSpinner } from "../../../../../components/LoadingSpinner";
+import ThemeToggle from "../../../../../components/toggleTheme";
+import { useFileEditor } from "../../../../../hooks/useFileEditorHook";
 
 export default function FileEditor() {
   const { fileId } = useParams() as { workspaceId: string; fileId: string };

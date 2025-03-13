@@ -1,6 +1,6 @@
-import { API } from "@/app/api/handle-token-expire";
-import { baseUrl } from "@/app/api/urlconfig";
 import axios from "axios";
+import { API } from "../app/api/handle-token-expire";
+import { baseUrl } from "../app/api/urlconfig";
 
 export const fileCreateFunc=async(folderId:string,email:string|null)=>{
     try {

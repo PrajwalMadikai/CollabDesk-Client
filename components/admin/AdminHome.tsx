@@ -1,4 +1,3 @@
-import { usePaymentAnalytics } from '@/hooks/usePaymentAnalytics';
 import { Calendar, CircleDollarSign, TrendingUp, Users } from 'lucide-react';
 import {
   Bar, BarChart, CartesianGrid,
@@ -8,6 +7,7 @@ import {
   PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis
 } from 'recharts';
+import { usePaymentAnalytics } from '../../hooks/usePaymentAnalytics';
 import { LoadingSpinner } from '../LoadingSpinner';
  
 

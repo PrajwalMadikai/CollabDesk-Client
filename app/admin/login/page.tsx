@@ -1,7 +1,4 @@
 "use client";
-import { baseUrl } from "@/app/api/urlconfig";
-import { setAdmin } from "@/store/slice/adminSlice";
-import { AppDispatch } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import Link from "next/link";
@@ -9,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { setAdmin } from "../../../store/slice/adminSlice";
+import { AppDispatch } from "../../../store/store";
+import { baseUrl } from "../../api/urlconfig";
 
 export default function AdminLogin() {
   const dispatch = useDispatch<AppDispatch>();

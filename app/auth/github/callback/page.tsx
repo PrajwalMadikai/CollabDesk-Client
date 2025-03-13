@@ -1,13 +1,13 @@
 'use client';
 
-import { setUser } from '@/store/slice/userSlice';
-import { AppDispatch } from '@/store/store';
 import axios from 'axios';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
+import { setUser } from '../../../../store/slice/userSlice';
+import { AppDispatch } from '../../../../store/store';
 
 export default function GitHubCallback() {
   const router = useRouter();

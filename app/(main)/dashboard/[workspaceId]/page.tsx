@@ -1,9 +1,9 @@
 'use client';
-import { useWorkspace } from '@/hooks/useWorkspaceHook';
 import { Box, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useWorkspace } from '../../../../hooks/useWorkspaceHook';
 
 export default function WorkspaceDashboard() {
   const { workspaceId }: { workspaceId: string } = useParams();

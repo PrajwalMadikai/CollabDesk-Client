@@ -1,4 +1,3 @@
-import { VideoRoomHook } from '@/hooks/useVideoCall';
 import {
   LiveKitRoom,
   RoomAudioRenderer,
@@ -7,6 +6,7 @@ import {
 import "@livekit/components-styles";
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
+import { VideoRoomHook } from '../../hooks/useVideoCall';
 
 interface VideoProps {
   workspaceId: string;

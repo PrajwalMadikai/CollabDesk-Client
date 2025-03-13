@@ -1,7 +1,7 @@
 "use client";
-import LiveblocksProviderWrapper from "@/components/Providers/LiveblocksProvider";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import LiveblocksProviderWrapper from "../../../components/Providers/LiveblocksProvider";
 import Sidebar from "./sidebar";
 
  

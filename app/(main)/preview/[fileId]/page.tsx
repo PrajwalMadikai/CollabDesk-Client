@@ -1,10 +1,10 @@
 "use client";
-import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeRoom";
-import { CollaborativeEditor } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
-import { previewFileData } from "@/hooks/useFile";
-import { grantRoomAccess } from "@/services/fileApi";
 import { useParams } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { CollaborativeRoom } from "../../../../components/Liveblocks/Editor/CollaborativeRoom";
+import { CollaborativeEditor } from "../../../../components/Liveblocks/Editor/CollaborativeTextEditor";
+import { previewFileData } from "../../../../hooks/useFile";
+import { grantRoomAccess } from "../../../../services/fileApi";
 
 const Preview = () => {
   const { fileId } = useParams() as { fileId: string };

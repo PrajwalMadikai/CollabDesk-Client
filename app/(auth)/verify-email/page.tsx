@@ -1,9 +1,9 @@
 "use client";
-import { useVerifyEmail } from "@/hooks/useEmailHook";
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
+import { useVerifyEmail } from "../../../hooks/useEmailHook";
 
 export default function VerifyEmail() {
   const router = useRouter();

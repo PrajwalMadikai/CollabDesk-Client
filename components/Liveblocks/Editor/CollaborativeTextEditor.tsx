@@ -1,6 +1,4 @@
 'use client';
-import { baseUrl } from "@/app/api/urlconfig";
-import { connectionIdToColor } from "@/lib/utils";
 import { BlockNoteEditor, filterSuggestionItems } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMenuController, useCreateBlockNote } from "@blocknote/react";
@@ -11,6 +9,8 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import * as Y from "yjs";
+import { baseUrl } from "../../../app/api/urlconfig";
+import { connectionIdToColor } from "../../../lib/utils";
 import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
 const socket = io(baseUrl, {
   withCredentials: true,

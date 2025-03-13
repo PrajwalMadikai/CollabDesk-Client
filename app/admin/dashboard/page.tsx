@@ -1,12 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Home, LogOut, Plus, Users } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+} from "../../../components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -15,9 +16,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
-} from "@/components/ui/sidebar";
-import { useAdminSidebar } from "@/hooks/useAdminhook";
-import { Home, LogOut, Plus, Users } from "lucide-react";
+} from "../../../components/ui/sidebar";
+import { useAdminSidebar } from "../../../hooks/useAdminhook";
 
  
  

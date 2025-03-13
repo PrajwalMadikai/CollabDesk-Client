@@ -1,4 +1,4 @@
-import { ResponseStatus } from "@/enums/responseStatus";
+import { ResponseStatus } from "../enums/responseStatus";
 
 function getResponseStatus(statusCode: number): ResponseStatus {
     switch (statusCode) {

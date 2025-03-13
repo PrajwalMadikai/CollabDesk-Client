@@ -1,8 +1,8 @@
-import AppProviders from "@/components/Providers/AppProvider";
-import ProtectedRoute from "@/components/Providers/ProtectedRoute";
 import type { Metadata } from "next";
 import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from "next/font/google";
+import AppProviders from "../components/Providers/AppProvider";
+import ProtectedRoute from "../components/Providers/ProtectedRoute";
 import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",

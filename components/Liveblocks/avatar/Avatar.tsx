@@ -1,5 +1,5 @@
 import { useOthers, useSelf } from "@liveblocks/react/suspense";
-import styles from "./Avatar.module.css"; // Ensure the correct path
+import styles from "./Avatar.module.css";
 
 export function Avatars() {
   const users = useOthers();

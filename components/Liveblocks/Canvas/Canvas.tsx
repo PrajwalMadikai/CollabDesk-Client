@@ -3,9 +3,8 @@
 import { LiveObject } from "@liveblocks/client";
 import { nanoid } from "nanoid";
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-import { useDeleteLayers } from "@/hooks/useDeleteLayers";
-import { useDisableScrollBounce } from "@/hooks/useDisableScrollDenbounce";
+import { useDeleteLayers } from "../../../hooks/useDeleteLayers";
+import { useDisableScrollBounce } from "../../../hooks/useDisableScrollDenbounce";
 import {
   colorToCss,
   connectionIdToColor,
@@ -13,7 +12,7 @@ import {
   penPointsToPathLayer,
   pointerEventToCanvasPoint,
   resizeBounds,
-} from "@/lib/utils";
+} from "../../../lib/utils";
 import {
   useCanRedo,
   useCanUndo,
@@ -22,7 +21,7 @@ import {
   useOthersMapped,
   useSelf,
   useStorage,
-} from "@/liveblocks.config";
+} from "../../../liveblocks.config";
 import {
   Camera,
   CanvasMode,
@@ -32,7 +31,7 @@ import {
   Point,
   Side,
   XYWH,
-} from "@/Types/canvas";
+} from "../../../Types/canvas";
 
 import { CursorsPresence } from "./cursor-presence";
 import { Info } from "./info";
@@ -429,7 +428,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
 
   return (
     <main className="h-full w-full relative bg-neutral-100 touch-none">
-      <Info boardId={boardId}   />
+      <Info    />
       <Participants />
       <Toolbar
         canvasState={canvasState}

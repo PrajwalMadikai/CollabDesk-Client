@@ -1,8 +1,8 @@
 'use client';
-import VideoCall from "@/components/Video Call/VideoCall";
-import { RootState } from "@/store/store";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
+import VideoCall from "../../../../components/Video Call/VideoCall";
+import { RootState } from "../../../../store/store";
 
 function Page() {
   const params = useParams();

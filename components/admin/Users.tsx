@@ -1,7 +1,7 @@
 "use client";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { useUsersManagement } from "@/hooks/useUserManagementhook";
 import { Search, Users as UsersIcon } from "lucide-react";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../../components/ui/pagination";
+import { useUsersManagement } from "../../hooks/useUserManagementhook";
 
 const Users = () => {
  

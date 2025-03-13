@@ -1,17 +1,17 @@
 "use client";
-import SettingsModal from "@/components/Settings";
-import VideoCallButton from "@/components/Video Call/VideoCallButton";
-import { useFile } from "@/hooks/useFile";
-import { useFolder } from "@/hooks/useFolder";
-import { useProfile } from "@/hooks/useProfile";
-import { useWorkspace, Workspace } from "@/hooks/useWorkspaceHook";
-import { setUser } from "@/store/slice/userSlice";
-import { RootState } from "@/store/store";
 import { ChevronRight, File, Folder, Menu, MessageSquare, Plus, RefreshCcw, Settings, Trash } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import SettingsModal from "../../../components/Settings";
+import VideoCallButton from "../../../components/Video Call/VideoCallButton";
+import { useFile } from "../../../hooks/useFile";
+import { useFolder } from "../../../hooks/useFolder";
+import { useProfile } from "../../../hooks/useProfile";
+import { useWorkspace, Workspace } from "../../../hooks/useWorkspaceHook";
+import { setUser } from "../../../store/slice/userSlice";
+import { RootState } from "../../../store/store";
 
 interface SidebarProps {
   onToggle: (isOpen: boolean) => void;

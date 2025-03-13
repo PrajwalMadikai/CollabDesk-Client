@@ -1,9 +1,9 @@
-import { API } from '@/app/api/handle-token-expire';
-import { setPlanType } from '@/store/slice/userSlice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { API } from '../app/api/handle-token-expire';
+import { setPlanType } from '../store/slice/userSlice';
 
 export function useHandlePayment(sessionId: string | null, isPaymentStored: boolean, user: any) {
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');

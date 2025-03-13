@@ -1,8 +1,7 @@
 "use client";
 
-import { Color } from "@/Types/canvas";
-import { colorToCss } from "@/lib/utils";
-
+import { colorToCss } from "../../../lib/utils";
+import { Color } from "../../../Types/canvas";
 interface ColorPickerProps {
   onChange: (color: Color) => void;
 }

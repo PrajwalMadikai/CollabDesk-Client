@@ -1,8 +1,8 @@
 "use client";
-import { useAuthSignup } from "@/hooks/useSignupHook";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
 import Link from "next/link";
+import { useAuthSignup } from "../../../hooks/useSignupHook";
 
 export default function Signup() {
 

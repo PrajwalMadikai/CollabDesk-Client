@@ -1,6 +1,6 @@
-import { useAdminPaymentPlans } from "@/hooks/useAdminpayment";
 import { Button, Dialog, TextField } from "@mui/material";
 import { Folder, IndianRupee, Layout } from "lucide-react";
+import { useAdminPaymentPlans } from "../../hooks/useAdminpayment";
 import PlanCard from "./PlanComponent";
 
 const AddPayment = () => {

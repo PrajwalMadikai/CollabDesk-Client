@@ -1,10 +1,9 @@
 "use client";
 
 import { memo } from "react";
-
-import { LayerType, Side, XYWH } from "@/Types/canvas";
-import { useSelectionBounds } from "@/hooks/useSelectionBonds";
-import { useSelf, useStorage } from "@/liveblocks.config";
+import { LayerType, Side, XYWH } from "../../../Types/canvas";
+import { useSelectionBounds } from "../../../hooks/useSelectionBonds";
+import { useSelf, useStorage } from "../../../liveblocks.config";
 
 interface SelectionBoxProps {
   onResizeHandlePointerDown: (corner: Side, initialBounds: XYWH) => void;

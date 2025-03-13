@@ -1,8 +1,8 @@
 'use client'
-import { Canvas } from "@/components/Liveblocks/Canvas/Canvas"
-import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeRoom"
-import { LoadingSpinner } from "@/components/LoadingSpinner"
 import { useParams } from "next/navigation"
+import { Canvas } from "../../../../../components/Liveblocks/Canvas/Canvas"
+import { CollaborativeRoom } from "../../../../../components/Liveblocks/Editor/CollaborativeRoom"
+import { LoadingSpinner } from "../../../../../components/LoadingSpinner"
 
 const WhiteboardLayout=()=>{
     const {workspaceId}= useParams() as {workspaceId:string}

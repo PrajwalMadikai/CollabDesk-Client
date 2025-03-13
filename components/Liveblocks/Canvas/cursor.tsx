@@ -3,8 +3,8 @@
 import { MousePointer2 } from "lucide-react";
 import { memo } from "react";
 
-import { connectionIdToColor } from "@/lib/utils";
-import { useOther, useSelf } from "@/liveblocks.config";
+import { connectionIdToColor } from "../../../lib/utils";
+import { useOther, useSelf } from "../../../liveblocks.config";
 
 interface CursorProps { 
   connectionId: number;

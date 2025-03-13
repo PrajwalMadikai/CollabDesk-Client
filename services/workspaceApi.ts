@@ -1,4 +1,4 @@
-import { API } from "@/app/api/handle-token-expire"
+import { API } from "../app/api/handle-token-expire"
 
 export const workspaceCreateFunc=async(spaceName:string,userId:string)=>{
     try {

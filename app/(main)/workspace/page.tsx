@@ -1,9 +1,9 @@
 "use client";
 
-import ProtectedRoute from "@/components/Providers/ProtectedRoute";
-import { useCreateWorkspace } from '@/hooks/useWorkspaceHook';
 import Image from "next/image";
 import Link from "next/link";
+import ProtectedRoute from "../../../components/Providers/ProtectedRoute";
+import { useCreateWorkspace } from "../../../hooks/useWorkspaceHook";
 
 export default function CreateWorkspace() {
   const {

@@ -1,4 +1,4 @@
-import { useOthers } from "@/liveblocks.config";
+import { useOthers } from "../../../liveblocks.config";
 import { Cursor } from "./Cursor";
 
 

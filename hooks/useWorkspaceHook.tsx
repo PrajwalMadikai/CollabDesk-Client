@@ -1,17 +1,16 @@
 "use client";
-
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { deleteWorkspaceFunc, userActivityLogs, workspaceCreateFunc, workspaceFetch } from "@/services/workspaceApi";
-import { addWorkspace, removeWorkspace } from "@/store/slice/userSlice";
-import { AppDispatch, RootState } from "@/store/store";
-import { workspaceSchema } from "@/validations/workspace";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { ResponseStatus } from "../enums/responseStatus";
+import getResponseStatus from "../lib/responseStatus";
+import { deleteWorkspaceFunc, userActivityLogs, workspaceCreateFunc, workspaceFetch } from "../services/workspaceApi";
+import { addWorkspace, removeWorkspace } from "../store/slice/userSlice";
+import { AppDispatch, RootState } from "../store/store";
+import { workspaceSchema } from "../validations/workspace";
 
 interface CreateWorkspaceFormData {
   workspaceName: string;

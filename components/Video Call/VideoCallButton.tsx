@@ -1,8 +1,8 @@
-import { VideoRoomHook } from '@/hooks/useVideoCall';
-import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { VideoRoomHook } from '../../hooks/useVideoCall';
+import { RootState } from '../../store/store';
 
 interface VideoCallButtonProps {
   workspaceId: string;

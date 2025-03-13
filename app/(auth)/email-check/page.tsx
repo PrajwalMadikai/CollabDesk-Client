@@ -1,7 +1,7 @@
 "use client";
-import { useEmailCheck } from '@/hooks/useEmailHook';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { useEmailCheck } from '../../../hooks/useEmailHook';
 
 export default function VerifyEmail() {
 

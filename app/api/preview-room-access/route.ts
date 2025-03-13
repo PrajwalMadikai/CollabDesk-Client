@@ -1,5 +1,5 @@
-import { liveblocks } from "@/lib/liveblocks-server";
 import { NextRequest, NextResponse } from "next/server";
+import { liveblocks } from "../../../lib/liveblocks-server";
 
 
 export async function POST(request: NextRequest) {

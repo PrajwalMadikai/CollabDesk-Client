@@ -1,9 +1,9 @@
-import { ResponseStatus } from '@/enums/responseStatus';
-import getResponseStatus from '@/lib/responseStatus';
-import { emailCheck, emailVerify, sendVerificationEmailAPI } from '@/services/emailApi';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { ResponseStatus } from '../enums/responseStatus';
+import getResponseStatus from '../lib/responseStatus';
+import { emailCheck, emailVerify, sendVerificationEmailAPI } from '../services/emailApi';
 export type VerificationStatus = 'loading' | 'success' | 'error';
 
 export function useVerifyEmail(email: string | null, token: string | null) {

@@ -1,11 +1,11 @@
 'use client';
-import { useHandlePayment } from '@/hooks/useHandlePayment';
-import { RootState } from '@/store/store';
 import { CheckCircle2 as Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useHandlePayment } from '../../../../hooks/useHandlePayment';
+import { RootState } from '../../../../store/store';
 
 export default function PaymentSuccess() {
     const searchParams = useSearchParams();

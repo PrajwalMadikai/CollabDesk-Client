@@ -1,10 +1,10 @@
 'use client';
-import PaymentForm from "@/components/Landing Page/PaymentForm";
-import { RootState } from "@/store/store";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
+import PaymentForm from "../../../../components/Landing Page/PaymentForm";
+import { RootState } from "../../../../store/store";
 
 const PaymentPage = () => {
   if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC) {

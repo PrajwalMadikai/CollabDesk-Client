@@ -1,5 +1,5 @@
-import { baseUrl } from "@/app/api/urlconfig"
 import axios from "axios"
+import { baseUrl } from "../app/api/urlconfig"
 
 export const emailVerify=async(email:string,token:string)=>{
     try {

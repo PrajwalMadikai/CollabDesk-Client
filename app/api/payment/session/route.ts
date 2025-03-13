@@ -1,5 +1,5 @@
-import stripe from '@/lib/stripeInit';
 import { NextResponse } from 'next/server';
+import stripe from '../../../../lib/stripeInit';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

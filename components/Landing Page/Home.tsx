@@ -1,17 +1,17 @@
 "use client";
-import { API } from "@/app/api/handle-token-expire";
-import ThemeToggle from '@/components/toggleTheme';
-import { ResponseStatus } from "@/enums/responseStatus";
-import getResponseStatus from "@/lib/responseStatus";
-import { Plan, setPlan } from "@/store/slice/planSlice";
-import { clearUser, setUser } from "@/store/slice/userSlice";
-import { AppDispatch, RootState } from "@/store/store";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
+import { API } from "../../app/api/handle-token-expire";
+import ThemeToggle from '../../components/toggleTheme';
+import { ResponseStatus } from "../../enums/responseStatus";
+import getResponseStatus from "../../lib/responseStatus";
+import { Plan, setPlan } from "../../store/slice/planSlice";
+import { clearUser, setUser } from "../../store/slice/userSlice";
+import { AppDispatch, RootState } from "../../store/store";
 import PaymentComponent, { paymentPlans } from "./PaymentComponent";
  
 

@@ -1,4 +1,4 @@
-import stripe from "@/lib/stripeInit";
+import stripe from "../../../lib/stripeInit";
 
 export async function POST(req: Request) {
     try {

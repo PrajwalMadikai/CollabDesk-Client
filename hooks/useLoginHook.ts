@@ -1,13 +1,13 @@
-import { baseUrl } from '@/app/api/urlconfig';
-import { ResponseStatus } from '@/enums/responseStatus';
-import getResponseStatus from '@/lib/responseStatus';
-import { googleLogin, loginEmail, resetPasswordFunc } from '@/services/AuthApi';
-import { setUser } from '@/store/slice/userSlice';
-import { AppDispatch } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
+import { baseUrl } from '../app/api/urlconfig';
+import { ResponseStatus } from '../enums/responseStatus';
+import getResponseStatus from '../lib/responseStatus';
+import { googleLogin, loginEmail, resetPasswordFunc } from '../services/AuthApi';
+import { setUser } from '../store/slice/userSlice';
+import { AppDispatch } from '../store/store';
 
 interface ValidationErrors {
   email: string;

@@ -7,7 +7,8 @@ import {
   Point,
   Side,
   XYWH,
-} from "@/Types/canvas";
+} from "../Types/canvas";
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 

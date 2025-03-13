@@ -1,6 +1,6 @@
-import { clearUser } from "@/store/slice/userSlice";
-import { store } from "@/store/store";
 import axios from "axios";
+import { clearUser } from "../../store/slice/userSlice";
+import { store } from "../../store/store";
 import { baseUrl } from "./urlconfig";
 
 const API = axios.create({

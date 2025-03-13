@@ -1,12 +1,12 @@
 "use client";
-import AddPayment from "@/components/admin/AddPayment";
-import Home from "@/components/admin/AdminHome";
-import Users from "@/components/admin/Users";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { setAdmin } from "@/store/slice/adminSlice";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import AddPayment from "../../../components/admin/AddPayment";
+import Home from "../../../components/admin/AdminHome";
+import Users from "../../../components/admin/Users";
+import { SidebarProvider, SidebarTrigger } from "../../../components/ui/sidebar";
+import { setAdmin } from "../../../store/slice/adminSlice";
 import AppSidebar from "./page";
 
 export default function Layout() {
