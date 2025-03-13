@@ -1,15 +1,13 @@
 "use client";
 
 import { useEmailLogin, useGithubLogin, useGoogleLogin } from "@/hooks/useLoginHook";
-import { RootState } from "@/store/store";
 import TextField from "@mui/material/TextField";
 import { GoogleLogin } from '@react-oauth/google';
+import Image from "next/image";
 import Link from "next/link";
-import { useSelector } from "react-redux";
 
 export default function Home() {
-  const user = useSelector((state: RootState) => state.user);
-  console.log("User from Redux:", user);
+
 
   const { 
     email, 
@@ -23,7 +21,6 @@ export default function Home() {
   
   const { 
     handleGoogleLoginSuccess, 
-    isLoading: isGoogleLoading 
   } = useGoogleLogin();
   
   const { handleGitHubLogin } = useGithubLogin();
@@ -33,13 +30,15 @@ export default function Home() {
       <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl w-full flex-grow">
         
         <div className="flex flex-1 flex-col items-center text-center md:text-left space-y-28 p-14 rounded-lg">
-          <img
-            src="/3682888-Photoroom.png"
-            alt="Signup Illustration"
-            className="w-full max-w-xs md:max-w-sm mx-auto pt-10"
+            <Image
+            src="/3682888-Photoroom.png"  
+            alt="Signup Illustration"  
+            width={500} 
+            height={300}  
+            className="w-full max-w-xs md:max-w-sm mx-auto"  
           />
           <div>
-            <span className="text-white text-md font-thin">Don't have an account? </span>
+            <span className="text-white text-md font-thin">Don&apos;t have an account? </span>
             <Link href="/signup" className="text-[#8B8AF4] hover:underline font-semibold">
              Register
             </Link>
@@ -140,8 +139,8 @@ export default function Home() {
               />
             </div>
              <div className="space-y-2 flex justify-end">
-              <Link href='email-verification'>
-              <p className="text-[14px] font-normal text-red-600">forgot password ?</p>
+              <Link href="email-verification">
+              <p className="text-[14px] font-normal text-red-600">Forgot your password?</p>
               </Link>
              </div>
             <button

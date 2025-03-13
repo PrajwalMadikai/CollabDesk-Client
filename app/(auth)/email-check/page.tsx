@@ -1,10 +1,10 @@
 "use client";
-
 import { useEmailCheck } from '@/hooks/useEmailHook';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
 export default function VerifyEmail() {
+
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
   const token = searchParams.get('token');
@@ -13,9 +13,7 @@ export default function VerifyEmail() {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-[#020817] text-white p-4">
-      {/* Main Container */}
       <div className="w-full max-w-3xl mx-auto text-center space-y-12">
-        {/* Illustration */}
         <div className="relative w-full max-w-lg mx-auto">
           <svg className="w-full h-auto" viewBox="0 0 786 466" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M457.722 465H39.2777C17.5862 465 0 447.414 0 425.722V39.2777C0 17.5862 17.5862 0 39.2777 0H457.722C479.414 0 497 17.5862 497 39.2777V425.722C497 447.414 479.414 465 457.722 465Z" fill="#1E293B"/>

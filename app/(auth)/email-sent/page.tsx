@@ -27,7 +27,7 @@ export default function EmailSent() {
             Check your email
           </h1>
           <p className="text-lg text-gray-400 max-w-md mx-auto">
-            We've sent a verification link to your email.
+            We&apos;ve sent a verification link to your email.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export default function EmailSent() {
 
         {/* Help Text */}
         <p className="text-sm text-gray-500">
-          Didn't receive the email? Check your spam folder or try another email address
+          Didn&apos;t receive the email? Check your spam folder or try another email address
         </p>
       </div>
 

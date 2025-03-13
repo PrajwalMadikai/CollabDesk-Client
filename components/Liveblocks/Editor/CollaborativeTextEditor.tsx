@@ -8,12 +8,10 @@ import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { Box, Text, ThemeIcon } from "@mantine/core";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import * as Y from "yjs";
 import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
-
 const socket = io(baseUrl, {
   withCredentials: true,
   reconnection: true,
@@ -103,7 +101,7 @@ export function CollaborativeEditor({ fileId, initialContent,edit }: Props) {
 }
 
 function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
-  const router=useRouter()
+
   const currentUser = useSelf((me) => me.info);
   const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
@@ -143,6 +141,8 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
     provider.on('sync', (isSynced: boolean) => {
       setIsConnected(isSynced);
     });
+    console.log('connected:',isConnected);
+    
 
     const fragment = doc.getXmlFragment(fileId);
     

@@ -8,47 +8,11 @@ import {
   PieChart,
   ResponsiveContainer, Tooltip, XAxis, YAxis
 } from 'recharts';
-
+import { LoadingSpinner } from '../LoadingSpinner';
  
-
-interface Stats {
-  totalRevenue: number;
-  monthlyGrowth: number;
-  activeSubscribers: number;
-}
-
-interface MonthlyData {
-  month: string;
-  revenue: number;
-  subscribers: number;
-}
-
-interface PlanData {
-  plan: string;
-  count: number;
-  revenue: number;
-}
-
-interface DateRange {
-  startDate: string;
-  endDate: string;
-}
-
-interface FormattedMonthlyData {
-  month: string;
-  revenue: number;
-  subscribers: number;
-}
-
-interface FormattedPlanData {
-  plan: string;
-  count: number;
-  revenue: number;
-}
 
 const COLORS = ['#0088FE', '#00C49F'];
 
- 
 
 export default function Home() {
  const{
@@ -59,6 +23,12 @@ export default function Home() {
   dateRange,
   setDateRange,
  }=usePaymentAnalytics()
+
+ if(loading)
+ {
+  return <LoadingSpinner/>
+ }
+
   return (
     <div className="p-4 md:p-6 bg-gray-900 min-h-screen">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">

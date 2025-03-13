@@ -20,23 +20,11 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    // const token = authHeader.split(" ")[1];
-    // const userResponse = await fetch(`${baseUrl}/verify-user`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
-
-    // if (!userResponse.ok) {
-    //   throw new Error("Failed to fetch user details");
-    // }
-
-    // const userData = await userResponse.json();
+   
     
     try { 
-      const room = await liveblocks.getRoom(roomId);
+
+      await liveblocks.getRoom(roomId);
       
       await liveblocks.updateRoom(roomId, {
         metadata: {
@@ -51,6 +39,8 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ success: true }, { status: 200 });
     } catch (roomError) {
+      console.log('Room Error:',roomError);
+      
       const newRoom = await liveblocks.createRoom(roomId, {
         metadata: {
           title: title || "Untitled",

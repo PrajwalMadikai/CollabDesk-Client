@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
    
 
     try {
-      const room = await liveblocks.getRoom(roomId);
+        await liveblocks.getRoom(roomId);
       
       await liveblocks.updateRoom(roomId, {
         defaultAccesses: ["room:read", "room:presence:write"],
@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
       
       return NextResponse.json({ success: true }, { status: 200 });
     } catch (roomError) {
+      console.log('Room error:',roomError);
+      
       const newRoom = await liveblocks.createRoom(roomId, {
         defaultAccesses: ["room:read", "room:presence:write"],
       });

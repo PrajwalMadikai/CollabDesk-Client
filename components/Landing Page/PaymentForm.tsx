@@ -1,10 +1,9 @@
 'use client';
 import { usePayment } from '@/hooks/useHandlePayment';
+import { Plan } from '@/store/slice/planSlice';
 import { CreditCard, Shield } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
-const PaymentForm = ({ plan }: { plan: any }) => {
-  const router = useRouter();
+const PaymentForm = ({ plan }: {plan:Plan}) => {
   const { loading, initiatePayment } = usePayment();
 
   const handlePayment = () => {

@@ -18,6 +18,7 @@ export async function POST(req:NextRequest)
        return NextResponse.json( { message: "Room deleted successfully" },{status:200})
         
     } catch (error) {
+        console.error("Error deleting room:", error);
         return NextResponse.json({error:'Error in room delete'},{status:500})
     }
 }

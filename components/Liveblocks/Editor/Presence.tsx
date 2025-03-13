@@ -7,7 +7,7 @@ export default function Presence() {
 
   return (
     <>
-      {others.map(({ connectionId, presence }) => { 
+      {others.map(({ connectionId }) => { 
         return <Cursor key={connectionId}  connectionId={connectionId} />;
       })}
     </>

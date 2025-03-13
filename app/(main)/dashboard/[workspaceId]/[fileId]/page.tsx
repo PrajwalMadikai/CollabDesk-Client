@@ -12,7 +12,7 @@ import ReactCrop, { PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 export default function FileEditor() {
-  const { workspaceId, fileId } = useParams() as { workspaceId: string; fileId: string };
+  const { fileId } = useParams() as { workspaceId: string; fileId: string };
   const {
     fileData,
     loading,

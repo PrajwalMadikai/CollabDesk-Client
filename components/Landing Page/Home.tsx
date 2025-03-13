@@ -3,38 +3,56 @@ import { API } from "@/app/api/handle-token-expire";
 import ThemeToggle from '@/components/toggleTheme';
 import { ResponseStatus } from "@/enums/responseStatus";
 import getResponseStatus from "@/lib/responseStatus";
-import { setPlan } from "@/store/slice/planSlice";
+import { Plan, setPlan } from "@/store/slice/planSlice";
 import { clearUser, setUser } from "@/store/slice/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import PaymentComponent, { paymentPlans } from "./PaymentComponent";
-
+ 
 
 function HeaderAndLandingHome() {
+  const router = useRouter();
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const [basePlan, setBasePlan] = useState<paymentPlans>();
+  const [premiumPlan, setPremiumPlan] = useState<paymentPlans>();
+  const { theme } = useTheme();
 
-  
-  useEffect(()=>{
-    fetchPaymentPlans()
-  },[])
+  console.log('user redux:', user);
 
-  const router=useRouter()
-  const user=useSelector((state:RootState)=>state.user)
-  const dispatch=useDispatch<AppDispatch>()
-  const [basePlan,setBasePlan]=useState<paymentPlans>()
-  const [premiumPlan,setPremiumPlan]=useState<paymentPlans>()
+  const fetchPaymentPlans = useCallback(async () => {
+    try {
+      const response = await API.get('/get-plans', { withCredentials: true });
 
-  const {theme}=useTheme()
+      const responseStatus = getResponseStatus(response.status);
 
-  console.log('user redux:',user);
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        const plansArray:Plan[]= response.data.data;
+        dispatch(setPlan(plansArray));
+
+        const base = plansArray.find((plan:Plan) => plan.paymentType === "base");
+        const premium = plansArray.find((plan: Plan) => plan.paymentType === "premium");
+
+        setBasePlan(base);
+        setPremiumPlan(premium);
+      }
+    } catch (error) {
+      console.log("Error during plans fetching", error);
+    }
+  }, [dispatch, setBasePlan, setPremiumPlan]);
+
+  useEffect(() => {
+    fetchPaymentPlans();
+  }, [fetchPaymentPlans]);  
 
   useEffect(() => {
     const userFetch = localStorage.getItem('user');
-    
+
     if (userFetch) {
       const userData = JSON.parse(userFetch);
       if (userData) {
@@ -45,89 +63,62 @@ function HeaderAndLandingHome() {
           workSpaces: userData.workSpaces,
           isAuthenticated: true,
           planType: userData.paymentDetail.paymentType,
-          avatar:userData.avatar
+          avatar: userData.avatar,
         }));
       }
     }
   }, [dispatch]);
-  
 
-  const logout=async()=>{
-
+  const logout = async () => {
     try {
-    
-      await API.post('/logout', { withCredentials: true })
-    
+      await API.post('/logout', { withCredentials: true });
+
       localStorage.removeItem('user');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+
+      dispatch(clearUser());
+
+      toast.success('Logged out successfully', {
+        duration: 2000,
+        position: 'top-right',
+      });
+      router.push('/');
+    } catch (error) {
+      console.log('error:',error);
       
-      dispatch(clearUser())
-
-       toast.success('Logged out successfully',{
-        duration:2000,
-        position:'top-right'
-       });
-       router.push('/');  
-     } catch (error) {
-       toast.error('Error logging out');
-     }
-  }
-  
-const handleDashboard = async () => {
-  if (!user.isAuthenticated) {
-    router.push('/login');
-    return;
-  }
-
-  if (user.workSpaces.length === 0) {
-    router.push('/workspace');
-    return;
-  }
-
-
-  try {
-    const response = await API.post("/workspace/fetch", { userId: user.id }, { withCredentials: true });
-
-    const responseStatus=getResponseStatus(response.status)
-
-    if(responseStatus==ResponseStatus.SUCCESS){
-
-    if (response.data.workspace.length > 0) {
-      router.push(`/dashboard/${response.data.workspace[0].workspaceId}`); 
-    } else {
-      router.push('/workspace');  
+      toast.error('Error logging out');
     }
-  }
-  } catch (error) {
-    console.error("Error fetching workspaces:", error);
-    toast.error("Failed to fetch workspaces.");
-  }
-};
-const fetchPaymentPlans=async()=>{
-  try {
-    const response=await API.get('/get-plans',{withCredentials:true})
+  };
 
-    const responseStatus=getResponseStatus(response.status)
-
-    if(responseStatus === ResponseStatus.SUCCESS){
-
-    const plansArray = response.data.data;
-    dispatch(setPlan(plansArray));
-
-    const base = plansArray.find((plan: any) => plan.paymentType === "base");
-    const premium = plansArray.find((plan: any) => plan.paymentType === "premium");
-
-    setBasePlan(base)
-    setPremiumPlan(premium)
+  const handleDashboard = async () => {
+    if (!user.isAuthenticated) {
+      router.push('/login');
+      return;
     }
-  } catch (error) {
-    console.log("Error during plans fetching",error);
-    
-  }
-}
 
- 
+    if (user.workSpaces.length === 0) {
+      router.push('/workspace');
+      return;
+    }
+
+    try {
+      const response = await API.post("/workspace/fetch", { userId: user.id }, { withCredentials: true });
+
+      const responseStatus = getResponseStatus(response.status);
+
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        if (response.data.workspace.length > 0) {
+          router.push(`/dashboard/${response.data.workspace[0].workspaceId}`);
+        } else {
+          router.push('/workspace');
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+      toast.error("Failed to fetch workspaces.");
+    }
+  };
 
     return (
       <>
@@ -174,24 +165,25 @@ const fetchPaymentPlans=async()=>{
         {/* Home Content */}
         <div className="w-full flex flex-col items-center justify-center pt-[60px] min-h-screen">
           {/* Small Text under Logo */}
-          <div className="text-center h-7 w-[200px] mt-12 text-sm text-white md:h-7 md:w-[250px] border-2 border-white rounded-[14px] mb-4">
+          <div className="text-center h-7 w-[200px] mt-12 text-sm dark:text-white md:h-7 md:w-[250px] border-2 dark:border-white rounded-[14px] mb-4">
             <p className=" tracking-tight">A perfect workspace</p>
           </div>
   
           {/* Big Text under Small Text */}
-          <div className="text-center font-extrabold text-3xl md:text-6xl  m-0 p-0 leading-tight tracking-tight">
-            <h2 className="text-foreground">All-in-One Platform</h2>
+          <div className="text-center font-extrabold text-3xl  md:text-6xl m-0 p-0 leading-tight tracking-tight">
+          <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-purple-600 dark:from-white dark:to-purple-600">
+            The Ultimate Collaboration Hub
+          </h2>
           </div>
           <div className="text-center text-xl md:text-4xl font-semibold text-white m-0 p-0 leading-tight tracking-tight">
-            <h2 className="text-foreground">for real-time collaboration</h2>
+            <h2 className="text-foreground ">Seamless, Real-Time Teamwork</h2>
           </div>
-          <div className="text-center text-sm md:text-md font-extralight font-cursive  m-0 p-0">
-            <h2 className="text-foreground">and enhanced productivity</h2>
+          <div className="text-center text-sm md:text-md font-extralight font-cursive m-0 p-0">
+            <h2 className="text-foreground">Boost efficiency, enhance productivity</h2>
           </div>
-  
           {/* Button under Big Text */}
           <div className="text-center mt-3">
-          <button onClick={handleDashboard} className="bg-transparent font-medium  hover:text-foreground border border-gray-400 w-[140px] rounded-[8px] text-[16px] text-foreground h-9">
+          <button onClick={handleDashboard} className="dark:bg-black  font-medium  hover:text-foreground border   w-[140px] rounded-[8px] text-[16px] text-foreground h-12">
             Get Started
           </button>
           

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import AppSidebar from "./page";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout() {
 
   const [selectedMenu, setSelectedMenu] = useState<string>("home");
   const router=useRouter()
@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       router.replace('/admin/login');
     }
 
-  }, [router]);
+  }, []);
 
   const renderContent = () => {
     switch (selectedMenu) {

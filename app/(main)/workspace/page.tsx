@@ -2,6 +2,7 @@
 
 import ProtectedRoute from "@/components/Providers/ProtectedRoute";
 import { useCreateWorkspace } from '@/hooks/useWorkspaceHook';
+import Image from "next/image";
 import Link from "next/link";
 
 export default function CreateWorkspace() {
@@ -18,9 +19,11 @@ export default function CreateWorkspace() {
       <div className="min-h-screen flex flex-col bg-gray-900 text-white px-4">
         <div className="flex items-center">
           <Link href="/">
-            <img
+            <Image
               src="/collabdesk white logo.png"
               alt="Logo"
+              width={800}  
+              height={600}
               className="h-24 w-auto md:h-[125px]"
             />
           </Link>
@@ -30,7 +33,7 @@ export default function CreateWorkspace() {
           <div className="max-w-4xl w-full bg-gray-800 p-6 md:p-8 rounded-xl shadow-lg">
             <h1 className="text-2xl font-semibold">Create A Workspace</h1>
             <p className="text-gray-300 mt-2 text-[15px]">
-              Let's create a private workspace to get you started.
+              Let&apos;s create a private workspace to get you started.
             </p>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="mt-6">

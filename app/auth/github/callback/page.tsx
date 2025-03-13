@@ -2,6 +2,7 @@
 
 import { setUser } from '@/store/slice/userSlice';
 import { AppDispatch } from '@/store/store';
+import axios from 'axios';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -54,8 +55,8 @@ export default function GitHubCallback() {
           }, 2000);
         }, 1500); 
 
-      } catch (err: any) {
-       
+      } catch (err: unknown) {
+       if(axios.isAxiosError(err)){
         setStatus('error');
         setErrorMessage(err.message);
         toast.error("Authentication Failed!");
@@ -75,6 +76,7 @@ export default function GitHubCallback() {
           router.push(mode === 'login' ? '/signup' : '/signup');
         }, 4000);
       }
+    }
     };
 
     handleCallback();

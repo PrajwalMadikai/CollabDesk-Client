@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const SubscriptionEnded = () => {
@@ -10,7 +11,7 @@ const SubscriptionEnded = () => {
         
         {/* Left Section - Image */}
         <div className="flex-1 flex justify-center md:justify-end">
-          <img src="/collabdesk white logo.png" 
+          <Image src="/collabdesk white logo.png" 
             alt="Subscription Ended" 
             className="w-full max-w-xs md:max-w-sm"
           />

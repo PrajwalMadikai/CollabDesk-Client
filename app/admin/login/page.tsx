@@ -1,4 +1,5 @@
 "use client";
+import { baseUrl } from "@/app/api/urlconfig";
 import { setAdmin } from "@/store/slice/adminSlice";
 import { AppDispatch } from "@/store/store";
 import TextField from "@mui/material/TextField";
@@ -25,7 +26,7 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5713/admin/login", { email, password }, { withCredentials: true });
+      const response = await axios.post(`${baseUrl}/admin/login`, { email, password }, { withCredentials: true });
 
       if (response.status === 200) {
         toast.success("Admin login successful!", {
@@ -50,12 +51,20 @@ export default function AdminLogin() {
           duration: 3000,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error during admin login:", error);
-      toast.error(error.response?.data?.message || "Error during login", {
-        position: "top-right",
-        duration: 3000,
-      });
+  
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Error during login", {
+          position: "top-right",
+          duration: 3000,
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
+          position: "top-right",
+          duration: 3000,
+        });
+      }
     }
   };
 

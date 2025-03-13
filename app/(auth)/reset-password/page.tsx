@@ -5,8 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, CircularProgress, TextField } from '@mui/material';
 import { useForm } from 'react-hook-form';
 
+interface PasswordFormData {
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export default function ChangePassword() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
   });
 
@@ -18,7 +23,7 @@ export default function ChangePassword() {
 
   const { loading, resetPassword } = resetPasswordHook;
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: PasswordFormData) => {
     resetPassword(data.newPassword);
   };
 

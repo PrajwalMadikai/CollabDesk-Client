@@ -4,7 +4,7 @@ import { CollaborativeRoom } from "@/components/Liveblocks/Editor/CollaborativeR
 import { LoadingSpinner } from "@/components/LoadingSpinner"
 import { useParams } from "next/navigation"
 
-const whiteboardLayout=()=>{
+const WhiteboardLayout=()=>{
     const {workspaceId}= useParams() as {workspaceId:string}
 
     return (
@@ -16,4 +16,4 @@ const whiteboardLayout=()=>{
     )
 }
 
-export default whiteboardLayout
+export default WhiteboardLayout

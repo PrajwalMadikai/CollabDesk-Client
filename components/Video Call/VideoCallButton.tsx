@@ -14,11 +14,8 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
 
   const {
     joinCall,
-    isLoading,
     error,
     setError,
-    isCallActive,
-    participantCount,
   } = VideoRoomHook({
     workspaceId,
     userId: user?.id || null,
@@ -45,26 +42,11 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
     );
   }
 
-  return (
-    <button
-      className={`
-        relative border px-4 py-2 rounded
-        ${isCallActive 
-          ? 'bg-red-600 text-white hover:bg-red-700' 
-          : 'bg-green-600 text-white hover:bg-green-700'}
-      `}
-      onClick={handleButtonClick}
-    >
-      {isCallActive && (
-        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-        </span>
-      )}
-      {isCallActive 
-        ? `Join Video Call (${participantCount} active)` 
-        : 'Start Video Call'}
+  return (<>
+    <button onClick={handleButtonClick}>
+     Start Video Call
     </button>
+    </>
   );
 };
 

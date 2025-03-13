@@ -32,7 +32,8 @@ const refreshAccess = async (isAdmin = false) => {
           }
           
           throw new Error('No access token received');
-      } catch (error: any) {
+      } catch (error: unknown) {
+        if(axios.isAxiosError(error)){
         if ( error.response?.status === 403) {
             localStorage.removeItem(isAdmin ? "adminAccessToken" : "accessToken");
             window.location.href = isAdmin ? "/admin/login" : "/login";
@@ -42,8 +43,7 @@ const refreshAccess = async (isAdmin = false) => {
               message: error.response?.data?.message,
               error
           });
-          
-          
+        }
           return null;
       }
   };

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Plan {
+export interface Plan {
     id: string;
     paymentType: string;
     amount: number;

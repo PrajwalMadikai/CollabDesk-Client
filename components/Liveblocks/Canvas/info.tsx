@@ -1,24 +1,18 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { RootState } from "@/store/store";
 import { ArrowLeftToLine } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
 import { TooltipComponent } from "../global/tooltip";
+ 
 
+// const TabSeparator = () => {
+//   return <div className="text-neutral-300 px-1.5">|</div>;
+// };
 
-interface InfoProps {
-  boardId: string;
-}
-
-const TabSeparator = () => {
-  return <div className="text-neutral-300 px-1.5">|</div>;
-};
-
-export const Info = ({ boardId }: InfoProps) => {
+export const Info = ( ) => {
   const router = useRouter();
-  const user=useSelector((state:RootState)=>state.user)
-  const workspace:any=user.workSpaces.find(space=> space.workspaceId==boardId)
+  // const user=useSelector((state:RootState)=>state.user)
+  // const workspace:any=user.workSpaces.find(space=> space.workspaceId==boardId)
   // const workspaceName=workspace.workspaceName
   
   const onClick = () => {

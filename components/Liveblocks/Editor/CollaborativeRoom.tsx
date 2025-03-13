@@ -1,4 +1,5 @@
 "use client";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { RootState } from "@/store/store";
 import { Layer } from "@/Types/canvas";
 import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
@@ -14,10 +15,13 @@ interface RoomProps {
 }
 
 export const CollaborativeRoom = ({ children, roomId, fallback }: RoomProps) => {
-  if (!roomId) {
-    return <div className="text-white text-2xl">Loading... (No Room ID)</div>;
-  }
+
   const user=useSelector((state:RootState)=>state.user)
+
+  if (!roomId) {
+    return <LoadingSpinner/>
+  }
+
 
   return (
     <RoomProvider

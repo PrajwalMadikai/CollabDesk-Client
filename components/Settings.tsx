@@ -28,8 +28,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   workspaceId,
   workspaceName,
-  onWorkspaceUpdate,
-  setIsSettingsModalOpen
 }) => {
   const mainUser = useSelector((state: RootState) => state.user);
    

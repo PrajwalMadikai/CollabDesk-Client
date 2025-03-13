@@ -24,12 +24,12 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
     token,
     error,
     setError,
-    isInCall,
     isLoading,
   } = VideoRoomHook({ workspaceId, userId, userName });
   
   useEffect(() => {
     joinCall();
+     
   }, []);
 
   const leaveCall = () => {

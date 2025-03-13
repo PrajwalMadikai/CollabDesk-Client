@@ -14,8 +14,8 @@ const Users = () => {
     totalPages,
     blockUser,
     unblockUser,
-    fetchUsers,
-    filterUsers,}=useUsersManagement()
+    filterUsers
+  }=useUsersManagement()
   return (
     <div className="md:w-[1250px] min-h-screen bg-black text-white p-4 sm:p-6 md:p-8 border-gray-400 rounded-[5px] px-10">
       <div className="max-w-7xl mx-auto">

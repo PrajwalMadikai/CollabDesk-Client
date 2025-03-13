@@ -1,3 +1,4 @@
+"use client";
 import SettingsModal from "@/components/Settings";
 import VideoCallButton from "@/components/Video Call/VideoCallButton";
 import { useFile } from "@/hooks/useFile";
@@ -12,38 +13,105 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onToggle: (isOpen: boolean) => void;
+}
 
+const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
   const router = useRouter();
   const params = useParams();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(true);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
- 
-  const user = useSelector((state: RootState) => state.user);
 
-  if(!user.email||!user.id)
-  {
-    return
-  }
+  const user = useSelector((state: RootState) => state.user);
+  
   const workspace = useWorkspace();
-  if (!workspace) {
-    console.log('workspace is null in workspace hook');
+  const folder = useFolder();
+
+  const selectedWorkspaced = workspace?.selectedWorkspace || null;
+
+  const file = useFile(
+    selectedWorkspaced, 
+    folder?.fetchFolders, 
+    folder?.updateFileNameInFolder, 
+    folder?.fetchTrashItems
+  );
+  const profile = useProfile();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+
+      dispatch(setUser({
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        isAuthenticated: true,
+        planType: user.paymentDetail.paymentType,
+        workSpaces: user.workSpaces,
+        avatar: user.googleId
+      }));
+    }
+    if (user.id) {
+      profile.fetchUserDetils(user.id);
+    }
+  }, [dispatch, user.id, profile]);
+
+  useEffect(() => {
+    const initializeWorkspace = async () => {
+      if (isInitialLoad && workspace) {
+        const workspaceId = params?.workspaceId as string;
+        const fetchedWorkspaces = await workspace.fetchWorkspaces();
+
+        if (fetchedWorkspaces && fetchedWorkspaces.length > 0) {
+          if (workspaceId) {
+            const targetWorkspace = fetchedWorkspaces.find((w: Workspace) => w.workspaceId === workspaceId);
+            if (targetWorkspace) {
+              workspace.selectWorkspace(targetWorkspace);
+            } else {
+              workspace.selectWorkspace(fetchedWorkspaces[0]);
+            }
+          } else {
+            workspace.selectWorkspace(fetchedWorkspaces[0]);
+          }
+        }
+
+        setIsInitialLoad(false);
+      }
+    };
+
+    initializeWorkspace();
+  }, [isInitialLoad, params?.workspaceId, workspace]);
+
+  useEffect(() => {
+    if (workspace?.selectedWorkspace?.workspaceId && folder) {
+      folder.fetchFolders(workspace.selectedWorkspace.workspaceId);
+      folder.fetchTrashItems(workspace.selectedWorkspace.workspaceId);
+
+      const currentUrl = window.location.pathname;
+      const targetUrl = `/dashboard/${workspace.selectedWorkspace.workspaceId}`;
+
+      if (!currentUrl.includes(workspace.selectedWorkspace.workspaceId)) {
+        router.push(targetUrl);
+      }
+    }
+  }, [workspace?.selectedWorkspace?.workspaceId, folder, router]);
+
+  if (!user.email || !user.id || !workspace || !folder || !file || !profile) {
     return null;
   }
 
   const {
     workspaces,
     selectedWorkspace,
-    loading: workspaceLoading,
     newWorkspaceName,
     setNewWorkspaceName,
-    fetchWorkspaces,
     selectWorkspace,
-    findAndSelectWorkspace,
     createWorkspace,
     deleteWorkspace,
     updateWorkspaceName,
@@ -54,111 +122,39 @@ const Sidebar: React.FC = () => {
     trashItems,
     isTrashExpanded,
     setIsTrashExpanded,
-    loading: folderLoading,
     editingFolderId,
     editingFolderName,
     setEditingFolderName,
     fetchFolders,
-    fetchTrashItems,
     toggleFolderExpansion,
     createFolder,
     updateFolderName,
     moveToTrash: moveFolderToTrash,
     restoreFolder,
     startEditingFolder,
-    updateFileNameInFolder
-  } = useFolder();
+  } = folder;
 
   const {
     selectedFile,
     editingFileId,
     editingFileName,
     setEditingFileName,
-    loading: fileLoading,
     createFile,
     openFile,
     renameFile,
     moveToTrash: moveFileToTrash,
     restoreFile,
     startEditingFile,
-  } = useFile(selectedWorkspace, fetchFolders,updateFileNameInFolder,fetchTrashItems);
+  } = file;
 
   const {
-    fetchUserDetils,
     userProfile,
     handleImageUpload,
     handleChange,
     handleSubmit,
     error,
     newPassword
-  }=useProfile()
-
-  
-
-  useEffect(() => {
-    const initializeWorkspace = async () => {
-      if (isInitialLoad) {
-        const workspaceId = params?.workspaceId as string;
-        const fetchedWorkspaces = await fetchWorkspaces();
-        
-        if (fetchedWorkspaces && fetchedWorkspaces.length > 0) {
-          if (workspaceId) {
-            const targetWorkspace = fetchedWorkspaces.find((w: Workspace) => w.workspaceId === workspaceId);
-            if (targetWorkspace) {
-              selectWorkspace(targetWorkspace);
-            } else {
-              selectWorkspace(fetchedWorkspaces[0]);
-            }
-          } else {
-            selectWorkspace(fetchedWorkspaces[0]);
-          }
-        }
-        
-        setIsInitialLoad(false);
-      }
-    };
-
-    initializeWorkspace();
-  
-  }, [isInitialLoad, params?.workspaceId]);
-
-  useEffect(()=>{
-    const userData=localStorage.getItem('user')
-    if(userData){
-    const user=JSON.parse(userData)
-    
-    dispatch(setUser({
-      id: user.id,
-      fullname: user.fullname,
-      email: user.email,
-      isAuthenticated: true,
-      planType: user.paymentDetail.paymentType,
-      workSpaces: user.workSpaces,
-      avatar:user.googleId
-    }))
-  }
-  if(user.id){
-  fetchUserDetils(user.id)
-  }
-  },[])
-
-  useEffect(() => {
-    if (selectedWorkspace?.workspaceId) {
-      fetchFolders(selectedWorkspace.workspaceId);
-      fetchTrashItems(selectedWorkspace.workspaceId);
-      
-      const currentUrl = window.location.pathname;
-      const targetUrl = `/dashboard/${selectedWorkspace.workspaceId}`;
-      
-      if (!currentUrl.includes(selectedWorkspace.workspaceId)) {
-        router.push(targetUrl);
-      }
-    }
-  }, [selectedWorkspace?.workspaceId]);
-
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
+  } = profile;
 
   const handleWorkspaceUpdate = (updatedWorkspace: { workspaceId: string; workspaceName: string }) => {
     updateWorkspaceName(updatedWorkspace);
@@ -175,6 +171,12 @@ const Sidebar: React.FC = () => {
     }
   };
   
+  const handleToggle = () => {
+    const newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
+    onToggle(newIsOpen);  
+  };
+
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
@@ -415,7 +417,6 @@ const Sidebar: React.FC = () => {
           </div>
         )}
       </div>
-      {}
       <VideoCallButton workspaceId={params?.workspaceId as string}  />
       {isOpen && (
         <div className="p-4 border-gray-800 mt-auto">
@@ -568,7 +569,7 @@ const Sidebar: React.FC = () => {
             <label className="block text-xs text-gray-400">Email</label>
             <input
               type="text"
-              value={userProfile?.email }
+              value={userProfile?.email}
               readOnly
               className="w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none"
             />
@@ -603,7 +604,7 @@ const Sidebar: React.FC = () => {
           )}
           </div>
 
-          <form onSubmit={()=>handleSubmit(user.id)} className="flex-grow mt-7">
+          <form onSubmit={() => handleSubmit(user.id)} className="flex-grow mt-7">
             <label className="block text-xs text-gray-400">New Password</label>
             <input
               type="password"

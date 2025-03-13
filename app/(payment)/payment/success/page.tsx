@@ -13,7 +13,7 @@ export default function PaymentSuccess() {
     const [isPaymentStored, setIsPaymentStored] = useState(false);
     const user = useSelector((state: RootState) => state.user);
 
-    const { status, sessionDetails } = useHandlePayment(sessionId, isPaymentStored, user);
+    const { status } = useHandlePayment(sessionId, isPaymentStored, user);
 
     useEffect(() => {
         if (status === 'success') {

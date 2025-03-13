@@ -3,6 +3,7 @@ import { useSendVerificationEmail } from '@/hooks/useEmailHook';
 import { emailSchema } from '@/validations/all validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, CircularProgress, TextField } from '@mui/material';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -27,15 +28,15 @@ const EmailCheckForm = () => {
   return (
     <div className="min-h-screen bg-[radial-gradient(100%_50%_at_50%_0%,rgba(98,51,238,1)_0,rgba(0,0,0,0.8)_50%,rgba(0,0,0,1)_100%)] flex items-center justify-center p-4">
       <div className="flex flex-col md:flex-row items-stretch gap-8 max-w-5xl w-full flex-grow">
-        {/* Left Section: Image (Hidden on small screens) */}
         <div className="hidden md:flex flex-1 flex-col items-center text-center space-y-28 p-14 rounded-lg">
-          <img
-            src="/3682888-Photoroom.png"
-            alt="Email Verification"
-            className="w-full max-w-xs md:max-w-sm mx-auto"
-          />
+        <Image
+          src="/3682888-Photoroom.png"  
+          alt="Email Verification"  
+          width={500}  
+          height={300}  
+          className="w-full max-w-xs md:max-w-sm mx-auto"  
+        />
         </div>
-        {/* Right Section: Form */}
         <div className="flex flex-1 flex-col md:mt-[110px] space-y-6 p-6 rounded-lg">
           <h2 className="text-2xl font-bold text-white text-center md:text-left">
             Enter Your Email
