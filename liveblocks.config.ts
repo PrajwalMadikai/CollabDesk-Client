@@ -1,9 +1,9 @@
-import { Color, Layer } from "@/Types/canvas";
+import { Color, Layer } from "@/types/canvas";
 import {
-  createClient,
-  LiveList,
-  LiveMap,
-  LiveObject,
+    createClient,
+    LiveList,
+    LiveMap,
+    LiveObject,
 } from "@liveblocks/client";
 import { createLiveblocksContext, createRoomContext } from "@liveblocks/react";
 const API_KEY = process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY;

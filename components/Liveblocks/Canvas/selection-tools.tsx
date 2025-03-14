@@ -5,7 +5,7 @@ import { memo } from "react";
 import { useDeleteLayers } from "../../../hooks/useDeleteLayers";
 import { useSelectionBounds } from "../../../hooks/useSelectionBonds";
 import { useMutation, useSelf } from "../../../liveblocks.config";
-import { Camera, Color } from "../../../Types/canvas";
+import { Camera, Color } from "../../../types/canvas";
 import { Button } from "../../ui/button";
 import { TooltipComponent as Hint } from "../global/tooltip";
 

@@ -1,15 +1,15 @@
 import {
-  Circle,
-  MousePointer2,
-  Pencil,
-  Redo2,
-  Square,
-  StickyNote,
-  Type,
-  Undo2,
+    Circle,
+    MousePointer2,
+    Pencil,
+    Redo2,
+    Square,
+    StickyNote,
+    Type,
+    Undo2,
 } from "lucide-react";
   
-  import { CanvasMode, CanvasState, LayerType } from "../../../Types/canvas";
+  import { CanvasMode, CanvasState, LayerType } from "../../../types/canvas";
 import { ToolButton } from "./toolButton";
   
   interface ToolbarProps {

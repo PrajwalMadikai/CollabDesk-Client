@@ -1,13 +1,13 @@
 import {
-  Camera,
-  Color,
-  Layer,
-  LayerType,
-  PathLayer,
-  Point,
-  Side,
-  XYWH,
-} from "../Types/canvas";
+    Camera,
+    Color,
+    Layer,
+    LayerType,
+    PathLayer,
+    Point,
+    Side,
+    XYWH,
+} from "../types/canvas";
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";

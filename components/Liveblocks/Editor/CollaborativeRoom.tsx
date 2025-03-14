@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 import { useSelector } from "react-redux";
 import { RoomProvider } from "../../../liveblocks.config";
 import { RootState } from "../../../store/store";
-import { Layer } from "../../../Types/canvas";
+import { Layer } from "../../../types/canvas";
 import { LoadingSpinner } from "../../LoadingSpinner";
 
 interface RoomProps {

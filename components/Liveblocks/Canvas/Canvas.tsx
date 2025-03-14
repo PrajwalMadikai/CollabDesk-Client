@@ -31,7 +31,7 @@ import {
   Point,
   Side,
   XYWH,
-} from "../../../Types/canvas";
+} from "../../../types/canvas";
 
 import { CursorsPresence } from "./cursor-presence";
 import { Info } from "./info";
