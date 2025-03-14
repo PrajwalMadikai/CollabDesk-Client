@@ -19,8 +19,9 @@ import {
 } from "../../../components/ui/sidebar";
 import { useAdminSidebar } from "../../../hooks/useAdminhook";
 
- 
- 
+interface AppSidebarProps {
+  onSelectMenu: (key: string) => void;
+}
 
 const items = [
   { title: "Home", key: "home", icon: Home },
@@ -28,13 +29,12 @@ const items = [
   { title: "Add Payment", key: "add-payment", icon: Plus },
 ];
 
-const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) => {
- 
-  const {admin, handleLogout}=useAdminSidebar()
+const AppSidebar: React.FC<AppSidebarProps> = ({ onSelectMenu }) => {
+  const { admin, handleLogout } = useAdminSidebar();
 
   return (
     <Sidebar className="h-screen w-[260px] bg-black text-white shadow-xl rounded-r-3xl flex flex-col items-center">
-      <div className="text-lg  text-white text-center mt-6 uppercase tracking-tight">
+      <div className="text-lg text-white text-center mt-6 uppercase tracking-tight">
         Admin Dashboard
       </div>
 
@@ -65,16 +65,13 @@ const AppSidebar = ({ onSelectMenu }: { onSelectMenu: (key: string) => void }) =
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-full flex items-center justify-center space-x-3 p-3">
-            
-            <span className="text-md font-sm text-gray-200">{admin.email}</span>
+              <span className="text-md font-sm text-gray-200">{admin.email}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-gray-800 border-gray-700">
             <DropdownMenuSeparator />
-            {/* <DropdownMenuItem className="text-white hover:bg-gray-700">Subscription</DropdownMenuItem> */}
-            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="text-red-600 text-md font-semibold">
-              <LogOut className="mr-2 "  /> Logout
+              <LogOut className="mr-2" /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
