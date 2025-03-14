@@ -38,29 +38,34 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onSelectMenu }) => {
         Admin Dashboard
       </div>
 
-      <SidebarContent className="flex-1 flex flex-col justify-center w-full">
-        <SidebarGroup>
-          <SidebarGroupContent className="flex flex-col items-center gap-6 mt-8 w-full">
-            <SidebarMenu className="w-full">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.key} className="w-full">
-                  <SidebarMenuButton
-                    asChild
-                    onClick={() => onSelectMenu(item.key)}
-                    className="flex flex-col items-center w-full h-14 p-4 border border-gray-600 rounded-[2px] bg-gray-800 hover:bg-gray-700 hover:scale-105 transition-all duration-200"
-                  >
-                    <button className="flex flex-col items-center space-y-2 w-full">
-                      <span className="text-md font-bold">{item.title}</span>
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <SidebarContent className="flex-1 flex flex-col w-full">
+      <SidebarGroup>
+        <SidebarGroupContent className="flex flex-col gap-3 mt-8 px-4">
+          <SidebarMenu className="w-full">
+            {items.map((item) => (
+              <SidebarMenuItem key={item.key} className="w-full">
+                <SidebarMenuButton
+                  asChild
+                  onClick={() => onSelectMenu(item.key)}
+                  className="group flex items-center w-full h-12 px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-700 transition-all duration-200"
+                >
+                  <button className="flex items-center space-x-4 w-full text-left">
+                    <item.icon
+                      size={20}
+                      className="text-gray-400 group-hover:text-white transition-colors duration-200"
+                    />
+                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors duration-200">
+                      {item.title}
+                    </span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
 
-      {/* 🔹 User Section at the Bottom */}
       <div className="p-6 border-t border-gray-700 w-full">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
