@@ -16,7 +16,6 @@ export const ToolButton = ({
   label,
   icon: Icon,
   onClick,
-  isActive,
   isDisabled,
 }: ToolButtonProps) => {
   return (

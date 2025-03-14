@@ -10,7 +10,7 @@ const WhiteboardLayout=()=>{
     return (
         <>
         <CollaborativeRoom roomId={workspaceId} fallback={<LoadingSpinner />}>
-        <Canvas boardId={workspaceId}/>
+        <Canvas />
         </CollaborativeRoom>
         </>
     )

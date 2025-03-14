@@ -1,10 +1,10 @@
 "use client";
-import { useAuthInit } from "@/hooks/useAuthInit";
-import { persistor, store } from "@/store/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react';
+import { useAuthInit } from "../../hooks/useAuthInit";
+import { persistor, store } from "../../store/store";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   useAuthInit();

@@ -44,11 +44,11 @@ import { Toolbar } from "./toolbar";
 
 const MAX_LAYERS = 100;
 
-interface CanvasProps {
-  boardId: string;
-}
+// interface CanvasProps {
+//   boardId: string;
+// }
 
-export const Canvas = ({ boardId }: CanvasProps) => {
+export const Canvas = () => {
   const layerIds = useStorage(root => root.layerIds);
 
   const pencilDraft = useSelf(me => me.presence.pencilDraft);
