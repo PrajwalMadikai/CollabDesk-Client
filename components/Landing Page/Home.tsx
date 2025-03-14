@@ -148,12 +148,12 @@ function HeaderAndLandingHome() {
             ) : (
               <>
               <Link href="/login" prefetch={true}>
-              <button className="text-primary h-[38px] rounded w-12 font-normal text-sm hover:text-white transition duration-200">
+              <button className="text-primary h-[38px] rounded w-12 font-normal text-sm   transition duration-200">
                  Login
               </button>
               </Link>
               <Link href="/signup" prefetch={true}> 
-              <button className="bg-primary text-black h-[32px] rounded w-20 font-normal text-sm hover:bg-gray-200 transition duration-200">
+              <button className="bg-primary text-primary-foreground h-[32px] rounded w-20 font-normal text-sm  transition duration-200">
                 Signup
               </button>
               </Link>
