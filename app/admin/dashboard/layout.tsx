@@ -10,25 +10,23 @@ import { setAdmin } from "../../../store/slice/adminSlice";
 import AppSidebar from "./page";
 
 export default function Layout() {
-
   const [selectedMenu, setSelectedMenu] = useState<string>("home");
-  const router=useRouter()
-  const dispatch=useDispatch()
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const adminToken = localStorage.getItem('adminAccessToken');
-    const adminData = localStorage.getItem('admin')
+    const adminToken = localStorage.getItem("adminAccessToken");
+    const adminData = localStorage.getItem("admin");
 
-    if(adminData){
-    const admin=JSON.parse(adminData)
-    dispatch(setAdmin({id:admin.id,email:admin.email}))
+    if (adminData) {
+      const admin = JSON.parse(adminData);
+      dispatch(setAdmin({ id: admin.id, email: admin.email }));
     }
 
     if (!adminToken) {
-      router.replace('/admin/login');
+      router.replace("/admin/login");
     }
-
-  }, []);
+  }, [router, dispatch]);
 
   const renderContent = () => {
     switch (selectedMenu) {
@@ -39,9 +37,7 @@ export default function Layout() {
       case "add-payment":
         return <AddPayment />;
       default:
-        return (
-           <Home/>
-        );
+        return <Home />;
     }
   };
 
@@ -49,14 +45,11 @@ export default function Layout() {
     <div className="dark flex">
       <SidebarProvider>
         <AppSidebar onSelectMenu={setSelectedMenu} />
-        <main className="flex-1 bg-black  overflow-auto">
-          <SidebarTrigger style={{ color: "white"}} >
-          
-            </SidebarTrigger>
+        <main className="flex-1 bg-black overflow-auto">
+          <SidebarTrigger style={{ color: "white" }} />
           {renderContent()}
         </main>
       </SidebarProvider>
     </div>
   );
 }
- 

@@ -6,7 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -15,7 +15,7 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
 } from "../../../components/ui/sidebar";
 import { useAdminSidebar } from "../../../hooks/useAdminhook";
 
@@ -39,32 +39,32 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onSelectMenu }) => {
       </div>
 
       <SidebarContent className="flex-1 flex flex-col w-full">
-      <SidebarGroup>
-        <SidebarGroupContent className="flex flex-col gap-3 mt-8 px-4">
-          <SidebarMenu className="w-full">
-            {items.map((item) => (
-              <SidebarMenuItem key={item.key} className="w-full">
-                <SidebarMenuButton
-                  asChild
-                  onClick={() => onSelectMenu(item.key)}
-                  className="group flex items-center w-full h-12 px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-700 transition-all duration-200"
-                >
-                  <button className="flex items-center space-x-4 w-full text-left">
-                    <item.icon
-                      size={20}
-                      className="text-gray-400 group-hover:text-white transition-colors duration-200"
-                    />
-                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors duration-200">
-                      {item.title}
-                    </span>
-                  </button>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent className="flex flex-col gap-3 mt-8 px-4">
+            <SidebarMenu className="w-full">
+              {items.map((item) => (
+                <SidebarMenuItem key={item.key} className="w-full">
+                  <SidebarMenuButton
+                    asChild
+                    onClick={() => onSelectMenu(item.key)}
+                    className="group flex items-center w-full h-12 px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-700 transition-all duration-200"
+                  >
+                    <button className="flex items-center space-x-4 w-full text-left">
+                      <item.icon
+                        size={20}
+                        className="text-gray-400 group-hover:text-white transition-colors duration-200"
+                      />
+                      <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors duration-200">
+                        {item.title}
+                      </span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
       <div className="p-6 border-t border-gray-700 w-full">
         <DropdownMenu>
