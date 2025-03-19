@@ -16,6 +16,7 @@ const Sidebar: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(true);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
@@ -54,7 +55,7 @@ const Sidebar: React.FC = () => {
     moveToTrash: moveFileToTrash,
     restoreFile,
     startEditingFile,
-  } = useFile(workspace?.selectedWorkspace, fetchFolders, updateFileNameInFolder, fetchTrashItems);
+  } = useFile(workspace?.selectedWorkspace ?? null, fetchFolders, updateFileNameInFolder, fetchTrashItems);
   const {
     fetchUserDetails,
     userProfile,
@@ -67,7 +68,6 @@ const Sidebar: React.FC = () => {
     currentPassword,
   } = useProfile();
 
-  // Early exit (conditional rendering)
   if (!user.email || !user.id || !workspace) {
     return null;
   }
@@ -84,7 +84,6 @@ const Sidebar: React.FC = () => {
     updateWorkspaceName,
   } = workspace;
 
-  // Fetch workspaces and initialize workspace selection
   useEffect(() => {
     const initializeWorkspace = async () => {
       if (isInitialLoad) {
@@ -100,7 +99,6 @@ const Sidebar: React.FC = () => {
     initializeWorkspace();
   }, [isInitialLoad, params?.workspaceId, fetchWorkspaces, selectWorkspace]);
 
-  // Load user data from localStorage
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
@@ -122,7 +120,6 @@ const Sidebar: React.FC = () => {
     }
   }, [dispatch, fetchUserDetails, user.id]);
 
-  // Sync workspace ID with URL
   useEffect(() => {
     if (selectedWorkspace?.workspaceId) {
       fetchFolders(selectedWorkspace.workspaceId);
@@ -135,7 +132,6 @@ const Sidebar: React.FC = () => {
     }
   }, [selectedWorkspace?.workspaceId, fetchFolders, fetchTrashItems, router]);
 
-  // Event handlers
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
@@ -154,7 +150,6 @@ const Sidebar: React.FC = () => {
       router.push(`/dashboard/whiteboard/${selectedWorkspace.workspaceId}`);
     }
   };
-
 
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>

@@ -99,13 +99,16 @@ export function CollaborativeEditor({ fileId, initialContent,edit }: Props) {
 
   return <BlockNote doc={doc} provider={provider} fileId={fileId} edit={edit} />;
 }
-
+type BlockNoteEditorRef = {
+  document: any;
+  updateContent: () => void;
+};
 function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
 
   const currentUser = useSelf((me) => me.info);
   const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<BlockNoteEditorRef|null>(null);
   const userPresence = useSelf();
   
   const editor = useCreateBlockNote({
@@ -136,7 +139,7 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
   useEffect(() => {
     if (!editor || !doc) return;
     
-    editorRef.current = editor;
+    editorRef.current = editor as unknown as BlockNoteEditorRef;
 
     provider.on('sync', (isSynced: boolean) => {
       setIsConnected(isSynced);
