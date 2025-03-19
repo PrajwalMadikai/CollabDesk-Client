@@ -126,7 +126,7 @@ const PaymentComponent = ({ basePlan, premiumPlan }: { basePlan: paymentPlans; p
                 <Check className="w-5 h-5 text-yellow-400" />
               </div>
               <div>
-                <p className="text-white font-medium">5 folders</p>
+                <p className="text-white font-medium">{premiumPlan?.FolderNum} folders</p>
                 <p className="text-indigo-200 text-sm">No restrictions on organization</p>
               </div>
             </div>
@@ -136,7 +136,7 @@ const PaymentComponent = ({ basePlan, premiumPlan }: { basePlan: paymentPlans; p
                 <Check className="w-5 h-5 text-yellow-400" />
               </div>
               <div>
-                <p className="text-white font-medium">5 workspaces</p>
+                <p className="text-white font-medium">{premiumPlan?.WorkspaceNum} workspaces</p>
                 <p className="text-indigo-200 text-sm">Scale your team without limits</p>
               </div>
             </div>

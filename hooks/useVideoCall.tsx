@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { TokenGenerate } from "../services/VideocallApi";
+import { useEffect, useState } from "react";
+import { GetVideocallParticipants, TokenGenerate } from "../services/VideocallApi";
 
 interface hookProps {
   workspaceId: string;
@@ -11,14 +11,14 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
   const [token, setToken] = useState(null);
   const [isInCall, setIsInCall] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string|null>(null);
- 
+  const [error, setError] = useState<string | null>(null);
+  const [participantCount, setParticipantCount] = useState(0);
+
   const getToken = async () => {
     try {
       setIsLoading(true);
       const response = await TokenGenerate(workspaceId, userName, userId);
-  
-      if (response && response.token) {
+      if (response?.token) {
         setToken(response.token);
         return response.token;
       } else {
@@ -35,7 +35,6 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
 
   const joinCall = async () => {
     setError(null);
-    
     const callToken = await getToken();
     if (callToken) {
       setIsInCall(true);
@@ -47,7 +46,21 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     setToken(null);
   };
 
- 
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      try {
+        const response = await GetVideocallParticipants(workspaceId);
+        setParticipantCount(response.count);
+      } catch (error) {
+        console.error("Failed to fetch participants:", error);
+      }
+    };
+
+    fetchParticipants();
+    const interval = setInterval(fetchParticipants, 3000); 
+
+    return () => clearInterval(interval);
+  }, [workspaceId]);
 
   return {
     getToken,
@@ -58,6 +71,6 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     setError,
     isInCall,
     isLoading,
- 
+    participantCount,
   };
 };

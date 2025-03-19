@@ -6,34 +6,11 @@ import Sidebar from "./sidebar";
 
  
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // const router = useRouter();
-  // const [workspaces, setWorkspaces] = useState([]);
+ 
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  // useEffect(() => {
-  //   const fetchWorkspaces = async () => {
-  //     try {
-  //       const userFetch = localStorage.getItem("user");
-  //       if (!userFetch) return;
-
-  //       const userData = JSON.parse(userFetch);
-  //       const response = await API.post(
-  //         "/workspace/fetch",
-  //         { userId: userData.id },
-  //         { withCredentials: true }
-  //       );
-
-  //       if (response.data.workspace?.length > 0) {
-  //         setWorkspaces(response.data.workspace);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching workspaces:", error);
-  //     }
-  //   };
-
-  //   fetchWorkspaces();
-  // }, [router]);
+ 
+ 
 
   const whiteboardPresent = pathname.startsWith('/dashboard/whiteboard');
 
@@ -45,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             className={`fixed top-0 left-0 h-full transition-all duration-300 z-10
               ${isSidebarOpen ? 'w-64' : 'w-16'}`}
           >
-            <Sidebar onToggle={(isOpen) => setIsSidebarOpen(isOpen)} />
+            <Sidebar   />
           </div>
         )}
 

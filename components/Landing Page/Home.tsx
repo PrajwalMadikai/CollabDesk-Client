@@ -252,16 +252,17 @@ function HeaderAndLandingHome() {
             <p className="mb-6 text-gray-300">
               Designed for greater flexibility, this solution offers advanced tools for custom tailoring to your needs.
             </p>
-            <button className="py-2 px-6 bg-blue-800 rounded-lg text-white hover:bg-blue-600 transition">
-              Get Started
-            </button>
+            <button 
+            className="dark:bg-black font-medium hover:text-foreground border w-[140px] rounded-[8px] text-[16px] text-foreground h-12"
+          >
+            Get Started
+          </button>
         </div>
        </div>
      </div>
    </div> 
-</>
-    );
-  }
+   </>
+)};
   
   export default HeaderAndLandingHome;
   

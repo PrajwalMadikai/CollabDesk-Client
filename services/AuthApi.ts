@@ -117,11 +117,12 @@ export const profileUpload=async(formData:FormData,userId:string|null)=>{
         throw error
     }
 }
-export const ChangePassword=async(userId:string|null,password:string)=>
+export const ChangePassword=async(userId:string|null,password:string,currentPassword:string)=>
 {
     try {
-        const response = await API.put('/change-password',{userId,password},{withCredentials:true})
+        const response = await API.put('/change-password',{userId,password,currentPassword},{withCredentials:true})
         return response
+
     } catch (error) {
         throw error
     }

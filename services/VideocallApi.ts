@@ -14,4 +14,17 @@ export const TokenGenerate=async(workspaceId:string,userName:string|null,userId:
       }
 }
 
+export const GetVideocallParticipants = async (roomId: string) => {
+  try {
+    const response = await axios.get(`/api/participants?room=${roomId}`);
+
+    return {
+      participants: response.data.participants || [],
+      count: response.data.participants?.length || 0,
+    };
+  } catch (error) {
+    return { participants: [], count: 0 };
+  }
+};
+
  

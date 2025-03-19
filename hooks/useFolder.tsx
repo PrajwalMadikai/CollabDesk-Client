@@ -88,7 +88,6 @@ export function useFolder() {
     if (!workspaceId) return null;
     if(!user.id){
         console.log('no user id in redux create Folder');
-        
         return
     }
 

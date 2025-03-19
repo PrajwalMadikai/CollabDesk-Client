@@ -1,4 +1,4 @@
-const baseUrl='http://localhost:5713'
-const baseFrontUrl='http://localhost:3000'
+const baseUrl='http://api.collabdesk.site'
+const baseFrontUrl='http://collabdesk.site'
 
 export { baseFrontUrl, baseUrl }

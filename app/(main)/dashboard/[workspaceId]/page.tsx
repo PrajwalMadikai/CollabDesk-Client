@@ -6,25 +6,24 @@ import { useEffect, useState } from 'react';
 import { useWorkspace } from '../../../../hooks/useWorkspaceHook';
 
 export default function WorkspaceDashboard() {
-  const { workspaceId }: { workspaceId: string } = useParams();
+  const { workspaceId } = useParams();
   const [showUserLogs, setShowUserLogs] = useState(false);
 
-  // Call all hooks unconditionally
   const workspace = useWorkspace();
 
   useEffect(() => {
     if (workspaceId && workspace?.userAction) {
-      workspace.userAction(workspaceId);
+      const finalWorkspaceId = Array.isArray(workspaceId) ? workspaceId[0] : workspaceId;
+      workspace.userAction(finalWorkspaceId);
     }
-  }, [workspaceId, workspace?.userAction]);
+  }, [workspaceId]);  
 
-  // Conditional logic after all hooks
   if (!workspace) {
     console.error('useWorkspace context is not available');
     return null;
   }
 
-  const {  userLogs } = workspace;
+  const { userLogs } = workspace;
 
   const toggleUserLogs = () => {
     setShowUserLogs(!showUserLogs);
@@ -32,7 +31,6 @@ export default function WorkspaceDashboard() {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      {/* Header Section */}
       <div className="w-full flex justify-between items-center p-4 border-b">
         <button
           onClick={toggleUserLogs}
@@ -65,10 +63,11 @@ export default function WorkspaceDashboard() {
                 <X size={18} className="text-white" />
               </button>
             </div>
-            <div className="p-4 overflow-y-auto flex-grow">
-              <p className="text-sm text-gray-400 mb-4">Recent user activity:</p>
-              <ul className="space-y-2 max-h-[580px] overflow-y-auto custom-scrollbar">
-                {userLogs.map((log, index) => (
+            <div className="p-4 flex-grow">
+            <p className="text-sm text-gray-400 mb-4">Recent user activity:</p>
+            <ul className="space-y-2 min-h-[300px] max-h-[480px] overflow-y-auto custom-scrollbar">
+              {userLogs && userLogs.length > 0 ? (
+                userLogs.map((log, index) => (
                   <li key={index} className="p-2 rounded text-white">
                     <div className="flex justify-between items-start">
                       <div>
@@ -80,9 +79,12 @@ export default function WorkspaceDashboard() {
                       </span>
                     </div>
                   </li>
-                ))}
-              </ul>
-            </div>
+                ))
+              ) : (
+                <li className="p-2 text-gray-400">No activity logs available</li>
+              )}
+            </ul>
+          </div>
           </div>
         )}
       </div>

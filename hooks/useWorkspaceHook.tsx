@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -370,24 +370,18 @@ export function useWorkspace() :UseWorkspaceReturn|null{
     }
   };
 
-  const userAction=async(workspaceId:string)=>{
-
+  const userAction = useCallback(async (workspaceId: string) => {
     try {
-
-      const response =await userActivityLogs(workspaceId)
-      const responseStatus=getResponseStatus(response.status)
-
-      if(responseStatus==ResponseStatus.SUCCESS)
-      {
+      const response = await userActivityLogs(workspaceId);
+      const responseStatus = getResponseStatus(response.status);
+      if (responseStatus == ResponseStatus.SUCCESS) {
         const newLogs: useractivity[] = response.data.data.activity;
         setuserLogs(newLogs);
       }
-      
     } catch (error) {
       console.log('error in user activity log');
-      
     }
-  }
+  }, []);
 
 const showLimitExceededToast = (resourceType: string,isMax:boolean) => {
     toast.custom((t) => (

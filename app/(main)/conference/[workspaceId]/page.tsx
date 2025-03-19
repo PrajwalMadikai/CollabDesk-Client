@@ -10,8 +10,8 @@ function Page() {
   const user = useSelector((state: RootState) => state.user);
 
   return (
-    <div className="w-full h-full">
-      <div className="h-full flex flex-col">
+    <div className="w-screen h-screen">  
+      <div className="h-full flex flex-col bg-black">
         <h1 className="text-xl font-bold p-4">Meeting Room</h1>
         <div className="flex-1">
           <VideoCall 

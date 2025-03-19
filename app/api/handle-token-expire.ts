@@ -63,16 +63,14 @@ const refreshAccess = async (isAdmin = false) => {
       async (error) => {
           const originalRequest = error.config;
           
-          console.log('Response error:', {
-              status: error.response?.status,
-              message: error.response?.data?.message,
-              retry: originalRequest._retry
-          });
-  
           // Don't retry if already retried or if it's the refresh token endpoint
           if (originalRequest._retry || originalRequest.url?.includes('refreshtoken')) {
-              return Promise.reject(error);
+            return Promise.reject(error);
           }
+          
+          // if (error.response?.status === 401) {
+          //   return Promise.reject(error);
+          // }
   
           //Blocked user
           if (error.response?.status === 403 && error.response?.data?.message === "Your account is blocked") {

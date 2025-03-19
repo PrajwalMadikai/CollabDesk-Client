@@ -288,8 +288,6 @@ export const useResetPasswordHook = () => {
         }, 2000);
       }
     } catch (error: any) {
-      // if(error.response.data.status==404&&error.response.data.message=='user email is not exists!')
-      console.error('Error updating password:', error.response?.data || error.message);
       toast.error(error.response?.data?.message || 'Failed to update password.');
     } finally {
       setLoading(false);
