@@ -13,40 +13,18 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const Sidebar: React.FC = () => {
-
   const router = useRouter();
   const params = useParams();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(true);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
   const user = useSelector((state: RootState) => state.user);
 
-
-  if(!user.email||!user.id)
-  {
-    return
-  }
   const workspace = useWorkspace();
-  if (!workspace) {
-    console.log('workspace is null in workspace hook');
-    return null;
-  }
-
-  const {
-    workspaces,
-    selectedWorkspace,
-    newWorkspaceName,
-    setNewWorkspaceName,
-    fetchWorkspaces,
-    selectWorkspace,
-    createWorkspace,
-    deleteWorkspace,
-    updateWorkspaceName,
-  } = workspace;
-
   const {
     folders,
     trashItems,
@@ -63,9 +41,8 @@ const Sidebar: React.FC = () => {
     moveToTrash: moveFolderToTrash,
     restoreFolder,
     startEditingFolder,
-    updateFileNameInFolder
+    updateFileNameInFolder,
   } = useFolder();
-
   const {
     selectedFile,
     editingFileId,
@@ -77,8 +54,7 @@ const Sidebar: React.FC = () => {
     moveToTrash: moveFileToTrash,
     restoreFile,
     startEditingFile,
-  } = useFile(selectedWorkspace, fetchFolders,updateFileNameInFolder,fetchTrashItems);
-
+  } = useFile(workspace?.selectedWorkspace, fetchFolders, updateFileNameInFolder, fetchTrashItems);
   const {
     fetchUserDetails,
     userProfile,
@@ -89,71 +65,77 @@ const Sidebar: React.FC = () => {
     error,
     newPassword,
     currentPassword,
-  }=useProfile()
+  } = useProfile();
 
-  
+  // Early exit (conditional rendering)
+  if (!user.email || !user.id || !workspace) {
+    return null;
+  }
 
+  const {
+    workspaces,
+    selectedWorkspace,
+    newWorkspaceName,
+    setNewWorkspaceName,
+    fetchWorkspaces,
+    selectWorkspace,
+    createWorkspace,
+    deleteWorkspace,
+    updateWorkspaceName,
+  } = workspace;
+
+  // Fetch workspaces and initialize workspace selection
   useEffect(() => {
     const initializeWorkspace = async () => {
       if (isInitialLoad) {
-        const workspaceId = params?.workspaceId as string;
         const fetchedWorkspaces = await fetchWorkspaces();
-        
         if (fetchedWorkspaces && fetchedWorkspaces.length > 0) {
-          if (workspaceId) {
-            const targetWorkspace = fetchedWorkspaces.find((w: Workspace) => w.workspaceId === workspaceId);
-            if (targetWorkspace) {
-              selectWorkspace(targetWorkspace);
-            } else {
-              selectWorkspace(fetchedWorkspaces[0]);
-            }
-          } else {
-            selectWorkspace(fetchedWorkspaces[0]);
-          }
+          const workspaceId = params?.workspaceId as string;
+          const targetWorkspace = fetchedWorkspaces.find((w: Workspace) => w.workspaceId === workspaceId);
+          selectWorkspace(targetWorkspace || fetchedWorkspaces[0]);
         }
-        
         setIsInitialLoad(false);
       }
     };
-
     initializeWorkspace();
-  
-  }, [isInitialLoad, params?.workspaceId]);
+  }, [isInitialLoad, params?.workspaceId, fetchWorkspaces, selectWorkspace]);
 
-  useEffect(()=>{
-    const userData=localStorage.getItem('user')
-    if(userData){
-    const user=JSON.parse(userData)
-    
-    dispatch(setUser({
-      id: user.id,
-      fullname: user.fullname,
-      email: user.email,
-      isAuthenticated: true,
-      planType: user.paymentDetail.paymentType,
-      workSpaces: user.workSpaces,
-      avatar:user.googleId
-    }))
-  }
-  if(user.id){
-    fetchUserDetails(user.id)
-  }
-  },[])
+  // Load user data from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      dispatch(
+        setUser({
+          id: parsedUser.id,
+          fullname: parsedUser.fullname,
+          email: parsedUser.email,
+          isAuthenticated: true,
+          planType: parsedUser.paymentDetail.paymentType,
+          workSpaces: parsedUser.workSpaces,
+          avatar: parsedUser.googleId,
+        })
+      );
+    }
+    if (user.id) {
+      fetchUserDetails(user.id);
+    }
+  }, [dispatch, fetchUserDetails, user.id]);
 
+  // Sync workspace ID with URL
   useEffect(() => {
     if (selectedWorkspace?.workspaceId) {
       fetchFolders(selectedWorkspace.workspaceId);
       fetchTrashItems(selectedWorkspace.workspaceId);
-      
       const currentUrl = window.location.pathname;
       const targetUrl = `/dashboard/${selectedWorkspace.workspaceId}`;
-      
       if (!currentUrl.includes(selectedWorkspace.workspaceId)) {
         router.push(targetUrl);
       }
     }
-  }, [selectedWorkspace?.workspaceId]);
+  }, [selectedWorkspace?.workspaceId, fetchFolders, fetchTrashItems, router]);
 
+  // Event handlers
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
@@ -172,7 +154,8 @@ const Sidebar: React.FC = () => {
       router.push(`/dashboard/whiteboard/${selectedWorkspace.workspaceId}`);
     }
   };
-  
+
+
   return (
     <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
       <div className="p-4 flex flex-col h-full">

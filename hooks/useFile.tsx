@@ -8,7 +8,7 @@ import { fileCreateFunc, fileRestoreFunc, fileReviewFunc, makeDocPublish, moveFi
 import { RootState } from "../store/store";
 
 export function useFile(
-    selectedWorkspace: { workspaceId: string } | null,
+    selectedWorkspace: { workspaceId: string } | null|undefined,
     fetchFolders: (workspaceId: string) => Promise<void>,
     updateFileNameInFolder:(fileId:string,folderId:string,newName:string)=>void,
     fetchTrashItems: (workspaceId: string ) => Promise<void> 

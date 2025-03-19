@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
  
- 
+ console.log(setIsSidebarOpen)
 
   const whiteboardPresent = pathname.startsWith('/dashboard/whiteboard');
 
