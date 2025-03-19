@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { ResponseStatus } from "../enums/responseStatus";
@@ -22,11 +22,11 @@ export const useProfile = () => {
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
 
-  const fetchUserDetails = async (userId: string) => {
+  const fetchUserDetails = useCallback(async (userId: string) => {
     try {
       const response = await userData(userId);
       const responseStatus = getResponseStatus(response.status);
-
+  
       if (responseStatus === ResponseStatus.SUCCESS) {
         setUserProfile({
           email: response.data.user.email,
@@ -39,7 +39,7 @@ export const useProfile = () => {
     } catch (error) {
       console.error("Error in fetching user info", error);
     }
-  };
+  },[]);
 
   const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,

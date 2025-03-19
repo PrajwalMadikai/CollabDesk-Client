@@ -118,7 +118,7 @@ const Sidebar: React.FC = () => {
     if (user.id) {
       fetchUserDetails(user.id);
     }
-  }, [dispatch, fetchUserDetails, user.id]);
+  }, [dispatch, fetchUserDetails,user.id]);
 
   useEffect(() => {
     if (selectedWorkspace?.workspaceId) {
