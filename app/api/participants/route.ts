@@ -13,23 +13,20 @@ export async function GET(request: Request) {
     const apiKey = process.env.NEXT_PUBLIC_LIVEKIT_API_KEY;
     const apiSecret = process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET;
     const wsUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
-    const livekitHost = process.env.NEXT_PUBLIC_LIVEKIT_API
+    const livekitHost = process.env.NEXT_PUBLIC_LIVEKIT_API;
 
     if (!apiKey || !apiSecret || !wsUrl || !livekitHost) {
       return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
     }
 
-
     const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
     const participants = await roomService.listParticipants(roomName);
-    console.log('participants:',participants);
     
-
     const formattedParticipants = participants.map(participant => ({
       sid: participant.sid,
       identity: participant.identity,
-      state: participant.state,
-      joinedAt: participant.joinedAt,
+      state: participant.state ? Number(participant.state) : undefined,
+      joinedAt: participant.joinedAt ? new Date(Number(participant.joinedAt)).toISOString() : undefined,
       name: participant.name,
     }));
 
