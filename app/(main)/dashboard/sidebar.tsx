@@ -421,10 +421,10 @@ const Sidebar: React.FC = () => {
         {isOpen && (
           <button
             onClick={handleWhiteboardClick}
-            className="flex items-center gap-2 p-3 text-white rounded-lg transition-colors duration-200 hover:bg-blue-700"
+            className="flex items-center gap-2 p-3 text-white rounded-lg transition-colors duration-200 "
           >
             <MessageSquare className="h-5 w-5" />
-            <span className="text-[8px]">Open Whiteboard</span>
+            <span className="text-[14px]">Open Whiteboard</span>
           </button>
         )}
       </div>

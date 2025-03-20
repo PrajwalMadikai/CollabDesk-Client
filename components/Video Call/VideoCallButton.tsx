@@ -53,7 +53,7 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
         className={`relative rounded-full w-12 h-12 flex items-center justify-center transition-all duration-300 ${
           isRinging 
             ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/50" 
-            : "bg-green-500 hover:bg-green-600 text-white"
+            : "bg-blue-600 hover:bg-blue-700 text-white"
         }`}
         title={isRinging ? "Join Call" : "Start Video Call"}
       >
