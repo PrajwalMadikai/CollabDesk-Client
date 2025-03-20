@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { ResponseStatus } from "../enums/responseStatus";
@@ -31,7 +31,7 @@ export function useFolder() {
   const user = useSelector((state: RootState) => state.user);
  
 
-  const fetchFolders = async (workspaceId: string | undefined) => {
+  const fetchFolders = useCallback(async (workspaceId: string | undefined) => {
     if (!workspaceId) return [];
     
     try {
@@ -54,9 +54,9 @@ export function useFolder() {
     } finally {
       setLoading(false);
     }
-  };
+  },[])
 
-  const fetchTrashItems = async (workspaceId: string | undefined) => {
+  const fetchTrashItems = useCallback(async (workspaceId: string | undefined) => {
     if (!workspaceId) return;
 
     try {
@@ -74,7 +74,7 @@ export function useFolder() {
     } finally {
       setLoading(false);
     }
-  };
+  },[])
 
   const toggleFolderExpansion = (folderId: string) => {
     setFolders(folders.map(folder => 

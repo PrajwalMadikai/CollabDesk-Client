@@ -22,7 +22,7 @@ export default function CreateWorkspace() {
             <Image
               src="/collabdesk white logo.png"
               alt="Logo"
-              width={800}  
+              width={800}
               height={600}
               className="h-24 w-auto md:h-[125px]"
             />

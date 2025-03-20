@@ -1,4 +1,5 @@
 import stripe from "../../../lib/stripeInit";
+import { baseFrontUrl } from "../urlconfig";
 
 export async function POST(req: Request) {
     try {
@@ -22,8 +23,8 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'subscription',  
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel`,
+            success_url: `${baseFrontUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${baseFrontUrl}/payment/cancel`,
             metadata: {
                 planType, 
             },
