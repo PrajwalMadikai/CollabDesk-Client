@@ -123,7 +123,6 @@ function HeaderAndLandingHome() {
   return (
     <>
       <div className="relative bg-background text-foreground overflow-x-hidden ">
-        {/* Header */}
         <div className="fixed top-0 left-0 w-full h-[60px] flex items-center pb-4 pr-4 z-50 backdrop-blur-md">
           <div className="flex items-center flex-shrink-0">
             <img
@@ -184,7 +183,8 @@ function HeaderAndLandingHome() {
           <div className="text-center mt-3">
             <button
               onClick={handleDashboard}
-              className="bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 px-6 rounded-md shadow-md hover:from-blue-500 hover:to-purple-600 transition duration-300"
+              style={{ borderColor: '#272757' }}
+              className="border border-5 bg-transparent text-primary rounded-[4px] font-medium py-2 px-6  shadow-md hover:bg-[#272757] hover:text-white transition duration-300"
             >
               Get Started
             </button>
@@ -192,7 +192,6 @@ function HeaderAndLandingHome() {
 
 
           <div className="w-full flex flex-wrap justify-center gap-5 mt-10 px-4 sm:px-6 md:px-0">
-
             <div className="animate-fade-right w-full sm:w-[48%] md:w-[250px] h-[240px] border-[1px] border-gray-400 rounded-[9px] p-4 flex flex-col items-start shadow-md bg-[rgba(99,102,241,0.1)]">
               <div className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 mr-2" viewBox="0 0 640 512">
@@ -213,7 +212,6 @@ function HeaderAndLandingHome() {
               <p className="text-[18px] md:text-[14px] font-light dark:text-gray-200">Publish your work online with ease.</p>
             </div>
 
-            {/* Feature Box 3 */}
             <div className="animate-fade-right w-full sm:w-[48%] md:w-[250px] h-[240px] border-[1px] border-gray-400 rounded-[9px] p-4 flex flex-col items-start shadow-md bg-[rgba(99,102,241,0.1)]">
               <div className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 mr-2" viewBox="0 0 640 512">
@@ -224,7 +222,6 @@ function HeaderAndLandingHome() {
               <p className="text-[18px] md:text-[14px] font-light dark:text-gray-200">Work collaboratively with your team in real time.</p>
             </div>
 
-            {/* Feature Box 4 */}
             <div className="animate-fade-right w-full sm:w-[48%] md:w-[250px] h-[240px] border-[1px] border-gray-400 rounded-[9px] p-4 flex flex-col items-start shadow-md bg-[rgba(99,102,241,0.1)]">
               <div className="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 mr-2" viewBox="0 0 640 512">
@@ -234,7 +231,6 @@ function HeaderAndLandingHome() {
               <h3 className="text-xl md:text-lg font-semibold mb-2 mt-4 text-foreground">Monthly Subscription</h3>
               <p className="text-[18px] md:text-[14px] font-light dark:text-gray-200">Ensure data privacy with secure access controls.</p>
             </div>
-
           </div>
         </div>
 
@@ -245,18 +241,16 @@ function HeaderAndLandingHome() {
               Subscription <span className="text-blue-800 font-extrabold">Details</span>
             </h2>
             <PaymentComponent basePlan={basePlan} premiumPlan={premiumPlan} />
-
-            <div className="bg-[#272757] text-white p-6 rounded-lg shadow-md text-center">
-              <h3 className="text-xl font-semibold mb-4">Professional</h3>
-              <p className="mb-6 text-gray-300">
-                Designed for greater flexibility, this solution offers advanced tools for custom tailoring to your needs.
+            <div className="bg-[#272757] text-white p-8 rounded-lg shadow-lg text-center">
+              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">
+                Professional Plan
+              </h3>
+              <p className="text-lg md:text-xl font-medium mb-6 text-gray-300">
+                Tailored for teams that demand flexibility and precision.
               </p>
-              <button
-                onClick={handleDashboard}
-                className="bg-black text-white font-medium py-2 px-6 rounded-md shadow-md hover:from-teal-400 hover:to-green-500 transition duration-300"
-              >
-                Get Started
-              </button>
+              <p className="text-base md:text-lg font-light mb-8 text-gray-400">
+                Designed for greater flexibility, this solution offers advanced tools for custom tailoring to your needs. Whether you're managing projects, collaborating in real-time, or ensuring data security, our Professional Plan has got you covered.
+              </p>
             </div>
           </div>
         </div>

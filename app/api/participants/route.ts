@@ -1,37 +1,43 @@
-import axios from "axios";
+// API route: /api/participants.ts
+import { RoomServiceClient } from 'livekit-server-sdk';
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const room = url.searchParams.get("room");
-
-  if (!room) {
+  const roomName = url.searchParams.get("room");
+  
+  if (!roomName) {
     return NextResponse.json({ error: "Missing room parameter" }, { status: 400 });
   }
-
+  
   try {
     const apiKey = process.env.NEXT_PUBLIC_LIVEKIT_API_KEY;
     const apiSecret = process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET;
     const wsUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
-
+    
     if (!apiKey || !apiSecret || !wsUrl) {
       return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
     }
+    
+    const livekitHost = 'https://my.livekit.host';
 
-    const response = await axios.get(`${wsUrl}/room/${room}/participants`, {
-      headers: {
-        Authorization: `Bearer ${apiSecret}`,
-      },
-    });
-
-    return NextResponse.json({ participants: response.data }, { status: 200 });
+    const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
+    const participants = await roomService.listParticipants(roomName);
+    
+    const formattedParticipants = participants.map(participant => ({
+      sid: participant.sid,
+      identity: participant.identity,
+      state: participant.state,
+      joinedAt: participant.joinedAt,
+      name: participant.name,
+    }));
+    
+    return NextResponse.json({ participants: formattedParticipants }, { status: 200 });
   } catch (error) {
     console.error("Error fetching participants:", error);
-
-    if (axios.isAxiosError(error)) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ error: "Failed to fetch participants" }, { status: 500 });
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : "Failed to fetch participants" 
+    }, { status: 500 });
   }
 }
+ 

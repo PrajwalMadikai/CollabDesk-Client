@@ -57,7 +57,7 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     };
 
     fetchParticipants();
-    const interval = setInterval(fetchParticipants, 3000); 
+    const interval = setInterval(fetchParticipants, 5000); 
 
     return () => clearInterval(interval);
   }, [workspaceId]);
