@@ -37,16 +37,16 @@ export function useFile(
       if (responseStatus === ResponseStatus.CREATED) {
         const newFile = response.data.file;
         
-        const liveblockAuth=await fetch('/api/liveblocks-auth',{
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        }})
+        // const liveblockAuth=await fetch('/api/liveblocks-auth',{
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "Authorization": `Bearer ${token}`
+        // }})
 
         
-        const authData = await liveblockAuth.json();
-        console.log('Liveblocks auth success:', authData);
+        // const authData = await liveblockAuth.json();
+        // console.log('Liveblocks auth success:', authData);
             
         const roomResponse = await fetch("/api/create-room", {
           method: "POST",
@@ -66,7 +66,6 @@ export function useFile(
           throw new Error("Failed to create room");
         }
 
-        // Refetch folders to update the UI
         if (selectedWorkspace?.workspaceId) {
           await fetchFolders(selectedWorkspace.workspaceId);
         }

@@ -4,7 +4,6 @@ import { liveblocks } from "../../../lib/liveblocks-server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log("Received data:", body);
     const { roomId, userId, email, title } = body;
 
     if (!roomId || !userId || !email || !title) {

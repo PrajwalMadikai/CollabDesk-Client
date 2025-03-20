@@ -413,26 +413,26 @@ const Sidebar: React.FC = () => {
           </div>
         )}
       </div>
-      <div className="ml-4">
-        <VideoCallButton workspaceId={params?.workspaceId as string} />
-      </div>
-      {isOpen && (
-        <div className="p-4 border-gray-800 mt-auto">
+      <div className="flex items-center gap-4 px-4 py-2 border-t border-gray-800 mt-auto">
+        <div>
+          <VideoCallButton workspaceId={params?.workspaceId as string} />
+        </div>
+
+        {isOpen && (
           <button
             onClick={handleWhiteboardClick}
-            className="flex items-center justify-center gap-2 w-full p-3 text-white rounded-lg transition-colors duration-200"
+            className="flex items-center gap-2 p-3 text-white bg-blue-600 rounded-lg transition-colors duration-200 hover:bg-blue-700"
           >
             <MessageSquare className="h-5 w-5" />
             <span className="text-sm">Open Whiteboard</span>
           </button>
-        </div>
-      )}
-
+        )}
+      </div>
       {isOpen && (
         <div className="p-4 border-t border-gray-800 mt-auto flex justify-center items-center gap-[35px]">
           <button
             onClick={() => setIsProfileModalOpen(true)}
-            className="flex items-center gap-2 cursor-pointer  "
+            className="flex items-center gap-2 cursor-pointer"
           >
             <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden flex-shrink-0">
               {userProfile?.avatar && (
@@ -443,15 +443,24 @@ const Sidebar: React.FC = () => {
                 />
               )}
             </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-white">Profile</p>
+
+            <div className="flex-1 relative">
+              <p
+                className="text-[14px] font-semibold text-white truncate max-w-[100px] whitespace-nowrap overflow-hidden"
+                title={userProfile?.email}  
+              >
+                {userProfile?.email ? (
+                  userProfile.email.length > 15
+                    ? `${userProfile.email.substring(0, 15)}...`
+                    : userProfile.email
+                ) : ""}
+              </p>
             </div>
           </button>
 
-          <span className="text-white">|</span>
-
+          {/* Logout Button */}
           <Link href="/">
-            <button className="text-white hover:text-white transition">
+            <button className="text-white hover:text-gray-300 transition">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
