@@ -1,4 +1,3 @@
-// API route: /api/participants.ts
 import { RoomServiceClient } from 'livekit-server-sdk';
 import { NextResponse } from "next/server";
 
@@ -15,11 +14,11 @@ export async function GET(request: Request) {
     const apiSecret = process.env.NEXT_PUBLIC_LIVEKIT_API_SECRET;
     const wsUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL;
     
-    if (!apiKey || !apiSecret || !wsUrl) {
+    const livekitHost =process.env.NEXT_PUBLIC_LIVEKIT_API
+    if (!apiKey || !apiSecret || !wsUrl ||!livekitHost) {
       return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
     }
-    
-    const livekitHost = 'https://my.livekit.host';
+
 
     const roomService = new RoomServiceClient(livekitHost, apiKey, apiSecret);
     const participants = await roomService.listParticipants(roomName);
