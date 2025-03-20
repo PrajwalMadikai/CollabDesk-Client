@@ -13,8 +13,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-     
-
     const room = await liveblocks.createRoom(roomId, {
       metadata: {
         title: title ,
