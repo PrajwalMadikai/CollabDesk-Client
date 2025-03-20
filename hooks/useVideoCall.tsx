@@ -50,7 +50,6 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     const fetchParticipants = async () => {
       try {
         const response = await GetVideocallParticipants(workspaceId);
-        console.log('count of users video call:',response.count);
         
         setParticipantCount(response.count);
       } catch (error) {
@@ -74,5 +73,6 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     isInCall,
     isLoading,
     participantCount,
+    setIsInCall
   };
 };

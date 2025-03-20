@@ -108,3 +108,20 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #6b7280;  
 }
+
+@keyframes wave-animation {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.wave-effect {
+  animation: wave-animation 1.5s infinite;
+  border: 2px solid rgba(0, 128, 255, 0.5); /* Blue color */
+  border-radius: 50%;
+}

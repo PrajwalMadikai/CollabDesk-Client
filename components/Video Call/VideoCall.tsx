@@ -44,36 +44,36 @@ const VideoCall: React.FC<VideoProps> = ({ workspaceId, userId, userName }) => {
     }
   }, [serverUrl, setError]);
 
-  useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.innerHTML = `
-      .lk-video-conference {
-        height: 100% !important;
-        overflow: auto !important;
-      }
+  // useEffect(() => {
+  //   const styleElement = document.createElement('style');
+  //   styleElement.innerHTML = `
+  //     .lk-video-conference {
+  //       height: 100% !important;
+  //       overflow: auto !important;
+  //     }
       
-      .lk-grid-layout {
-        overflow-y: auto !important;
-        max-height: calc(100vh - 80px) !important;
-      }
+  //     .lk-grid-layout {
+  //       overflow-y: auto !important;
+  //       max-height: calc(100vh - 80px) !important;
+  //     }
       
-      .lk-participant-tile {
-        min-height: 200px !important;
-      }
+  //     .lk-participant-tile {
+  //       min-height: 200px !important;
+  //     }
       
-      .lk-control-bar {
-        position: sticky !important;
-        bottom: 0 !important;
-        z-index: 10 !important;
-        background-color: rgba(36, 36, 36, 0.9) !important;
-      }
-    `;
-    document.head.appendChild(styleElement);
+  //     .lk-control-bar {
+  //       position: sticky !important;
+  //       bottom: 0 !important;
+  //       z-index: 10 !important;
+  //       background-color: rgba(36, 36, 36, 0.9) !important;
+  //     }
+  //   `;
+  //   document.head.appendChild(styleElement);
 
-    return () => {
-      document.head.removeChild(styleElement);
-    };
-  }, []);
+  //   return () => {
+  //     document.head.removeChild(styleElement);
+  //   };
+  // }, []);
 
   if (isLoading) {
     return (
