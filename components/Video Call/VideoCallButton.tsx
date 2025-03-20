@@ -15,7 +15,7 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
   const user = useSelector((state: RootState) => state.user);
   const [isRinging, setIsRinging] = useState(false);
 
-  const { joinCall, setError, participantCount,getToken,setIsInCall} = VideoRoomHook({
+  const { joinCall, setError, participantCount, getToken, setIsInCall } = VideoRoomHook({
     workspaceId,
     userId: user?.id || null,
     userName: user?.fullname || null,
@@ -43,17 +43,23 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
   };
 
   return (
-    <div className="relative">
-      {isRinging && <div className="absolute inset-0 rounded-full wave-effect"></div>}
-      
+    <div className="relative inline-flex items-center justify-center">
+      {isRinging && (
+        <>
+          <span className="absolute animate-ping-slow opacity-75 h-full w-full rounded-full bg-blue-400"></span>
+          <span className="absolute animate-ping-slower opacity-50 h-full w-full rounded-full bg-blue-300"></span>
+        </>
+      )}
       <Button
         onClick={handleButtonClick}
-        className={`flex items-center gap-2 px-4 py-2 rounded-md transition duration-200 ${
-          isRinging ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+        className={`relative rounded-full w-12 h-12 flex items-center justify-center transition-all duration-300 ${
+          isRinging 
+            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/50" 
+            : "bg-gray-200 hover:bg-gray-300 text-gray-800"
         }`}
+        title={isRinging ? "Join Call" : "Start Video Call"}
       >
-        <PhoneCall size={16} />
-        {isRinging ? <span>Join Call</span> : <span>Start Video Call</span>}
+        <PhoneCall size={20} className={isRinging ? "animate-pulse" : ""} />
       </Button>
     </div>
   );

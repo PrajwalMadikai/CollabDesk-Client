@@ -1,12 +1,13 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: ['class'], 
+  darkMode: ['class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './component/ui/**/*.{ts,tsx,js,jsx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx}',  
   ],
   theme: {
     extend: {
@@ -68,6 +69,8 @@ const config: Config = {
       animation: {
         'fade-down': 'fadeDown 1s ease-out',
         'fade-right': 'fadeRight 1s ease-out',
+        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',  
+        'ping-slower': 'ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite',  
       },
       keyframes: {
         fadeDown: {

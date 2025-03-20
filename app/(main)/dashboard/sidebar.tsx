@@ -118,7 +118,7 @@ const Sidebar: React.FC = () => {
     if (user.id) {
       fetchUserDetails(user.id);
     }
-  }, [dispatch, fetchUserDetails,user.id]);
+  }, [dispatch, fetchUserDetails, user.id]);
 
   useEffect(() => {
     if (selectedWorkspace?.workspaceId) {
@@ -156,12 +156,12 @@ const Sidebar: React.FC = () => {
       <div className="p-4 flex flex-col h-full">
         <div className="flex justify-between items-center mb-4">
           {isOpen && (
-            <div 
-              className="flex items-center gap-2 text-white text-lg font-semibold cursor-pointer" 
+            <div
+              className="flex items-center gap-2 text-white text-lg font-semibold cursor-pointer"
               onClick={() => setShowWorkspaceList(!showWorkspaceList)}
             >
               <span>{selectedWorkspace?.workspaceName}</span>
-              <ChevronRight 
+              <ChevronRight
                 className={`h-4 w-4 transition-transform ${showWorkspaceList ? 'rotate-90' : ''}`}
               />
             </div>
@@ -176,9 +176,8 @@ const Sidebar: React.FC = () => {
             {workspaces.map((workspace) => (
               <div
                 key={workspace.workspaceId}
-                className={`group px-3 py-2 hover:bg-gray-700 cursor-pointer rounded-md transition duration-200 flex justify-between items-center ${
-                  selectedWorkspace?.workspaceId === workspace.workspaceId ? 'bg-gray-700' : ''
-                }`}
+                className={`group px-3 py-2 hover:bg-gray-700 cursor-pointer rounded-md transition duration-200 flex justify-between items-center ${selectedWorkspace?.workspaceId === workspace.workspaceId ? 'bg-gray-700' : ''
+                  }`}
                 onClick={() => handleWorkspaceSelect(workspace)}
               >
                 <span>{workspace.workspaceName}</span>
@@ -210,8 +209,8 @@ const Sidebar: React.FC = () => {
 
         {isOpen && (
           <div className="flex items-center justify-start my-4 text-[13px] uppercase font-semibold py-0">
-            <button 
-              onClick={() => setIsSettingsModalOpen(true)} 
+            <button
+              onClick={() => setIsSettingsModalOpen(true)}
               className="flex items-center text-white hover:text-white transition duration-200"
             >
               <Settings className="h-6 w-5" />
@@ -223,8 +222,8 @@ const Sidebar: React.FC = () => {
         {isOpen && (
           <div className="flex items-center justify-between text-gray-400 text-[13px] uppercase font-semibold text-start px-2 py-2">
             <span className="text-white">Folders</span>
-            <button 
-              onClick={() => createFolder(selectedWorkspace?.workspaceId)} 
+            <button
+              onClick={() => createFolder(selectedWorkspace?.workspaceId)}
               className="text-gray-400 hover:text-white transition duration-200"
               disabled={!selectedWorkspace}
             >
@@ -239,7 +238,7 @@ const Sidebar: React.FC = () => {
               <div key={folder.id} className="group flex flex-col">
                 <div className="flex items-center justify-between px-4 text-white hover:bg-gray-800 cursor-pointer transition duration-200">
                   <div className="flex items-center gap-2 flex-1">
-                    <ChevronRight 
+                    <ChevronRight
                       className={`h-4 w-4 transition-transform ${folder.isExpanded ? 'rotate-90' : ''}`}
                       onClick={() => toggleFolderExpansion(folder.id)}
                     />
@@ -250,12 +249,12 @@ const Sidebar: React.FC = () => {
                         className="bg-transparent w-[100px]  border-none focus:outline-none text-sm text-gray-300"
                         value={editingFolderName}
                         onChange={(e) => setEditingFolderName(e.target.value)}
-                        onBlur={() => updateFolderName(folder.id,user.email)}
-                        onKeyPress={(e) => e.key === 'Enter' && updateFolderName(folder.id,user.email)}
+                        onBlur={() => updateFolderName(folder.id, user.email)}
+                        onKeyPress={(e) => e.key === 'Enter' && updateFolderName(folder.id, user.email)}
                         autoFocus
                       />
                     ) : (
-                      <span 
+                      <span
                         className="text-[14px] text-gray-300"
                         onDoubleClick={() => startEditingFolder(folder.id, folder.name)}
                       >
@@ -268,13 +267,13 @@ const Sidebar: React.FC = () => {
                       className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
                       onClick={(e) => {
                         e.stopPropagation();
-                        moveFolderToTrash(folder.id, selectedWorkspace?.workspaceId,user.email);
+                        moveFolderToTrash(folder.id, selectedWorkspace?.workspaceId, user.email);
                       }}
                     >
                       <Trash className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => createFile(folder.id,user.email)}
+                      onClick={() => createFile(folder.id, user.email)}
                       className="hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
                     >
                       <Plus className="h-4 w-4" />
@@ -284,11 +283,10 @@ const Sidebar: React.FC = () => {
                 {folder.isExpanded && (
                   <div className="ml-8">
                     {folder.files.map((file) => (
-                      <div 
-                        key={file.fileId} 
-                        className={`flex items-center gap-2 px-4 py-1 text-gray-300 cursor-pointer transition duration-200 group ${
-                          selectedFile === file.fileId ? 'bg-gray-700' : ''
-                        }`}
+                      <div
+                        key={file.fileId}
+                        className={`flex items-center gap-2 px-4 py-1 text-gray-300 cursor-pointer transition duration-200 group ${selectedFile === file.fileId ? 'bg-gray-700' : ''
+                          }`}
                         onClick={() => openFile(file.fileId, selectedWorkspace?.workspaceId)}
                       >
                         <File className="h-4 w-4 text-gray-400" />
@@ -298,12 +296,12 @@ const Sidebar: React.FC = () => {
                             className="bg-transparent border-none focus:outline-none text-sm text-gray-300 w-full"
                             value={editingFileName}
                             onChange={(e) => setEditingFileName(e.target.value)}
-                            onBlur={() => renameFile(file.fileId, folder.id,user.email)}
-                            onKeyPress={(e) => e.key === 'Enter' && renameFile(file.fileId, folder.id,user.email)}
+                            onBlur={() => renameFile(file.fileId, folder.id, user.email)}
+                            onKeyPress={(e) => e.key === 'Enter' && renameFile(file.fileId, folder.id, user.email)}
                             autoFocus
                           />
                         ) : (
-                          <span 
+                          <span
                             className="text-[14px] flex-1"
                             onDoubleClick={(e) => {
                               e.stopPropagation();
@@ -317,7 +315,7 @@ const Sidebar: React.FC = () => {
                           className="ml-auto hidden group-hover:block text-gray-400 hover:text-white transition duration-200"
                           onClick={(e) => {
                             e.stopPropagation();
-                            moveFileToTrash(file.fileId, folder.id,user.email, () => fetchFolders(selectedWorkspace?.workspaceId));
+                            moveFileToTrash(file.fileId, folder.id, user.email, () => fetchFolders(selectedWorkspace?.workspaceId));
                           }}
                         >
                           <Trash className="h-4 w-4" />
@@ -331,92 +329,93 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-       {isOpen && (
-        <div className="mt-[50px] relative">
-          <div 
-            className="flex items-center cursor-pointer text-primary transition duration-200"
-            onClick={() => setIsTrashExpanded(!isTrashExpanded)}
-          >
-            <Trash className="h-4 w-4" />
-            <span className="font-semibold text-primary text-[13px] ml-2">TRASH</span>
-          </div>
-
-          {isTrashExpanded && (
-            <div className="fixed left-[200px] ml-4 top-1/2 transform -translate-y-1/2 z-10">
-               
-              <div className="bg-gray-950 border border-gray-800 rounded-lg shadow-lg w-72 min-h-[320px] max-h-[350px] overflow-y-auto custom-scrollbar p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-white font-semibold">Trash Items</h3>
-                  <button 
-                    onClick={() => setIsTrashExpanded(false)}
-                    className="text-gray-400 hover:text-white transition"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-                
-                {trashItems.folders.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-gray-300 mb-2">Folders</h4>
-                    <div className="space-y-2">
-                      {trashItems.folders.map((folder) => (
-                        <div key={folder._id} className="flex items-center justify-between px-2  rounded">
-                          <div className="flex items-center gap-2">
-                            <Folder className="h-4 w-4 text-gray-400" />
-                            <span className="text-gray-300 text-sm">{folder.name}</span>
-                          </div>
-                          <button
-                            onClick={() => restoreFolder(folder._id, selectedWorkspace?.workspaceId, user.email)}
-                            className="text-gray-400 hover:text-white transition duration-200"
-                            title="Restore folder"
-                          >
-                            <RefreshCcw className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {trashItems.files.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-300 mb-2">Files</h4>
-                    <div className="space-y-2">
-                      {trashItems.files.map((file) => (
-                        <div key={file._id} className="flex items-center justify-between px-2 rounded">
-                          <div className="flex items-center gap-2">
-                            <File className="h-4 w-4 text-gray-400" />
-                            <span className="text-gray-300 text-sm">{file.name}</span>
-                          </div>
-                          <button
-                            onClick={() => restoreFile(file._id, user.email, () => fetchFolders(selectedWorkspace?.workspaceId))}
-                            className="text-gray-400 hover:text-white transition duration-200"
-                            title="Restore file"
-                          >
-                            <RefreshCcw className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {trashItems.folders.length === 0 && trashItems.files.length === 0 && (
-                  <div className="flex flex-col items-center justify-center h-64">
-                    <Trash className="h-12 w-12 text-gray-600 mb-2" />
-                    <p className="text-gray-500 text-center">No items in trash</p>
-                  </div>
-                )}
-              </div>
+        {isOpen && (
+          <div className="mt-[50px] relative">
+            <div
+              className="flex items-center cursor-pointer text-primary transition duration-200"
+              onClick={() => setIsTrashExpanded(!isTrashExpanded)}
+            >
+              <Trash className="h-4 w-4" />
+              <span className="font-semibold text-primary text-[13px] ml-2">TRASH</span>
             </div>
-          )}
-        </div>
-      )}
-    </div>
 
-      <VideoCallButton workspaceId={params?.workspaceId as string}  />
+            {isTrashExpanded && (
+              <div className="fixed left-[200px] ml-4 top-1/2 transform -translate-y-1/2 z-10">
+
+                <div className="bg-gray-950 border border-gray-800 rounded-lg shadow-lg w-72 min-h-[320px] max-h-[350px] overflow-y-auto custom-scrollbar p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-white font-semibold">Trash Items</h3>
+                    <button
+                      onClick={() => setIsTrashExpanded(false)}
+                      className="text-gray-400 hover:text-white transition"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {trashItems.folders.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold text-gray-300 mb-2">Folders</h4>
+                      <div className="space-y-2">
+                        {trashItems.folders.map((folder) => (
+                          <div key={folder._id} className="flex items-center justify-between px-2  rounded">
+                            <div className="flex items-center gap-2">
+                              <Folder className="h-4 w-4 text-gray-400" />
+                              <span className="text-gray-300 text-sm">{folder.name}</span>
+                            </div>
+                            <button
+                              onClick={() => restoreFolder(folder._id, selectedWorkspace?.workspaceId, user.email)}
+                              className="text-gray-400 hover:text-white transition duration-200"
+                              title="Restore folder"
+                            >
+                              <RefreshCcw className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {trashItems.files.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-300 mb-2">Files</h4>
+                      <div className="space-y-2">
+                        {trashItems.files.map((file) => (
+                          <div key={file._id} className="flex items-center justify-between px-2 rounded">
+                            <div className="flex items-center gap-2">
+                              <File className="h-4 w-4 text-gray-400" />
+                              <span className="text-gray-300 text-sm">{file.name}</span>
+                            </div>
+                            <button
+                              onClick={() => restoreFile(file._id, user.email, () => fetchFolders(selectedWorkspace?.workspaceId))}
+                              className="text-gray-400 hover:text-white transition duration-200"
+                              title="Restore file"
+                            >
+                              <RefreshCcw className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {trashItems.folders.length === 0 && trashItems.files.length === 0 && (
+                    <div className="flex flex-col items-center justify-center h-64">
+                      <Trash className="h-12 w-12 text-gray-600 mb-2" />
+                      <p className="text-gray-500 text-center">No items in trash</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="ml-4">
+        <VideoCallButton workspaceId={params?.workspaceId as string} />
+      </div>
       {isOpen && (
         <div className="p-4 border-gray-800 mt-auto">
           <button
@@ -490,7 +489,6 @@ const Sidebar: React.FC = () => {
             className="bg-gray-950 p-3 md:p-6 rounded-[4px] w-[500px] h-[550px] md:w-[650px] relative flex flex-col justify-between overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-white transition"
               onClick={() => setIsProfileModalOpen(false)}
@@ -570,10 +568,10 @@ const Sidebar: React.FC = () => {
                   {userProfile?.paymentPlan === "Non"
                     ? "No Plan Purchased"
                     : userProfile?.paymentPlan
-                    ? `${userProfile.paymentPlan[0].toLocaleUpperCase()}${userProfile.paymentPlan.slice(
+                      ? `${userProfile.paymentPlan[0].toLocaleUpperCase()}${userProfile.paymentPlan.slice(
                         1
                       )} Subscription`
-                    : "No Plan Selected"}
+                      : "No Plan Selected"}
                 </p>
               </div>
 
@@ -597,9 +595,8 @@ const Sidebar: React.FC = () => {
                   placeholder="Enter Current Password"
                   value={currentPassword}
                   onChange={handleCurrentPasswordChange}
-                  className={`w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none ${
-                    error ? "border border-red-500" : ""
-                  }`}
+                  className={`w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none ${error ? "border border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -610,9 +607,8 @@ const Sidebar: React.FC = () => {
                   placeholder="Enter New Password"
                   value={newPassword}
                   onChange={handleChange}
-                  className={`w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none ${
-                    error ? "border border-red-500" : ""
-                  }`}
+                  className={`w-full bg-gray-800 text-gray-300 text-sm px-3 py-2 rounded mt-1 focus:outline-none ${error ? "border border-red-500" : ""
+                    }`}
                 />
                 {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
               </div>

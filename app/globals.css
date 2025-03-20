@@ -109,19 +109,23 @@
   background: #6b7280;  
 }
 
-@keyframes wave-animation {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
+@layer utilities {
+  .animate-ping-slow {
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
+  
+  .animate-ping-slower {
+    animation: ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
 }
 
-.wave-effect {
-  animation: wave-animation 1.5s infinite;
-  border: 2px solid rgba(0, 128, 255, 0.5); /* Blue color */
-  border-radius: 50%;
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
 }
