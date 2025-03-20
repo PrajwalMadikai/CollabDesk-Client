@@ -413,7 +413,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
       </div>
-      <div className="flex items-center gap-4 px-4 py-2 border-t border-gray-800 mt-auto">
+      <div className="flex items-center gap-4 px-6 py-2   border-gray-800 mt-auto">
         <div>
           <VideoCallButton workspaceId={params?.workspaceId as string} />
         </div>
@@ -421,10 +421,10 @@ const Sidebar: React.FC = () => {
         {isOpen && (
           <button
             onClick={handleWhiteboardClick}
-            className="flex items-center gap-2 p-3 text-white bg-blue-600 rounded-lg transition-colors duration-200 hover:bg-blue-700"
+            className="flex items-center gap-2 p-3 text-white rounded-lg transition-colors duration-200 hover:bg-blue-700"
           >
             <MessageSquare className="h-5 w-5" />
-            <span className="text-sm">Open Whiteboard</span>
+            <span className="text-[8px]">Open Whiteboard</span>
           </button>
         )}
       </div>

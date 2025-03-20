@@ -8,20 +8,20 @@ import { fileCreateFunc, fileRestoreFunc, fileReviewFunc, makeDocPublish, moveFi
 import { RootState } from "../store/store";
 
 export function useFile(
-    selectedWorkspace: { workspaceId: string } | null|undefined,
-    fetchFolders: (workspaceId: string) => Promise<void>,
-    updateFileNameInFolder:(fileId:string,folderId:string,newName:string)=>void,
-    fetchTrashItems: (workspaceId: string ) => Promise<void> 
+  selectedWorkspace: { workspaceId: string } | null | undefined,
+  fetchFolders: (workspaceId: string) => Promise<void>,
+  updateFileNameInFolder: (fileId: string, folderId: string, newName: string) => void,
+  fetchTrashItems: (workspaceId: string) => Promise<void>
 ) {
-    const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [editingFileId, setEditingFileId] = useState<string | null>(null);
-    const [editingFileName, setEditingFileName] = useState<string>("");
-    const [loading, setLoading] = useState(false);
-  
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
+  const [editingFileName, setEditingFileName] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
 
-  const createFile = async (folderId: string,email:string|null) => {
+  const createFile = async (folderId: string, email: string | null) => {
     if (!folderId) {
       console.error("Missing folderId");
       return null;
@@ -31,23 +31,26 @@ export function useFile(
       setLoading(true);
       const token = localStorage.getItem("accessToken");
 
-      const response = await fileCreateFunc(folderId,email);
+      const response = await fileCreateFunc(folderId, email);
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.CREATED) {
         const newFile = response.data.file;
-        
-        // const liveblockAuth=await fetch('/api/liveblocks-auth',{
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "Authorization": `Bearer ${token}`
-        // }})
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const liveblockAuth = await fetch('/api/liveblocks-auth', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
-        
-        // const authData = await liveblockAuth.json();
-        // console.log('Liveblocks auth success:', authData);
-            
+        const authData = await liveblockAuth.json();
+        console.log('Liveblocks auth success:', authData);
+
         const roomResponse = await fetch("/api/create-room", {
           method: "POST",
           headers: {
@@ -74,11 +77,11 @@ export function useFile(
           duration: 2000,
           position: "top-right",
           style: {
-            background: '#166534',  
-            color: '#d1fae5',    
-            borderRadius: '8px',    
-            padding: '12px',        
-            fontSize: '14px',      
+            background: '#166534',
+            color: '#d1fae5',
+            borderRadius: '8px',
+            padding: '12px',
+            fontSize: '14px',
           },
         });
 
@@ -103,9 +106,9 @@ export function useFile(
       console.error("Missing workspace or user information");
       return false;
     }
-    
+
     setSelectedFile(fileId);
-    
+
     try {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
@@ -123,12 +126,12 @@ export function useFile(
           email: user.email
         })
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to access room');
       }
-  
+
       await response.json();
       router.push(`/dashboard/${workspaceId}/${fileId}`);
       return true;
@@ -141,22 +144,22 @@ export function useFile(
     } finally {
       setLoading(false);
     }
-    
+
     return false;
   };
 
-  const renameFile = async (fileId: string, folderId: string,email:string|null) => {
+  const renameFile = async (fileId: string, folderId: string, email: string | null) => {
     if (editingFileName.trim()) {
       try {
         setLoading(true);
-        
-        const response = await renameFileFunc(fileId,editingFileName,folderId,email)
+
+        const response = await renameFileFunc(fileId, editingFileName, folderId, email)
 
         const responseStatus = getResponseStatus(response.status);
-  
+
         if (responseStatus === ResponseStatus.SUCCESS) {
 
-          updateFileNameInFolder(fileId,folderId,editingFileName)
+          updateFileNameInFolder(fileId, folderId, editingFileName)
           setEditingFileId(null);
           return true
 
@@ -177,35 +180,35 @@ export function useFile(
     } else {
       setEditingFileId(null);
     }
-    
+
     return false;
   };
 
-  const moveToTrash = async (fileId: string, folderId: string,email:string|null, updateFolderFn?: () => Promise<void>) => {
+  const moveToTrash = async (fileId: string, folderId: string, email: string | null, updateFolderFn?: () => Promise<void>) => {
     try {
       setLoading(true);
-       
-      const response = await moveFileToTrashFunc(fileId,folderId,email)
+
+      const response = await moveFileToTrashFunc(fileId, folderId, email)
 
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.SUCCESS) {
         if (updateFolderFn) {
           await updateFolderFn();
-          if(selectedWorkspace?.workspaceId){
-          await fetchTrashItems(selectedWorkspace?.workspaceId)
+          if (selectedWorkspace?.workspaceId) {
+            await fetchTrashItems(selectedWorkspace?.workspaceId)
           }
         }
-        
+
         toast.success("File has moved to trash", {
           duration: 3000,
           position: "bottom-right",
           style: {
-            background: '#166534',  
-            color: '#d1fae5',    
-            borderRadius: '8px',    
-            padding: '12px',        
-            fontSize: '14px',      
+            background: '#166534',
+            color: '#d1fae5',
+            borderRadius: '8px',
+            padding: '12px',
+            fontSize: '14px',
           },
         });
         return true;
@@ -219,25 +222,25 @@ export function useFile(
     } finally {
       setLoading(false);
     }
-    
+
     return false;
   };
 
-  const restoreFile = async (fileId: string,email:string|null, updateFnCallback?: () => Promise<void>) => {
+  const restoreFile = async (fileId: string, email: string | null, updateFnCallback?: () => Promise<void>) => {
     try {
       setLoading(true);
-      const response = await fileRestoreFunc(fileId,email)
-      
+      const response = await fileRestoreFunc(fileId, email)
+
       const responseStatus = getResponseStatus(response.status);
 
       if (responseStatus === ResponseStatus.SUCCESS) {
         if (updateFnCallback) {
           await updateFnCallback();
-          if(selectedWorkspace?.workspaceId){
+          if (selectedWorkspace?.workspaceId) {
             await fetchTrashItems(selectedWorkspace?.workspaceId)
-            }
+          }
         }
-        
+
         return true;
       }
     } catch (error) {
@@ -249,7 +252,7 @@ export function useFile(
     } finally {
       setLoading(false);
     }
-    
+
     return false;
   };
 
@@ -274,43 +277,42 @@ export function useFile(
 }
 
 
-export const publishDocument=()=>{
-    const handleDocPublish=async(fileId:string)=>{
-        try {
-            const response=await makeDocPublish(fileId)
-            const responseStatus=getResponseStatus(response.status)
+export const publishDocument = () => {
+  const handleDocPublish = async (fileId: string) => {
+    try {
+      const response = await makeDocPublish(fileId)
+      const responseStatus = getResponseStatus(response.status)
 
-            if(responseStatus==ResponseStatus.SUCCESS)
-            {
-                return response
-            }
-            throw new Error("Failed to publish document");
-        } catch (error) {
-            toast.error("Unable to publish document",{
-                position:'top-right'
-            })
-        }
+      if (responseStatus == ResponseStatus.SUCCESS) {
+        return response
+      }
+      throw new Error("Failed to publish document");
+    } catch (error) {
+      toast.error("Unable to publish document", {
+        position: 'top-right'
+      })
     }
-  
-    return {
-        handleDocPublish
-    }
+  }
+
+  return {
+    handleDocPublish
+  }
 }
 
 
 export const previewFileData = () => {
 
-  const [content, setContent] = useState(null); 
+  const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string|null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [fetchedFileIds, setFetchedFileIds] = useState(new Set());
 
- 
-  const getFileData = useCallback(async (fileId:string) => {
+
+  const getFileData = useCallback(async (fileId: string) => {
     if (content && fetchedFileIds.has(fileId)) {
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(null);
@@ -330,7 +332,7 @@ export const previewFileData = () => {
     } finally {
       setLoading(false);
     }
-  }, [content, fetchedFileIds]);  
+  }, [content, fetchedFileIds]);
 
   return {
     content,
