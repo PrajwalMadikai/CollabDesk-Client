@@ -15,7 +15,7 @@ import {
 } from "./ui/sheet";
 
 interface SettingsModalProps {
-  isOpen: boolean;
+  isSidebarOpen: boolean;
   onClose: () => void;
   workspaceId: string;
   workspaceName: string;
@@ -24,7 +24,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
-  isOpen,
+  isSidebarOpen,
   onClose,
   workspaceId,
   workspaceName,
@@ -59,7 +59,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     debouncedUpdateUserName(newName);
   };
 
-  if (!isOpen) return null;
+  if (!isSidebarOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">

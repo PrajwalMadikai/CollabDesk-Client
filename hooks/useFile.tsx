@@ -33,38 +33,38 @@ export function useFile(
 
       const response = await fileCreateFunc(folderId, email);
       const responseStatus = getResponseStatus(response.status);
-      const newFile = response.data.file
-      // const roomResponse = await fetch("/api/create-room", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Authorization": `Bearer ${token}`,
-      //   },
-      //   body: JSON.stringify({
-      //     roomId: newFile.id,
-      //     userId: user.id,
-      //     email: user.email,
-      //     title: "Untitled",
-      //   }),
-      // });
-
-      // if (!roomResponse.ok) {
-      //   throw new Error("Failed to create room");
-      // }
+       console.log('response from the file create:',response);
+       
       if (responseStatus === ResponseStatus.CREATED) {
-      ;
-        // const liveblockAuth = await fetch('/api/liveblocks-auth', {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "Authorization": `Bearer ${token}`
-        //   },
-        // });
+        const newFile = response.data.file
+        const liveblockAuth = await fetch('/api/liveblocks-auth', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+        });
 
-        // const authData = await liveblockAuth.json();
-        // console.log('Liveblocks auth success:', authData);
+        await liveblockAuth.json();
 
-        
+        const roomResponse = await fetch("/api/create-room", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            roomId: newFile.id,
+            userId: user.id,
+            email: user.email,
+            title: "Untitled",
+          }),
+        });
+
+        if (!roomResponse.ok) {
+          throw new Error("Failed to create room");
+        }
+
 
         if (selectedWorkspace?.workspaceId) {
           await fetchFolders(selectedWorkspace.workspaceId);

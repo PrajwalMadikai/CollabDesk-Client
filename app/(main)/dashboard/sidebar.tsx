@@ -12,12 +12,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boolean) => void }> = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+}) =>{
   const router = useRouter();
   const params = useParams();
   const dispatch = useDispatch();
 
-  const [isOpen, setIsOpen] = useState(true);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showWorkspaceList, setShowWorkspaceList] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -133,7 +135,7 @@ const Sidebar: React.FC = () => {
   }, [selectedWorkspace?.workspaceId, fetchFolders, fetchTrashItems, router]);
 
   const handleToggle = () => {
-    setIsOpen(!isOpen);
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const handleWorkspaceUpdate = (updatedWorkspace: { workspaceId: string; workspaceName: string }) => {
@@ -152,10 +154,12 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} flex flex-col`}>
+    <div  className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${
+      isSidebarOpen ? "w-64" : "w-16"
+    } flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
         <div className="flex justify-between items-center mb-4">
-          {isOpen && (
+          {isSidebarOpen && (
             <div
               className="flex items-center gap-2 text-white text-lg font-semibold cursor-pointer"
               onClick={() => setShowWorkspaceList(!showWorkspaceList)}
@@ -171,7 +175,7 @@ const Sidebar: React.FC = () => {
           </button>
         </div>
 
-        {showWorkspaceList && isOpen && (
+        {showWorkspaceList && isSidebarOpen && (
           <div className="bg-gray-900 rounded-lg text-white mb-4">
             {workspaces.map((workspace) => (
               <div
@@ -207,7 +211,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-        {isOpen && (
+        {isSidebarOpen && (
           <div className="flex items-center justify-start my-4 text-[13px] uppercase font-semibold py-0">
             <button
               onClick={() => setIsSettingsModalOpen(true)}
@@ -219,7 +223,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-        {isOpen && (
+        {isSidebarOpen && (
           <div className="flex items-center justify-between text-gray-400 text-[13px] uppercase font-semibold text-start px-2 py-2">
             <span className="text-white">Folders</span>
             <button
@@ -232,7 +236,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-        {isOpen && (
+        {isSidebarOpen && (
           <div className="flex flex-col gap-1">
             {folders.map((folder) => (
               <div key={folder.id} className="group flex flex-col">
@@ -329,7 +333,7 @@ const Sidebar: React.FC = () => {
           </div>
         )}
 
-        {isOpen && (
+        {isSidebarOpen && (
           <div className="mt-[50px] relative">
             <div
               className="flex items-center cursor-pointer text-primary transition duration-200"
@@ -418,7 +422,7 @@ const Sidebar: React.FC = () => {
           <VideoCallButton workspaceId={params?.workspaceId as string} />
         </div>
 
-        {isOpen && (
+        {isSidebarOpen && (
           <button
             onClick={handleWhiteboardClick}
             className="flex items-center gap-2 p-3 text-white rounded-lg transition-colors duration-200 "
@@ -428,7 +432,7 @@ const Sidebar: React.FC = () => {
           </button>
         )}
       </div>
-      {isOpen && (
+      {isSidebarOpen && (
         <div className="p-4 border-t border-gray-800 mt-auto flex justify-center items-center gap-[35px]">
           <button
             onClick={() => setIsProfileModalOpen(true)}
@@ -482,7 +486,7 @@ const Sidebar: React.FC = () => {
 
       {isSettingsModalOpen && (
         <SettingsModal
-          isOpen={isSettingsModalOpen}
+          isSidebarOpen={isSettingsModalOpen}
           onClose={() => setIsSettingsModalOpen(false)}
           workspaceId={selectedWorkspace?.workspaceId || ""}
           workspaceName={selectedWorkspace?.workspaceName || ""}
