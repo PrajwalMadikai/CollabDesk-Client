@@ -6,10 +6,11 @@ import { ResponseStatus } from "../enums/responseStatus";
 import getResponseStatus from "../lib/responseStatus";
 import { fileCreateFunc, fileRestoreFunc, fileReviewFunc, makeDocPublish, moveFileToTrashFunc, renameFileFunc } from "../services/fileApi";
 import { RootState } from "../store/store";
+import { Folder } from "./useFolder";
 
 export function useFile(
   selectedWorkspace: { workspaceId: string } | null | undefined,
-  fetchFolders: (workspaceId: string) => Promise<void>,
+  setFolders: React.Dispatch<React.SetStateAction<Folder[]>>,
   updateFileNameInFolder: (fileId: string, folderId: string, newName: string) => void,
   fetchTrashItems: (workspaceId: string) => Promise<void>
 ) {
@@ -33,8 +34,8 @@ export function useFile(
 
       const response = await fileCreateFunc(folderId, email);
       const responseStatus = getResponseStatus(response.status);
-       console.log('response from the file create:',response);
-       
+      console.log('response from the file create:', response);
+
       if (responseStatus === ResponseStatus.CREATED) {
         const newFile = response.data.file
         // const liveblockAuth = await fetch('/api/liveblocks-auth', {
@@ -66,9 +67,20 @@ export function useFile(
         }
 
 
-        if (selectedWorkspace?.workspaceId) {
-          await fetchFolders(selectedWorkspace.workspaceId);
-        }
+        setFolders(prevFolders => {
+          return prevFolders.map(folder => {
+            if (folder.id === folderId) {
+              return {
+                ...folder,
+                files: [
+                  ...folder.files,
+                  { fileId: newFile.id, fileName: newFile.name }
+                ]
+              };
+            }
+            return folder;
+          });
+        });
 
         toast.success("File created successfully", {
           duration: 2000,

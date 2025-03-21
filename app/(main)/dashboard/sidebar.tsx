@@ -30,6 +30,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
   const workspace = useWorkspace();
   const {
     folders,
+    setFolders,
     trashItems,
     isTrashExpanded,
     setIsTrashExpanded,
@@ -57,7 +58,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
     moveToTrash: moveFileToTrash,
     restoreFile,
     startEditingFile,
-  } = useFile(workspace?.selectedWorkspace ?? null, fetchFolders, updateFileNameInFolder, fetchTrashItems);
+  } = useFile(workspace?.selectedWorkspace ?? null, setFolders, updateFileNameInFolder, fetchTrashItems);
   const {
     fetchUserDetails,
     userProfile,

@@ -7,7 +7,7 @@ import getResponseStatus from "../lib/responseStatus";
 import { folderCreateFunc, folderFetchFunc, folderMovetoTrash, folderRestoreFunc, folderTrashFetchFun, folderUpdateFunc } from "../services/folderApi";
 import { RootState } from "../store/store";
 
-interface Folder {
+export interface Folder {
   id: string;
   name: string;
   files: { fileId: string; fileName: string }[];
@@ -320,6 +320,7 @@ export function useFolder() {
 
   return {
     folders,
+    setFolders,
     trashItems,
     isTrashExpanded,
     setIsTrashExpanded,
