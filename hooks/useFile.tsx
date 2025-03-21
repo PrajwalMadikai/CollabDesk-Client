@@ -37,15 +37,15 @@ export function useFile(
        
       if (responseStatus === ResponseStatus.CREATED) {
         const newFile = response.data.file
-        const liveblockAuth = await fetch('/api/liveblocks-auth', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-        });
+        // const liveblockAuth = await fetch('/api/liveblocks-auth', {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "Authorization": `Bearer ${token}`
+        //   },
+        // });
 
-        await liveblockAuth.json();
+        // await liveblockAuth.json();
 
         const roomResponse = await fetch("/api/create-room", {
           method: "POST",
