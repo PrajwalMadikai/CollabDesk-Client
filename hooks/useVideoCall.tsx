@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { GetVideocallParticipants, TokenGenerate } from "../services/VideocallApi";
+import { useState } from "react";
+import { TokenGenerate } from "../services/VideocallApi";
 
 interface hookProps {
   workspaceId: string;
@@ -46,22 +46,22 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     setToken(null);
   };
 
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      try {
-        const response = await GetVideocallParticipants(workspaceId);
+  // useEffect(() => {
+  //   const fetchParticipants = async () => {
+  //     try {
+  //       const response = await GetVideocallParticipants(workspaceId);
         
-        setParticipantCount(response.count);
-      } catch (error) {
-        console.error("Failed to fetch participants:", error);
-      }
-    };
+  //       setParticipantCount(response.count);
+  //     } catch (error) {
+  //       console.error("Failed to fetch participants:", error);
+  //     }
+  //   };
 
-    fetchParticipants();
-    const interval = setInterval(fetchParticipants, 5000); 
+  //   fetchParticipants();
+  //   const interval = setInterval(fetchParticipants, 5000); 
 
-    return () => clearInterval(interval);
-  }, [workspaceId]);
+  //   return () => clearInterval(interval);
+  // }, [workspaceId]);
 
   return {
     getToken,

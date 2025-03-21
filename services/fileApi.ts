@@ -4,12 +4,10 @@ import { baseUrl } from "../app/api/urlconfig";
 
 export const fileCreateFunc = async (folderId: string, email: string | null) => {
   try {
-    console.time("fileCreateFunc");
-    const response = await API.post("/file/create", { folderId, email }, {
-      withCredentials: true,
-      timeout: 10000,  
-    });
-    console.timeEnd("fileCreateFunc");
+    const response = await API.post("/file/create", {
+      folderId, email
+    }, { withCredentials: true });
+
     return response
 
   } catch (error: any) {
