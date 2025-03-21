@@ -10,7 +10,7 @@ export const fileCreateFunc = async (folderId: string, email: string | null) => 
 
     return response
 
-  } catch (error: any) {
+  } catch (error) {
     throw error
   }
 }
