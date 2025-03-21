@@ -48,23 +48,23 @@ export function useFile(
 
         // await liveblockAuth.json();
 
-        const roomResponse = await fetch("/api/create-room", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            roomId: newFile.id,
-            userId: user.id,
-            email: user.email,
-            title: "Untitled",
-          }),
-        });
+        // const roomResponse = await fetch("/api/create-room", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "Authorization": `Bearer ${token}`,
+        //   },
+        //   body: JSON.stringify({
+        //     roomId: newFile.id,
+        //     userId: user.id,
+        //     email: user.email,
+        //     title: "Untitled",
+        //   }),
+        // });
 
-        if (!roomResponse.ok) {
-          throw new Error("Failed to create room");
-        }
+        // if (!roomResponse.ok) {
+        //   throw new Error("Failed to create room");
+        // }
 
 
         setFolders(prevFolders => {
