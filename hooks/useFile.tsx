@@ -66,7 +66,6 @@ export function useFile(
           throw new Error("Failed to create room");
         }
 
-
         setFolders(prevFolders => {
           return prevFolders.map(folder => {
             if (folder.id === folderId) {

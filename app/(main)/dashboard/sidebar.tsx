@@ -343,9 +343,9 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
               <Trash className="h-4 w-4" />
               <span className="font-semibold text-primary text-[13px] ml-2">TRASH</span>
             </div>
-
+ 
             {isTrashExpanded && (
-              <div className="fixed left-[200px] ml-4 top-1/2 transform -translate-y-1/2 z-10">
+              <div className="fixed left-[100px] ml-1 md:left-[200px] md:ml-4 top-1/2 transform -translate-y-1/2 z-10">
 
                 <div className="bg-gray-950 border border-gray-800 rounded-lg shadow-lg w-72 min-h-[320px] max-h-[350px] overflow-y-auto custom-scrollbar p-4">
                   <div className="flex items-center justify-between mb-4">
@@ -463,7 +463,6 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
             </div>
           </button>
 
-          {/* Logout Button */}
           <Link href="/">
             <button className="text-white hover:text-gray-300 transition">
               <svg
