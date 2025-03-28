@@ -58,7 +58,7 @@ export default function WorkspaceDashboard() {
 
         {showUserLogs && (
           <div
-            className={`absolute rounded-[4px] top-0 right-10 h-[600px] w-[90%] sm:w-[400px] bg-gray-950 border-l shadow-lg flex flex-col 
+            className={`absolute rounded-[4px] top-0 right-8 h-[600px] w-[90%] sm:w-[400px] bg-gray-950 border-l shadow-lg flex flex-col 
               ${isMediumScreen ? 'text-only' : ''}`}
           >
             <div className="flex justify-between items-center p-4 border-b">

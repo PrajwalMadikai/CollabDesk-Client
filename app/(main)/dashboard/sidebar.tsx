@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boolean) => void }> = ({
   isSidebarOpen,
   setIsSidebarOpen,
-}) =>{
+}) => {
   const router = useRouter();
   const params = useParams();
   const dispatch = useDispatch();
@@ -155,9 +155,8 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
   };
 
   return (
-    <div  className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${
-      isSidebarOpen ? "w-64" : "w-16"
-    } flex flex-col`}>
+    <div className={`fixed inset-y-0 left-0 bg-black border-r border-gray-800 transition-all duration-300 ease-in-out ${isSidebarOpen ? "w-64" : "w-16"
+      } flex flex-col`}>
       <div className="p-4 flex flex-col h-full">
         <div className="flex justify-between items-center mb-4">
           {isSidebarOpen && (
@@ -343,9 +342,9 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
               <Trash className="h-4 w-4" />
               <span className="font-semibold text-primary text-[13px] ml-2">TRASH</span>
             </div>
- 
+
             {isTrashExpanded && (
-              <div className="fixed left-[100px] ml-1 md:left-[200px] md:ml-4 top-1/2 transform -translate-y-1/2 z-10">
+              <div className="fixed left-[80px] ml-1 md:left-[200px] md:ml-4 top-1/2 transform -translate-y-1/2 z-10">
 
                 <div className="bg-gray-950 border border-gray-800 rounded-lg shadow-lg w-72 min-h-[320px] max-h-[350px] overflow-y-auto custom-scrollbar p-4">
                   <div className="flex items-center justify-between mb-4">
@@ -418,7 +417,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
           </div>
         )}
       </div>
-      <div className="flex items-center gap-2 px-4 py-2   border-gray-800 mt-auto">
+      <div className="flex items-center gap-2 px-2 md:px-4 py-2 border-gray-800 mt-auto">
         <div>
           <VideoCallButton workspaceId={params?.workspaceId as string} />
         </div>
@@ -437,7 +436,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
         <div className="p-4 border-t border-gray-800 mt-auto flex justify-center items-center gap-[35px]">
           <button
             onClick={() => setIsProfileModalOpen(true)}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-800 p-2 rounded-md"
           >
             <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden flex-shrink-0">
               {userProfile?.avatar && (
@@ -451,8 +450,8 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
 
             <div className="flex-1 relative">
               <p
-                className="text-[14px] font-semibold text-white truncate max-w-[100px] whitespace-nowrap overflow-hidden"
-                title={userProfile?.email}  
+                className="text-[14px] font-semibold text-white truncate max-w-[100px] whitespace-nowrap overflow-hidden hover:underline"
+                title={userProfile?.email}
               >
                 {userProfile?.email ? (
                   userProfile.email.length > 15
@@ -462,7 +461,6 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
               </p>
             </div>
           </button>
-
           <Link href="/">
             <button className="text-white hover:text-gray-300 transition">
               <svg
