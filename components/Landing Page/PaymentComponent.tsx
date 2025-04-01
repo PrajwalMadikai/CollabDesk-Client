@@ -10,7 +10,7 @@ export type paymentPlans = {
   WorkspaceNum: number
 } | undefined;
 
-const PaymentComponent = ({ basePlan, premiumPlan, userPlan }: { basePlan: paymentPlans; premiumPlan: paymentPlans, userPlan: string | null }) => {
+const PaymentComponent = ({ basePlan, premiumPlan ,userPlan}: { basePlan: paymentPlans; premiumPlan: paymentPlans;userPlan:string|null }) => {
   return (
     <div className="flex flex-col md:flex-row gap-8 py-8">
       <motion.div

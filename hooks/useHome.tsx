@@ -1,15 +1,18 @@
 import { API } from "@/app/api/handle-token-expire";
 import { paymentPlans } from "@/components/Landing Page/PaymentComponent";
 import getResponseStatus from "@/lib/responseStatus";
+import { userData } from "@/services/AuthApi";
 import { Plan, setPlan } from "@/store/slice/planSlice";
 import { clearUser, setUser } from "@/store/slice/userSlice";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export function useHome() {
   const [basePlan, setBasePlan] = useState<paymentPlans | undefined>();
   const [premiumPlan, setPremiumPlan] = useState<paymentPlans | undefined>();
+  const [userPlan,setUserPlan]=useState<string|null>(null)
+  const user=useSelector((state:RootState)=>state.user)
   const dispatch = useDispatch<AppDispatch>();
 
   const fetchPaymentPlans = useCallback(async () => {
@@ -28,6 +31,20 @@ export function useHome() {
       console.log("Error during plans fetching", error);
     }
   }, [dispatch]);
+   useEffect(()=>{
+  
+        const UserPaymentPlan=async()=>{
+            if(!user.id) return
+          try {
+               const response=await userData(user.id)
+               setUserPlan(response.data.paymentDetail.paymentType)
+          } catch (error) {
+            console.log('Error in fetching user data');
+            
+          }
+        }
+        UserPaymentPlan()
+      },[])
 
   const logout = useCallback(async () => {
     try {
@@ -76,5 +93,6 @@ export function useHome() {
     fetchPaymentPlans();
   }, [fetchPaymentPlans]);
 
-  return { basePlan, premiumPlan, logout, fetchWorkspaces };
+
+  return { basePlan, premiumPlan, logout, fetchWorkspaces,userPlan };
 }

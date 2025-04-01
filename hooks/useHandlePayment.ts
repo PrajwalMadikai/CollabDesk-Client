@@ -8,6 +8,7 @@ import { setPlanType } from '../store/slice/userSlice';
 export function useHandlePayment(sessionId: string | null, isPaymentStored: boolean, user: any) {
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [sessionDetails, setSessionDetails] = useState<any>(null);
+    const [userPlan,setUserPlan]=useState<string|null>(null)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -25,7 +26,6 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
                 if (!isMounted) return;
                 if (!response.ok) throw new Error(data.error);
 
-                console.log("Session details fetched successfully:", data.session);
                 setSessionDetails(data.session);
                 setStatus('success');
 
@@ -60,12 +60,12 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
                 { userData },
                 { withCredentials: true }
             );
-            console.log('payment Type:',sessionDetails.metadata?.planType)
             dispatch(setPlanType(sessionDetails.metadata?.planType));
         } catch (error) {
             console.error("Error storing payment details:", error);
         }
     };
+   
 
     return { status, sessionDetails };
 }
@@ -99,6 +99,8 @@ export const usePayment=()=> {
         setLoading(false);
       }
     };
+
+  
   
     return { loading, initiatePayment };
   }

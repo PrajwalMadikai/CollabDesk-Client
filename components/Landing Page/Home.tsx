@@ -14,8 +14,7 @@ function HeaderAndLandingHome() {
   const router = useRouter();
   const user = useSelector((state:RootState) => state.user);
   const { theme } = useTheme();
-  const { basePlan, premiumPlan, logout, fetchWorkspaces } = useHome();
-console.log('user redux:',user)
+  const { basePlan, premiumPlan, logout, fetchWorkspaces ,userPlan} = useHome();
   const handleDashboard = useCallback(async () => {
     if (!user.isAuthenticated) {
       router.push('/login');
@@ -166,7 +165,7 @@ console.log('user redux:',user)
           <h2 className="animate-fade-down text-foreground text-3xl font-semibold text-center mb-6">
             Subscription <span className="text-blue-800 font-extrabold">Details</span>
           </h2>
-          <PaymentComponent basePlan={basePlan} premiumPlan={premiumPlan} userPlan={user.planType} />
+          <PaymentComponent basePlan={basePlan} premiumPlan={premiumPlan} userPlan={userPlan} />
           <div className="bg-[#272757] text-white p-8 rounded-lg shadow-lg text-center">
             <h3 className="text-2xl md:text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">
               Professional Plan
