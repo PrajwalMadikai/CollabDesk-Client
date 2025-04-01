@@ -60,8 +60,8 @@ export function useHandlePayment(sessionId: string | null, isPaymentStored: bool
                 { userData },
                 { withCredentials: true }
             );
-            
-            dispatch(setPlanType(userData.paymentType));
+            console.log('payment Type:',sessionDetails.metadata?.planType)
+            dispatch(setPlanType(sessionDetails.metadata?.planType));
         } catch (error) {
             console.error("Error storing payment details:", error);
         }
