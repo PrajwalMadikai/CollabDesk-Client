@@ -31,20 +31,8 @@ export function useHome() {
       console.log("Error during plans fetching", error);
     }
   }, [dispatch]);
-   useEffect(()=>{
+
   
-        const UserPaymentPlan=async()=>{
-            if(!user.id) return
-          try {
-               const response=await userData(user.id)
-               setUserPlan(response.data.paymentDetail.paymentType)
-          } catch (error) {
-            console.log('Error in fetching user data');
-            
-          }
-        }
-        UserPaymentPlan()
-      },[])
 
   const logout = useCallback(async () => {
     try {
@@ -88,6 +76,22 @@ export function useHome() {
       }
     }
   }, [dispatch]);
+  useEffect(()=>{
+  
+    const UserPaymentPlan=async()=>{
+        if(!user.id) return
+      try {
+           const response=await userData(user.id)
+           console.log('res:',response.data);
+           
+           setUserPlan(response.data.paymentDetail.paymentType)
+      } catch (error) {
+        console.log('Error in fetching user data');
+        
+      }
+    }
+    UserPaymentPlan()
+  },[])
 
   useEffect(() => {
     fetchPaymentPlans();
