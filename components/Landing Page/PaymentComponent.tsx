@@ -10,7 +10,7 @@ export type paymentPlans = {
   WorkspaceNum: number
 } | undefined;
 
-const PaymentComponent = ({ basePlan, premiumPlan }: { basePlan: paymentPlans; premiumPlan: paymentPlans }) => {
+const PaymentComponent = ({ basePlan, premiumPlan,userPlan }: { basePlan: paymentPlans; premiumPlan: paymentPlans,userPlan:string|null }) => {
   return (
     <div className="flex flex-col md:flex-row gap-8 py-8">
       <motion.div 
@@ -35,13 +35,22 @@ const PaymentComponent = ({ basePlan, premiumPlan }: { basePlan: paymentPlans; p
             <span className="text-4xl font-bold text-white">₹{basePlan?.amount}</span>
             <span className="text-gray-400 ml-2 text-lg">/month</span>
           </div>
-          
-          <Link href={`/payment/${basePlan?.id}`}>
-            <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">
-              <span>Get Started</span>
-              <Zap className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </Link>
+          {userPlan=='base'?(
+            <Link href={`/payment/${basePlan?.id}`}>
+              <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">
+                <span>Get Started</span>
+                <Zap className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          ):(
+            
+            <Link href={`/payment/${basePlan?.id}`}>
+              <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">
+                <span>Get Started</span>
+                <Zap className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          )}
           
           <div className="mt-8 space-y-4">
             <div className="flex items-start gap-3">

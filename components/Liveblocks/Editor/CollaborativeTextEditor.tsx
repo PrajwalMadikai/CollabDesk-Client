@@ -12,6 +12,7 @@ import * as Y from "yjs";
 import { baseUrl } from "../../../app/api/urlconfig";
 import { connectionIdToColor } from "../../../lib/utils";
 import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
+
 const socket = io(baseUrl, {
   withCredentials: true,
   reconnection: true,
@@ -155,7 +156,6 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
         id: fileId,
         content: JSON.stringify(Array.from(content)),
       };
-      console.log("Sending update to server");
       socket.emit("updateFile", data);
     };
 

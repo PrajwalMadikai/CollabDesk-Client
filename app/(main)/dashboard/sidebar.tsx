@@ -436,7 +436,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
         <div className="p-4 border-t border-gray-800 mt-auto flex justify-center items-center gap-[35px]">
           <button
             onClick={() => setIsProfileModalOpen(true)}
-            className="flex items-center gap-2 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-800 p-2 rounded-md"
+            className="flex items-center gap-2 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-800 p-2 rounded-[4px]"
           >
             <div className="w-8 h-8 rounded-full bg-gray-600 overflow-hidden flex-shrink-0">
               {userProfile?.avatar && (
@@ -626,7 +626,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
 
               <button
                 type="submit"
-                className="mt-6 w-full bg-green-600 text-white text-sm py-2 rounded hover:bg-green-700 transition"
+                className="mt-6 w-full bg-black font-semibold text-white text-sm py-2 rounded hover:bg-gray-900 transition"
               >
                 Save Changes
               </button>
