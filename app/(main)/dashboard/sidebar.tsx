@@ -626,7 +626,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean; setIsSidebarOpen: (open: boole
 
               <button
                 type="submit"
-                className="mt-6 w-full bg-black font-semibold text-white text-sm py-2 rounded hover:bg-gray-900 transition"
+                className="mt-6 w-full bg-blue-700 font-semibold text-white text-sm py-2 rounded hover:bg-blue-800 transition"
               >
                 Save Changes
               </button>

@@ -36,9 +36,9 @@ const PaymentComponent = ({ basePlan, premiumPlan, userPlan }: { basePlan: payme
             <span className="text-gray-400 ml-2 text-lg">/month</span>
           </div>
           {userPlan === 'base' ? (
-            <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 bg-gray-200 cursor-not-allowed font-medium flex items-center justify-center gap-2">
-              <span>Your Current Plan</span>
-            </button>
+            <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">
+            <span>Your Current Plan</span>
+          </button>
           ) : (
             <Link href={`/payment/${basePlan?.id}`}>
               <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">

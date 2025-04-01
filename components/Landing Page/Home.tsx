@@ -15,7 +15,7 @@ function HeaderAndLandingHome() {
   const user = useSelector((state:RootState) => state.user);
   const { theme } = useTheme();
   const { basePlan, premiumPlan, logout, fetchWorkspaces } = useHome();
-
+console.log('user redux:',user)
   const handleDashboard = useCallback(async () => {
     if (!user.isAuthenticated) {
       router.push('/login');
