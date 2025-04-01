@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
- 
 
 interface Workspace {
   workspaceId: string;
@@ -70,11 +69,13 @@ const userSlice = createSlice({
     updateAvatar(state,action:PayloadAction<string>)
     {
       state.avatar=action.payload
+    },
+    setPlantTypeNull(state){
+      state.planType=null
     }
-    
   },
 });
 
-export const { setUser, clearUser,addWorkspace,removeWorkspace,setPlanType ,updateName,updateAvatar} = userSlice.actions;
+export const { setUser, clearUser,addWorkspace,removeWorkspace,setPlanType ,updateName,updateAvatar,setPlantTypeNull} = userSlice.actions;
 
 export default userSlice.reducer;
