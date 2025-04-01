@@ -13,18 +13,7 @@ interface ValidationErrors {
   email: string;
   password: string;
 }
-
-interface UserData {
-  id: string;
-  fullname: string;
-  email: string;
-  workSpaces: any[];
-  isAuthenticated: boolean;
-  planType: string | null;
-  workspaceCount: number;
-  folders: any[];
-  folderCount: number;
-}
+ 
 
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
