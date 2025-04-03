@@ -1,6 +1,6 @@
+import { socket } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
 import { useEffect, useState } from "react";
-import { GetVideocallParticipants, TokenGenerate } from "../services/VideocallApi";
-
+import { TokenGenerate } from "../services/VideocallApi";
 interface hookProps {
   workspaceId: string;
   userName: string | null;
@@ -8,11 +8,26 @@ interface hookProps {
 }
 
 export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isInCall, setIsInCall] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [participantCount, setParticipantCount] = useState(0);
+
+  useEffect(() => {
+
+    socket.emit('subscribeToRoom', workspaceId);
+
+    socket.on('participantUpdate', (data: { room: string; count: number }) => {
+      if (data.room === workspaceId) {
+        setParticipantCount(data.count);
+      }
+    });
+
+    return () => {
+      socket.emit('leaveCall', workspaceId);
+    };
+  }, [workspaceId]);
 
   const getToken = async () => {
     try {
@@ -35,6 +50,9 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
 
   const joinCall = async () => {
     setError(null);
+    if (isInCall) {
+      return; // Prevent redundant token generation
+    }
     const callToken = await getToken();
     if (callToken) {
       setIsInCall(true);
@@ -46,23 +64,6 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     setToken(null);
   };
 
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      try {
-        const response = await GetVideocallParticipants(workspaceId);
-        
-        setParticipantCount(response.count);
-      } catch (error) {
-        console.error("Failed to fetch participants:", error);
-      }
-    };
-
-    fetchParticipants();
-    const interval = setInterval(fetchParticipants, 5000); 
-
-    return () => clearInterval(interval);
-  }, [workspaceId]);
-
   return {
     getToken,
     joinCall,
@@ -73,6 +74,6 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
     isInCall,
     isLoading,
     participantCount,
-    setIsInCall
+    setIsInCall,
   };
 };

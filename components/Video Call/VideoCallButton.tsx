@@ -15,7 +15,7 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
   const user = useSelector((state: RootState) => state.user);
   const [isRinging, setIsRinging] = useState(false);
 
-  const { joinCall, setError, participantCount, getToken, setIsInCall } = VideoRoomHook({
+  const { joinCall, setError, participantCount, getToken, setIsInCall,isInCall } = VideoRoomHook({
     workspaceId,
     userId: user?.id || null,
     userName: user?.fullname || null,
@@ -27,7 +27,12 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
 
   const handleButtonClick = async () => {
     setError(null);
-
+  
+    if (isInCall) {
+      router.push(`/conference/${workspaceId}`);
+      return;
+    }
+  
     if (isRinging) {
       await joinCall();
     } else {
@@ -36,10 +41,9 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
         setIsInCall(true);
       }
     }
-
+  
     router.push(`/conference/${workspaceId}`);
   };
-
   return (
     <div className="relative inline-flex items-center justify-center">
       {isRinging && (

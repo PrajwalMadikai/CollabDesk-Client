@@ -13,7 +13,7 @@ import { baseUrl } from "../../../app/api/urlconfig";
 import { connectionIdToColor } from "../../../lib/utils";
 import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
 
-const socket = io(baseUrl, {
+export const socket = io(baseUrl, {
   withCredentials: true,
   reconnection: true,
   reconnectionDelay: 1000,
@@ -65,7 +65,6 @@ export function CollaborativeEditor({ fileId, initialContent,edit }: Props) {
       });
 
       yProvider.on('sync', (isSynced: boolean) => {
-        console.log('Provider sync status:', isSynced);
         if (isSynced) {
           // Force a re-render of the document when synced
           const fragment = yDoc.getXmlFragment(fileId);

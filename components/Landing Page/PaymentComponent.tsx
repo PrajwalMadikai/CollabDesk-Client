@@ -11,6 +11,8 @@ export type paymentPlans = {
 } | undefined;
 
 const PaymentComponent = ({ basePlan, premiumPlan ,userPlan}: { basePlan: paymentPlans; premiumPlan: paymentPlans;userPlan:string|null }) => {
+ console.log('user:payment',userPlan);
+ 
   return (
     <div className="flex flex-col md:flex-row gap-8 py-8">
       <motion.div
