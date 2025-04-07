@@ -15,7 +15,12 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
   const user = useSelector((state: RootState) => state.user);
   const [isRinging, setIsRinging] = useState(false);
 
-  const { joinCall, setError, participantCount, getToken, setIsInCall,isInCall } = VideoRoomHook({
+  const { 
+    joinCall, 
+    setError, 
+    participantCount, 
+    isInCall
+  } = VideoRoomHook({
     workspaceId,
     userId: user?.id || null,
     userName: user?.fullname || null,
@@ -28,22 +33,20 @@ const VideoCallButton: React.FC<VideoCallButtonProps> = ({ workspaceId }) => {
   const handleButtonClick = async () => {
     setError(null);
   
-    if (isInCall) {
-      router.push(`/conference/${workspaceId}`);
-      return;
-    }
-  
-    if (isRinging) {
-      await joinCall();
-    } else {
-      const callToken = await getToken();
-      if (callToken) {
-        setIsInCall(true);
+    try {
+      if (isInCall) {
+        router.push(`/conference/${workspaceId}`);
+        return;
       }
-    }
   
-    router.push(`/conference/${workspaceId}`);
+      await joinCall();
+      router.push(`/conference/${workspaceId}`);
+    } catch (error) {
+      console.error("Failed to join call:", error);
+      // Handle error appropriately
+    }
   };
+
   return (
     <div className="relative inline-flex items-center justify-center">
       {isRinging && (

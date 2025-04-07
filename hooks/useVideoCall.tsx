@@ -1,33 +1,50 @@
 import { socket } from "@/components/Liveblocks/Editor/CollaborativeTextEditor";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TokenGenerate } from "../services/VideocallApi";
-interface hookProps {
+
+interface HookProps {
   workspaceId: string;
   userName: string | null;
   userId: string | null;
 }
 
-export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
+export const VideoRoomHook = ({ workspaceId, userName, userId }: HookProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [isInCall, setIsInCall] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [participantCount, setParticipantCount] = useState(0);
+  const isSubscribed = useRef(false);
 
   useEffect(() => {
+    if (!isSubscribed.current) {
+      // Subscribe to room when component mounts
+      socket.emit('subscribeToRoom', workspaceId);
+      isSubscribed.current = true;
+    }
 
-    socket.emit('subscribeToRoom', workspaceId);
-
-    socket.on('participantUpdate', (data: { room: string; count: number }) => {
+    // Listen for participant updates
+    const handleParticipantUpdate = (data: { room: string; count: number }) => {
       if (data.room === workspaceId) {
         setParticipantCount(data.count);
       }
-    });
+    };
+    
+    socket.on('participantUpdate', handleParticipantUpdate);
 
     return () => {
-      socket.emit('leaveCall', workspaceId);
+      socket.off('participantUpdate', handleParticipantUpdate);
     };
   }, [workspaceId]);
+
+  // Handle component unmount
+  useEffect(() => {
+    return () => {
+      if (isInCall) {
+        socket.emit('leaveCall', workspaceId);
+      }
+    };
+  }, [workspaceId, isInCall]);
 
   const getToken = async () => {
     try {
@@ -51,17 +68,23 @@ export const VideoRoomHook = ({ workspaceId, userName, userId }: hookProps) => {
   const joinCall = async () => {
     setError(null);
     if (isInCall) {
-      return; // Prevent redundant token generation
+      return token;  
     }
     const callToken = await getToken();
     if (callToken) {
       setIsInCall(true);
+      socket.emit('joinCall', workspaceId);  
+      return callToken;
     }
+    return null;
   };
 
   const endCall = () => {
-    setIsInCall(false);
-    setToken(null);
+    if (isInCall) {
+      socket.emit('leaveCall', workspaceId);  
+      setIsInCall(false);
+      setToken(null);
+    }
   };
 
   return {
