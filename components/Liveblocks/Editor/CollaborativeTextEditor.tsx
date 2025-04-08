@@ -4,7 +4,6 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMenuController, useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import { Box, Text, ThemeIcon } from "@mantine/core";
 import '@mantine/core/styles.css';
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
@@ -23,22 +22,22 @@ export const socket = io(baseUrl, {
 
 type YjsProvider = ReturnType<typeof getYjsProviderForRoom>;
 
-
 type EditorProps = {
   doc: Y.Doc;
   provider: YjsProvider;
   fileId: string;
   edit: boolean
 };
+
 interface CustomReactSuggestionItem extends DefaultReactSuggestionItem {
   render?: (props: { onClick: () => void }) => React.ReactNode;
 }
+
 interface Props {
   fileId: string;
   initialContent?: string;
   edit: boolean
 }
-
 
 export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
   const room = useRoom();
@@ -100,12 +99,13 @@ export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
 
   return <BlockNote doc={doc} provider={provider} fileId={fileId} edit={edit} />;
 }
+
 type BlockNoteEditorRef = {
   document: any;
   updateContent: () => void;
 };
-function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
 
+function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
   const currentUser = useSelf((me) => me.info);
   const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
@@ -123,14 +123,12 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     },
     domAttributes: {
       editor: {
-        class: "min-h-screen ",
-
+        class: "min-h-screen",
       },
     },
   });
 
   const { theme } = useTheme()
-
   let mode: "dark" | "light" = "dark";
   if (theme == 'light') {
     mode = 'light'
@@ -145,7 +143,6 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
       setIsConnected(isSynced);
     });
     console.log('connected:', isConnected);
-
 
     const fragment = doc.getXmlFragment(fileId);
 
@@ -183,9 +180,9 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
       doc.off("update", handleLocalUpdate);
       socket.off("fileUpdated");
       fragment.unobserve(() => { });
-      // provider.off('sync',);  
     };
   }, [editor, doc, fileId, provider]);
+
   const onPointerMove = useMutation(
     ({ setMyPresence }, e: React.PointerEvent) => {
       e.preventDefault();
@@ -204,118 +201,89 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     setMyPresence({ cursor: null });
   }, []);
 
-
-
-
+  // Updated slash menu items with better styling to match Liveblocks official
   const getCustomSlashMenuItems = (
     editor: BlockNoteEditor
   ): CustomReactSuggestionItem[] =>
     getDefaultReactSlashMenuItems(editor).map((item) => ({
       ...item,
       render: (props: { onClick: () => void }) => (
-        <Box
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "10px 16px",
-            cursor: "pointer",
-            backgroundColor: mode === 'dark' ? '#2c2c2c' : '#ffffff',
-          }}
+        <div
           onClick={props.onClick}
-          className="bn-slash-menu-item"
+          className={`
+            flex items-center px-4 py-3 cursor-pointer rounded-md hover:bg-secondary
+            ${mode === 'dark' ? 'hover:bg-secondary/80' : 'hover:bg-secondary/60'}
+          `}
         >
           {item.icon && (
-            <ThemeIcon
-              size="sm"
-              radius="xl"
-              style={{
-                marginRight: "12px",
-                backgroundColor: mode === 'dark' ? '#3c3c3c' : '#e0e0e0',
-                color: mode === 'dark' ? '#ffffff' : '#333333',
-              }}
-            >
+            <div className={`
+              flex items-center justify-center rounded-full mr-3 w-8 h-8
+              ${mode === 'dark' ? 'bg-secondary text-foreground' : 'bg-secondary text-foreground'}
+            `}>
               {item.icon}
-            </ThemeIcon>
+            </div>
           )}
-
-          <div style={{ flex: 1 }}>
-            <Text
-              size="md"
-              fw={600}
-              color={mode === 'dark' ? 'white' : 'black'}
-              style={{ marginBottom: "2px" }}
-            >
+          
+          <div className="flex-1">
+            <div className={`
+              font-medium
+              ${mode === 'dark' ? 'text-foreground' : 'text-foreground'}
+            `}>
               {item.title}
-            </Text>
+            </div>
             {item.subtext && (
-              <Text
-                size="xs"
-                color={mode === 'dark' ? 'gray.5' : 'dimmed'}
-                style={{ lineHeight: 1.4 }}
-              >
+              <div className={`
+                text-xs mt-0.5
+                ${mode === 'dark' ? 'text-muted-foreground' : 'text-muted-foreground'}
+              `}>
                 {item.subtext}
-              </Text>
+              </div>
             )}
           </div>
-        </Box>
+        </div>
       ),
     }));
 
+  // Add global CSS for the slash menu - using CSS variables from the Liveblocks example
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
-        /* Main menu container */
-        .bn-suggestion-menu {
-          max-height: 350px !important;
-          overflow-y: auto !important;
-          border-radius: 12px !important;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.15'}) !important;
-          border: 1px solid ${mode === 'dark' ? '#444' : '#e0e0e0'} !important;
-          background-color: ${mode === 'dark' ? '#2c2c2c' : '#ffffff'} !important;
-          width: 320px !important;
-          z-index: 9999 !important;
-          padding: 4px !important;
-        }
-        .bn-suggestion-menu {
-          animation: fadeIn 0.2s ease-in-out !important;
-        }
+      .bn-suggestion-menu {
+        max-height: 350px !important;
+        overflow-y: auto !important;
+        border-radius: var(--radius) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.12'}) !important;
+        border: 1px solid hsl(var(--border)) !important;
+        background-color: hsl(var(--background)) !important;
+        color: hsl(var(--foreground)) !important;
+        width: 320px !important;
+        z-index: 30 !important;
+        padding: 4px !important;
+        animation: fadeIn 0.2s ease-in-out !important;
+      }
 
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-5px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Each individual menu item */
-        .bn-suggestion-menu .bn-slash-menu-item {
-          border-radius: 8px !important;
-          margin: 2px 0 !important;
-          transition: background-color 0.2s ease !important;
-        }
-        
-        /* Hover state for menu items */
-        .bn-suggestion-menu .bn-slash-menu-item:hover {
-          background-color: ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
-        }
-        
-        /* Selected/focused menu item */
-        .bn-suggestion-menu .bn-suggestion-item[data-selected=true] {
-          background-color: ${mode === 'dark' ? '#444' : '#eaeaea'} !important;
-        }
-        
-        /* Custom scrollbar styling */
-        .bn-suggestion-menu::-webkit-scrollbar {
-          width: 8px !important;
-        }
-        
-        .bn-suggestion-menu::-webkit-scrollbar-thumb {
-          background: ${mode === 'dark' ? '#555' : '#ccc'} !important;
-          border-radius: 4px !important;
-        }
-        
-        .bn-suggestion-menu::-webkit-scrollbar-track {
-          background: ${mode === 'dark' ? '#2c2c2c' : '#f9f9f9'} !important;
-        }
-      `;
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .bn-suggestion-menu::-webkit-scrollbar {
+        width: 6px !important;
+      }
+      
+      .bn-suggestion-menu::-webkit-scrollbar-thumb {
+        background: hsl(var(--muted-foreground) / 0.3) !important;
+        border-radius: 3px !important;
+      }
+      
+      .bn-suggestion-menu::-webkit-scrollbar-track {
+        background: transparent !important;
+      }
+      
+      .bn-suggestion-item[data-selected=true] {
+        background-color: hsl(var(--secondary)) !important;
+      }
+    `;
     document.head.appendChild(style);
 
     return () => {
@@ -323,13 +291,11 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     };
   }, [mode]);
 
-
   if (!editor) {
     return null;
   }
 
   return (
-
     <div
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
