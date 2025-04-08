@@ -5,6 +5,7 @@ import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMe
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { Box, Text, ThemeIcon } from "@mantine/core";
+import '@mantine/core/styles.css';
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
@@ -22,12 +23,12 @@ export const socket = io(baseUrl, {
 
 type YjsProvider = ReturnType<typeof getYjsProviderForRoom>;
 
- 
+
 type EditorProps = {
   doc: Y.Doc;
   provider: YjsProvider;
   fileId: string;
-  edit:boolean
+  edit: boolean
 };
 interface CustomReactSuggestionItem extends DefaultReactSuggestionItem {
   render?: (props: { onClick: () => void }) => React.ReactNode;
@@ -35,11 +36,11 @@ interface CustomReactSuggestionItem extends DefaultReactSuggestionItem {
 interface Props {
   fileId: string;
   initialContent?: string;
-  edit:boolean
+  edit: boolean
 }
 
 
-export function CollaborativeEditor({ fileId, initialContent,edit }: Props) {
+export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
   const room = useRoom();
   const [doc, setDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<YjsProvider | null>(null);
@@ -75,7 +76,7 @@ export function CollaborativeEditor({ fileId, initialContent,edit }: Props) {
       });
 
       await yProvider.connect();
-      
+
       setDoc(yDoc);
       setProvider(yProvider);
     };
@@ -103,52 +104,51 @@ type BlockNoteEditorRef = {
   document: any;
   updateContent: () => void;
 };
-function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
+function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
 
   const currentUser = useSelf((me) => me.info);
   const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
-  const editorRef = useRef<BlockNoteEditorRef|null>(null);
+  const editorRef = useRef<BlockNoteEditorRef | null>(null);
   const userPresence = useSelf();
-  
+
   const editor = useCreateBlockNote({
     collaboration: {
       provider,
       fragment: doc.getXmlFragment(fileId),
       user: {
-        name:userPresence.presence.user?.name || currentUser?.name || "Anonymous",
+        name: userPresence.presence.user?.name || currentUser?.name || "Anonymous",
         color: connectionIdToColor(connectionId),
       },
     },
     domAttributes: {
       editor: {
         class: "min-h-screen ",
-         
+
       },
     },
   });
 
-   const {theme}=useTheme()
+  const { theme } = useTheme()
 
-   let mode: "dark" | "light" = "dark";
-   if(theme=='light')
-   {
-    mode='light'
-   }
+  let mode: "dark" | "light" = "dark";
+  if (theme == 'light') {
+    mode = 'light'
+  }
 
   useEffect(() => {
     if (!editor || !doc) return;
-    
+
     editorRef.current = editor as unknown as BlockNoteEditorRef;
 
     provider.on('sync', (isSynced: boolean) => {
       setIsConnected(isSynced);
     });
-    console.log('connected:',isConnected);
-    
+    console.log('connected:', isConnected);
+
 
     const fragment = doc.getXmlFragment(fileId);
-    
+
     const handleLocalUpdate = () => {
       const content = Y.encodeStateAsUpdate(doc);
       const data = {
@@ -158,7 +158,7 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
       socket.emit("updateFile", data);
     };
 
-  // Force editor to sync with latest document state
+    // Force editor to sync with latest document state
     fragment.observe(() => {
       console.log('Document fragment remote updated ');
       if (editorRef.current) {
@@ -182,7 +182,7 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
     return () => {
       doc.off("update", handleLocalUpdate);
       socket.off("fileUpdated");
-      fragment.unobserve(() => {});
+      fragment.unobserve(() => { });
       // provider.off('sync',);  
     };
   }, [editor, doc, fileId, provider]);
@@ -192,9 +192,9 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
 
       const current = {
         x: Math.round(e.clientX),
-        y: Math.round(e.clientY), 
+        y: Math.round(e.clientY),
       };
-      
+
       setMyPresence({ cursor: current });
     },
     []
@@ -204,12 +204,12 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
     setMyPresence({ cursor: null });
   }, []);
 
- 
+
 
 
   const getCustomSlashMenuItems = (
     editor: BlockNoteEditor
-  ): CustomReactSuggestionItem[] => 
+  ): CustomReactSuggestionItem[] =>
     getDefaultReactSlashMenuItems(editor).map((item) => ({
       ...item,
       render: (props: { onClick: () => void }) => (
@@ -217,24 +217,19 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
           style={{
             display: "flex",
             alignItems: "center",
-            padding: "10px 16px", // Increased padding for better spacing
+            padding: "10px 16px",
             cursor: "pointer",
-            transition: "background-color 0.2s ease",
             backgroundColor: mode === 'dark' ? '#2c2c2c' : '#ffffff',
-            "&:hover": {
-              backgroundColor: mode === 'dark' ? '#3c3c3c' : '#f0f0f0',
-            },
           }}
           onClick={props.onClick}
-          className="slash-menu-item"
+          className="bn-slash-menu-item"
         >
-          {/* Icon/Emoji */}
           {item.icon && (
             <ThemeIcon
               size="sm"
               radius="xl"
               style={{
-                marginRight: "12px", // Space between icon and text
+                marginRight: "12px",
                 backgroundColor: mode === 'dark' ? '#3c3c3c' : '#e0e0e0',
                 color: mode === 'dark' ? '#ffffff' : '#333333',
               }}
@@ -242,16 +237,13 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
               {item.icon}
             </ThemeIcon>
           )}
-  
-          {/* Text Content */}
+
           <div style={{ flex: 1 }}>
             <Text
-              size="md" // Slightly larger font size
-              fw={600} // Bold font weight
+              size="md"
+              fw={600}
               color={mode === 'dark' ? 'white' : 'black'}
-              style={{
-                marginBottom: "2px", // Space between title and subtext
-              }}
+              style={{ marginBottom: "2px" }}
             >
               {item.title}
             </Text>
@@ -259,9 +251,7 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
               <Text
                 size="xs"
                 color={mode === 'dark' ? 'gray.5' : 'dimmed'}
-                style={{
-                  lineHeight: 1.4, // Improved line height for readability
-                }}
+                style={{ lineHeight: 1.4 }}
               >
                 {item.subtext}
               </Text>
@@ -271,56 +261,67 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
       ),
     }));
 
-    useEffect(() => {
-      const style = document.createElement('style');
-      style.innerHTML = `
-        /* Slash Menu Container */
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        /* Main menu container */
         .bn-suggestion-menu {
-          max-height: 350px !important; /* Increased height */
+          max-height: 350px !important;
           overflow-y: auto !important;
-          border-radius: 12px !important; /* Rounded corners */
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important; /* Softer shadow */
+          border-radius: 12px !important;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.15'}) !important;
           border: 1px solid ${mode === 'dark' ? '#444' : '#e0e0e0'} !important;
           background-color: ${mode === 'dark' ? '#2c2c2c' : '#ffffff'} !important;
-          width: 320px !important; /* Fixed width for consistency */
-          z-index: 9999; /* Ensure it appears above other elements */
+          width: 320px !important;
+          z-index: 9999 !important;
+          padding: 4px !important;
         }
-    
-        /* Individual Menu Items */
-        .slash-menu-item {
-          display: flex;
-          align-items: center;
-          padding: 10px 16px !important;
-          border-bottom: 1px solid ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
+        .bn-suggestion-menu {
+          animation: fadeIn 0.2s ease-in-out !important;
         }
-    
-        /* Hover Effect */
-        .slash-menu-item:hover {
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Each individual menu item */
+        .bn-suggestion-menu .bn-slash-menu-item {
+          border-radius: 8px !important;
+          margin: 2px 0 !important;
+          transition: background-color 0.2s ease !important;
+        }
+        
+        /* Hover state for menu items */
+        .bn-suggestion-menu .bn-slash-menu-item:hover {
           background-color: ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
         }
-    
-        /* Last Item Border Removal */
-        .slash-menu-item:last-child {
-          border-bottom: none !important;
+        
+        /* Selected/focused menu item */
+        .bn-suggestion-menu .bn-suggestion-item[data-selected=true] {
+          background-color: ${mode === 'dark' ? '#444' : '#eaeaea'} !important;
         }
-    
-        /* Scrollbar Styling */
+        
+        /* Custom scrollbar styling */
         .bn-suggestion-menu::-webkit-scrollbar {
-          width: 8px;
+          width: 8px !important;
         }
+        
         .bn-suggestion-menu::-webkit-scrollbar-thumb {
-          background: ${mode === 'dark' ? '#555' : '#ccc'};
-          border-radius: 4px;
+          background: ${mode === 'dark' ? '#555' : '#ccc'} !important;
+          border-radius: 4px !important;
         }
+        
         .bn-suggestion-menu::-webkit-scrollbar-track {
-          background: ${mode === 'dark' ? '#2c2c2c' : '#f9f9f9'};
+          background: ${mode === 'dark' ? '#2c2c2c' : '#f9f9f9'} !important;
         }
       `;
-      document.head.appendChild(style);
-      return () => {
-        document.head.removeChild(style);
-      };
-    }, [mode]);
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, [mode]);
 
 
   if (!editor) {
@@ -328,20 +329,20 @@ function BlockNote({ doc, provider, fileId,edit }: EditorProps) {
   }
 
   return (
-       
+
     <div
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       className="w-full h-full"
-       >
-        <BlockNoteView editor={editor} theme={mode} editable={edit}>
-          <SuggestionMenuController
-            triggerCharacter={"/"}
-            getItems={async query =>
-              filterSuggestionItems(getCustomSlashMenuItems(editor), query)
-            }
-          />
-        </BlockNoteView>
+    >
+      <BlockNoteView editor={editor} theme={mode} editable={edit}>
+        <SuggestionMenuController
+          triggerCharacter={"/"}
+          getItems={async query =>
+            filterSuggestionItems(getCustomSlashMenuItems(editor), query)
+          }
+        />
+      </BlockNoteView>
     </div>
   );
 }
