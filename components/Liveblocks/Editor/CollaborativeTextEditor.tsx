@@ -245,51 +245,51 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     }));
 
   // Add global CSS for the slash menu - using CSS variables from the Liveblocks example
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .bn-suggestion-menu {
-        max-height: 350px !important;
-        overflow-y: auto !important;
-        border-radius: var(--radius) !important;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.12'}) !important;
-        border: 1px solid hsl(var(--border)) !important;
-        background-color: hsl(var(--background)) !important;
-        color: hsl(var(--foreground)) !important;
-        width: 320px !important;
-        z-index: 30 !important;
-        padding: 4px !important;
-        animation: fadeIn 0.2s ease-in-out !important;
-      }
+  // useEffect(() => {
+  //   const style = document.createElement('style');
+  //   style.innerHTML = `
+  //     .bn-suggestion-menu {
+  //       max-height: 350px !important;
+  //       overflow-y: auto !important;
+  //       border-radius: var(--radius) !important;
+  //       box-shadow: 0 6px 16px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.12'}) !important;
+  //       border: 1px solid hsl(var(--border)) !important;
+  //       background-color: hsl(var(--background)) !important;
+  //       color: hsl(var(--foreground)) !important;
+  //       width: 320px !important;
+  //       z-index: 30 !important;
+  //       padding: 4px !important;
+  //       animation: fadeIn 0.2s ease-in-out !important;
+  //     }
 
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
+  //     @keyframes fadeIn {
+  //       from { opacity: 0; transform: translateY(-5px); }
+  //       to { opacity: 1; transform: translateY(0); }
+  //     }
       
-      .bn-suggestion-menu::-webkit-scrollbar {
-        width: 6px !important;
-      }
+  //     .bn-suggestion-menu::-webkit-scrollbar {
+  //       width: 6px !important;
+  //     }
       
-      .bn-suggestion-menu::-webkit-scrollbar-thumb {
-        background: hsl(var(--muted-foreground) / 0.3) !important;
-        border-radius: 3px !important;
-      }
+  //     .bn-suggestion-menu::-webkit-scrollbar-thumb {
+  //       background: hsl(var(--muted-foreground) / 0.3) !important;
+  //       border-radius: 3px !important;
+  //     }
       
-      .bn-suggestion-menu::-webkit-scrollbar-track {
-        background: transparent !important;
-      }
+  //     .bn-suggestion-menu::-webkit-scrollbar-track {
+  //       background: transparent !important;
+  //     }
       
-      .bn-suggestion-item[data-selected=true] {
-        background-color: hsl(var(--secondary)) !important;
-      }
-    `;
-    document.head.appendChild(style);
+  //     .bn-suggestion-item[data-selected=true] {
+  //       background-color: hsl(var(--secondary)) !important;
+  //     }
+  //   `;
+  //   document.head.appendChild(style);
 
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, [mode]);
+  //   return () => {
+  //     document.head.removeChild(style);
+  //   };
+  // }, [mode]);
 
   if (!editor) {
     return null;
