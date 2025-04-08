@@ -1,19 +1,21 @@
 'use client';
+import { baseUrl } from "@/app/api/urlconfig";
+import { connectionIdToColor } from "@/lib/utils";
 import { BlockNoteEditor, filterSuggestionItems } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMenuController, useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import '@mantine/core/styles.css';
+import { Box, Text, ThemeIcon } from "@mantine/core";
+// import { useCompletion } from "ai/react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import * as Y from "yjs";
-import { baseUrl } from "../../../app/api/urlconfig";
-import { connectionIdToColor } from "../../../lib/utils";
 import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
 
-export const socket = io(baseUrl, {
+const socket = io(baseUrl, {
   withCredentials: true,
   reconnection: true,
   reconnectionDelay: 1000,
@@ -22,24 +24,22 @@ export const socket = io(baseUrl, {
 
 type YjsProvider = ReturnType<typeof getYjsProviderForRoom>;
 
+ 
 type EditorProps = {
   doc: Y.Doc;
   provider: YjsProvider;
   fileId: string;
-  edit: boolean
 };
-
 interface CustomReactSuggestionItem extends DefaultReactSuggestionItem {
   render?: (props: { onClick: () => void }) => React.ReactNode;
 }
-
 interface Props {
   fileId: string;
   initialContent?: string;
-  edit: boolean
 }
 
-export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
+
+export function CollaborativeEditor({ fileId, initialContent }: Props) {
   const room = useRoom();
   const [doc, setDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<YjsProvider | null>(null);
@@ -65,6 +65,7 @@ export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
       });
 
       yProvider.on('sync', (isSynced: boolean) => {
+        console.log('Provider sync status:', isSynced);
         if (isSynced) {
           // Force a re-render of the document when synced
           const fragment = yDoc.getXmlFragment(fileId);
@@ -75,7 +76,7 @@ export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
       });
 
       await yProvider.connect();
-
+      
       setDoc(yDoc);
       setProvider(yProvider);
     };
@@ -97,65 +98,63 @@ export function CollaborativeEditor({ fileId, initialContent, edit }: Props) {
     return <div>Loading editor...</div>;
   }
 
-  return <BlockNote doc={doc} provider={provider} fileId={fileId} edit={edit} />;
+  return <BlockNote doc={doc} provider={provider} fileId={fileId} />;
 }
 
-type BlockNoteEditorRef = {
-  document: any;
-  updateContent: () => void;
-};
-
-function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
+function BlockNote({ doc, provider, fileId }: EditorProps) {
+  const router=useRouter()
   const currentUser = useSelf((me) => me.info);
   const { connectionId } = useSelf();
   const [isConnected, setIsConnected] = useState(false);
-  const editorRef = useRef<BlockNoteEditorRef | null>(null);
-  const userPresence = useSelf();
+  const editorRef = useRef<any>(null);
 
   const editor = useCreateBlockNote({
     collaboration: {
       provider,
       fragment: doc.getXmlFragment(fileId),
       user: {
-        name: userPresence.presence.user?.name || currentUser?.name || "Anonymous",
+        name: currentUser?.name || "Anonymous",
         color: connectionIdToColor(connectionId),
       },
     },
     domAttributes: {
       editor: {
-        class: "min-h-screen",
+        class: "min-h-screen ",
+         
       },
     },
   });
 
-  const { theme } = useTheme()
-  let mode: "dark" | "light" = "dark";
-  if (theme == 'light') {
-    mode = 'light'
-  }
+   const {theme}=useTheme()
+
+   let mode: "dark" | "light" = "dark";
+   if(theme=='light')
+   {
+    mode='light'
+   }
 
   useEffect(() => {
     if (!editor || !doc) return;
-
-    editorRef.current = editor as unknown as BlockNoteEditorRef;
+    
+    editorRef.current = editor;
 
     provider.on('sync', (isSynced: boolean) => {
       setIsConnected(isSynced);
     });
-    console.log('connected:', isConnected);
 
     const fragment = doc.getXmlFragment(fileId);
-
+    
     const handleLocalUpdate = () => {
       const content = Y.encodeStateAsUpdate(doc);
       const data = {
         id: fileId,
         content: JSON.stringify(Array.from(content)),
       };
+      console.log("Sending update to server");
       socket.emit("updateFile", data);
     };
 
-    // Force editor to sync with latest document state
+  // Force editor to sync with latest document state
     fragment.observe(() => {
       console.log('Document fragment remote updated ');
       if (editorRef.current) {
@@ -179,19 +178,19 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     return () => {
       doc.off("update", handleLocalUpdate);
       socket.off("fileUpdated");
-      fragment.unobserve(() => { });
+      fragment.unobserve(() => {});
+      // provider.off('sync',);  
     };
   }, [editor, doc, fileId, provider]);
-
   const onPointerMove = useMutation(
     ({ setMyPresence }, e: React.PointerEvent) => {
       e.preventDefault();
 
       const current = {
         x: Math.round(e.clientX),
-        y: Math.round(e.clientY),
+        y: Math.round(e.clientY), 
       };
-
+      
       setMyPresence({ cursor: current });
     },
     []
@@ -201,114 +200,144 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     setMyPresence({ cursor: null });
   }, []);
 
-  // Updated slash menu items with better styling to match Liveblocks official
+ 
+
+
   const getCustomSlashMenuItems = (
     editor: BlockNoteEditor
-  ): CustomReactSuggestionItem[] =>
+  ): CustomReactSuggestionItem[] => 
     getDefaultReactSlashMenuItems(editor).map((item) => ({
       ...item,
       render: (props: { onClick: () => void }) => (
-        <div
+        <Box
+          style={{
+            display: "flex",
+            alignItems: "center",
+            padding: "10px 16px", // Increased padding for better spacing
+            cursor: "pointer",
+            transition: "background-color 0.2s ease",
+            backgroundColor: mode === 'dark' ? '#2c2c2c' : '#ffffff',
+            "&:hover": {
+              backgroundColor: mode === 'dark' ? '#3c3c3c' : '#f0f0f0',
+            },
+          }}
           onClick={props.onClick}
-          className={`
-            flex items-center px-4 py-3 cursor-pointer rounded-md hover:bg-secondary
-            ${mode === 'dark' ? 'hover:bg-secondary/80' : 'hover:bg-secondary/60'}
-          `}
+          className="slash-menu-item"
         >
+          {/* Icon/Emoji */}
           {item.icon && (
-            <div className={`
-              flex items-center justify-center rounded-full mr-3 w-8 h-8
-              ${mode === 'dark' ? 'bg-secondary text-foreground' : 'bg-secondary text-foreground'}
-            `}>
+            <ThemeIcon
+              size="sm"
+              radius="xl"
+              style={{
+                marginRight: "12px", // Space between icon and text
+                backgroundColor: mode === 'dark' ? '#3c3c3c' : '#e0e0e0',
+                color: mode === 'dark' ? '#ffffff' : '#333333',
+              }}
+            >
               {item.icon}
-            </div>
+            </ThemeIcon>
           )}
-          
-          <div className="flex-1">
-            <div className={`
-              font-medium
-              ${mode === 'dark' ? 'text-foreground' : 'text-foreground'}
-            `}>
+  
+          {/* Text Content */}
+          <div style={{ flex: 1 }}>
+            <Text
+              size="md" // Slightly larger font size
+              fw={600} // Bold font weight
+              color={mode === 'dark' ? 'white' : 'black'}
+              style={{
+                marginBottom: "2px", // Space between title and subtext
+              }}
+            >
               {item.title}
-            </div>
+            </Text>
             {item.subtext && (
-              <div className={`
-                text-xs mt-0.5
-                ${mode === 'dark' ? 'text-muted-foreground' : 'text-muted-foreground'}
-              `}>
+              <Text
+                size="xs"
+                color={mode === 'dark' ? 'gray.5' : 'dimmed'}
+                style={{
+                  lineHeight: 1.4, // Improved line height for readability
+                }}
+              >
                 {item.subtext}
-              </div>
+              </Text>
             )}
           </div>
-        </div>
+        </Box>
       ),
     }));
 
-  // Add global CSS for the slash menu - using CSS variables from the Liveblocks example
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .bn-suggestion-menu {
-        max-height: 350px !important;
-        overflow-y: auto !important;
-        border-radius: var(--radius) !important;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.12'}) !important;
-        border: 1px solid hsl(var(--border)) !important;
-        background-color: hsl(var(--background)) !important;
-        color: hsl(var(--foreground)) !important;
-        width: 320px !important;
-        z-index: 30 !important;
-        padding: 4px !important;
-        animation: fadeIn 0.2s ease-in-out !important;
-      }
+    useEffect(() => {
+      const style = document.createElement('style');
+      style.innerHTML = `
+        /* Slash Menu Container */
+        .bn-suggestion-menu {
+          max-height: 350px !important; /* Increased height */
+          overflow-y: auto !important;
+          border-radius: 12px !important; /* Rounded corners */
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important; /* Softer shadow */
+          border: 1px solid ${mode === 'dark' ? '#444' : '#e0e0e0'} !important;
+          background-color: ${mode === 'dark' ? '#2c2c2c' : '#ffffff'} !important;
+          width: 320px !important; /* Fixed width for consistency */
+          z-index: 9999; /* Ensure it appears above other elements */
+        }
+    
+        /* Individual Menu Items */
+        .slash-menu-item {
+          display: flex;
+          align-items: center;
+          padding: 10px 16px !important;
+          border-bottom: 1px solid ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
+        }
+    
+        /* Hover Effect */
+        .slash-menu-item:hover {
+          background-color: ${mode === 'dark' ? '#3c3c3c' : '#f0f0f0'} !important;
+        }
+    
+        /* Last Item Border Removal */
+        .slash-menu-item:last-child {
+          border-bottom: none !important;
+        }
+    
+        /* Scrollbar Styling */
+        .bn-suggestion-menu::-webkit-scrollbar {
+          width: 8px;
+        }
+        .bn-suggestion-menu::-webkit-scrollbar-thumb {
+          background: ${mode === 'dark' ? '#555' : '#ccc'};
+          border-radius: 4px;
+        }
+        .bn-suggestion-menu::-webkit-scrollbar-track {
+          background: ${mode === 'dark' ? '#2c2c2c' : '#f9f9f9'};
+        }
+      `;
+      document.head.appendChild(style);
+      return () => {
+        document.head.removeChild(style);
+      };
+    }, [mode]);
 
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      
-      .bn-suggestion-menu::-webkit-scrollbar {
-        width: 6px !important;
-      }
-      
-      .bn-suggestion-menu::-webkit-scrollbar-thumb {
-        background: hsl(var(--muted-foreground) / 0.3) !important;
-        border-radius: 3px !important;
-      }
-      
-      .bn-suggestion-menu::-webkit-scrollbar-track {
-        background: transparent !important;
-      }
-      
-      .bn-suggestion-item[data-selected=true] {
-        background-color: hsl(var(--secondary)) !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, [mode]);
 
   if (!editor) {
     return null;
   }
 
   return (
+       
     <div
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       className="w-full h-full"
-    >
-      <BlockNoteView editor={editor} theme={mode} editable={edit}>
-        <SuggestionMenuController
-          triggerCharacter={"/"}
-          getItems={async query =>
-            filterSuggestionItems(getCustomSlashMenuItems(editor), query)
-          }
-        />
-      </BlockNoteView>
+       >
+        <BlockNoteView editor={editor} theme={mode}>
+          <SuggestionMenuController
+            triggerCharacter={"/"}
+            getItems={async query =>
+              filterSuggestionItems(getCustomSlashMenuItems(editor), query)
+            }
+          />
+        </BlockNoteView>
     </div>
   );
 }
