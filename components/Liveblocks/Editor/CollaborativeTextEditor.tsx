@@ -128,10 +128,10 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     },
   });
 
-  const { theme } = useTheme();
+  const { theme } = useTheme()
   let mode: "dark" | "light" = "dark";
-  if (theme === 'light') {
-    mode = 'light';
+  if (theme == 'light') {
+    mode = 'light'
   }
 
   useEffect(() => {
@@ -201,96 +201,87 @@ function BlockNote({ doc, provider, fileId, edit }: EditorProps) {
     setMyPresence({ cursor: null });
   }, []);
 
-  // Updated slash menu items with styling that matches the Liveblocks official implementation
+  // Updated slash menu items with better styling to match Liveblocks official
   const getCustomSlashMenuItems = (
     editor: BlockNoteEditor
   ): CustomReactSuggestionItem[] =>
     getDefaultReactSlashMenuItems(editor).map((item) => ({
       ...item,
       render: (props: { onClick: () => void }) => (
-        <div 
+        <div
           onClick={props.onClick}
-          className="flex items-center gap-3 p-3 rounded-md cursor-pointer hover:bg-muted"
+          className={`
+            flex items-center px-4 py-3 cursor-pointer rounded-md hover:bg-secondary
+            ${mode === 'dark' ? 'hover:bg-secondary/80' : 'hover:bg-secondary/60'}
+          `}
         >
           {item.icon && (
-            <div className="flex items-center justify-center rounded-full w-8 h-8 bg-muted">
+            <div className={`
+              flex items-center justify-center rounded-full mr-3 w-8 h-8
+              ${mode === 'dark' ? 'bg-secondary text-foreground' : 'bg-secondary text-foreground'}
+            `}>
               {item.icon}
             </div>
           )}
-          <div className="flex flex-col">
-            <div className="text-sm font-medium">{item.title}</div>
+          
+          <div className="flex-1">
+            <div className={`
+              font-medium
+              ${mode === 'dark' ? 'text-foreground' : 'text-foreground'}
+            `}>
+              {item.title}
+            </div>
             {item.subtext && (
-              <div className="text-xs text-muted-foreground">{item.subtext}</div>
+              <div className={`
+                text-xs mt-0.5
+                ${mode === 'dark' ? 'text-muted-foreground' : 'text-muted-foreground'}
+              `}>
+                {item.subtext}
+              </div>
             )}
           </div>
         </div>
       ),
     }));
 
-  // Import style from @liveblocks/react-blocknote
+  // Add global CSS for the slash menu - using CSS variables from the Liveblocks example
   useEffect(() => {
-    // Add styles that integrate with Liveblocks styling
     const style = document.createElement('style');
     style.innerHTML = `
-      /* BlockNote suggestion menu styling to match Liveblocks UI */
       .bn-suggestion-menu {
-        --radius: 0.5rem;
-        max-height: 350px;
-        overflow-y: auto;
-        border-radius: var(--radius);
-        box-shadow: 0 10px 38px -10px hsla(var(--foreground) / 0.35), 
-                   0 10px 20px -15px hsla(var(--foreground) / 0.2);
-        background-color: hsl(var(--background));
-        color: hsl(var(--foreground));
-        width: 280px;
-        z-index: 30;
-        padding: 0.5rem;
-        animation: fadeInSlashMenu 150ms cubic-bezier(0.16, 1, 0.3, 1);
-        border: 1px solid hsl(var(--border));
+        max-height: 350px !important;
+        overflow-y: auto !important;
+        border-radius: var(--radius) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, ${mode === 'dark' ? '0.25' : '0.12'}) !important;
+        border: 1px solid hsl(var(--border)) !important;
+        background-color: hsl(var(--background)) !important;
+        color: hsl(var(--foreground)) !important;
+        width: 320px !important;
+        z-index: 30 !important;
+        padding: 4px !important;
+        animation: fadeIn 0.2s ease-in-out !important;
       }
 
-      .bn-suggestion-menu .bn-suggestion-item {
-        border-radius: calc(var(--radius) - 2px);
-        margin: 0;
-        overflow: hidden;
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
       }
-
-      .bn-suggestion-menu .bn-suggestion-item[data-selected=true] {
-        background-color: hsl(var(--muted));
-      }
-
-      @keyframes fadeInSlashMenu {
-        from {
-          opacity: 0;
-          transform: translateY(4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      /* Custom scrollbar to match Liveblocks */
-      .bn-suggestion-menu {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
-      }
-
+      
       .bn-suggestion-menu::-webkit-scrollbar {
-        width: 4px;
+        width: 6px !important;
       }
-
-      .bn-suggestion-menu::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
+      
       .bn-suggestion-menu::-webkit-scrollbar-thumb {
-        background: rgba(155, 155, 155, 0.5);
-        border-radius: 10px;
+        background: hsl(var(--muted-foreground) / 0.3) !important;
+        border-radius: 3px !important;
       }
-
-      .bn-suggestion-menu::-webkit-scrollbar-thumb:hover {
-        background: rgba(155, 155, 155, 0.7);
+      
+      .bn-suggestion-menu::-webkit-scrollbar-track {
+        background: transparent !important;
+      }
+      
+      .bn-suggestion-item[data-selected=true] {
+        background-color: hsl(var(--secondary)) !important;
       }
     `;
     document.head.appendChild(style);
