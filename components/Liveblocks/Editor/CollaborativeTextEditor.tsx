@@ -7,7 +7,7 @@ import { DefaultReactSuggestionItem, getDefaultReactSlashMenuItems, SuggestionMe
 import "@blocknote/react/style.css";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { Box, Text, ThemeIcon } from "@mantine/core";
-// import { useCompletion } from "ai/react";
+ 
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -15,7 +15,7 @@ import { io } from "socket.io-client";
 import * as Y from "yjs";
 import { useMutation, useRoom, useSelf } from "../../../liveblocks.config";
 
-const socket = io(baseUrl, {
+export const socket = io(baseUrl, {
   withCredentials: true,
   reconnection: true,
   reconnectionDelay: 1000,
