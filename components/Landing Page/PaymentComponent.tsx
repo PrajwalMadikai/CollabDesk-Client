@@ -11,7 +11,6 @@ export type paymentPlans = {
 } | undefined;
 
 const PaymentComponent = ({ basePlan, premiumPlan ,userPlan}: { basePlan: paymentPlans; premiumPlan: paymentPlans;userPlan:string|null }) => {
- console.log('user:payment',userPlan);
  
   return (
     <div className="flex flex-col md:flex-row gap-8 py-8">
@@ -38,7 +37,7 @@ const PaymentComponent = ({ basePlan, premiumPlan ,userPlan}: { basePlan: paymen
             <span className="text-gray-400 ml-2 text-lg">/month</span>
           </div>
           {userPlan === 'base' ? (
-            <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">
+            <button className="w-full py-3 px-4 rounded-lg border border-blue-500 text-blue-400   hover:text-white transition-all duration-300 font-medium flex items-center justify-center gap-2 group">
             <span>Your Current Plan</span>
           </button>
           ) : (

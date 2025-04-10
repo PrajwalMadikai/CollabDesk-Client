@@ -17,7 +17,6 @@ const refreshAccess = async (isAdmin = false) => {
   try {
     const endPoint = isAdmin ? '/admin/refreshtoken' : '/refreshtoken';
 
-    console.log('Attempting to refresh token...');
     const response = await API.post(endPoint);
 
     if (response.data?.accessToken) {
@@ -61,12 +60,10 @@ API.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Don't retry if already retried or if it's the refresh token endpoint
     if (originalRequest._retry || originalRequest.url?.includes('refreshtoken')) {
       return Promise.reject(error);
     }
 
-    //Blocked user
     if (error.response?.status === 403 && error.response?.data?.message === "Your account is blocked") {
       store.dispatch(clearUser());
       localStorage.clear();
@@ -74,7 +71,6 @@ API.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Only try refresh on 401 errors
     if (error.response?.status === 401) {
       originalRequest._retry = true;
       try {
@@ -91,7 +87,6 @@ API.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-// Interceptors for admin API
 ADMIN_API.interceptors.request.use(
   async (config) => {
     const accessToken = localStorage.getItem("adminAccessToken");
