@@ -1,6 +1,3 @@
-@import "@liveblocks/react-ui/styles.css";
-@import "@liveblocks/react-ui/styles/dark/media-query.css";
-@import "@liveblocks/react-blocknote/styles.css";
 
 @tailwind base;
 @tailwind components;
@@ -124,14 +121,6 @@
   width: 100%;
 }
 
-.bn-slash-menu .mantine-Menu-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
 .bn-suggestion-menu {
   max-height: 350px !important;
   overflow-y: auto !important;
@@ -166,6 +155,16 @@
 
 .bn-suggestion-item[data-selected=true] {
   background-color: hsl(var(--secondary)) !important;
+}
+
+.bn-slash-menu-item {
+  border-radius: 8px !important;
+  margin: 2px 0 !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.bn-slash-menu-item:hover {
+  background-color: hsl(var(--accent)) !important;
 }
 
 .custom-scrollbar {
