@@ -13,8 +13,10 @@ import PaymentComponent from "./PaymentComponent";
 function HeaderAndLandingHome() {
   const router = useRouter();
   const user = useSelector((state:RootState) => state.user);
+
   const { theme } = useTheme();
   const { basePlan, premiumPlan, logout, fetchWorkspaces ,userPlan} = useHome();
+
   const handleDashboard = useCallback(async () => {
     if (!user.isAuthenticated) {
       router.push('/login');
@@ -25,6 +27,8 @@ function HeaderAndLandingHome() {
       return;
     }
     if(!user.id||!user.planType) return
+
+
     try {
       const workspaces = await fetchWorkspaces(user.id);
       if (workspaces && workspaces.length > 0) {

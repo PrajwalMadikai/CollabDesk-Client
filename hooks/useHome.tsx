@@ -87,8 +87,9 @@ export function useHome() {
             try {
                 const response = await userData(user.id)
                 console.log('res:', response.data);
+console.log('type:',response.data.user.paymentDetail.paymentType);
 
-                setUserPlan(response.data.paymentDetail.paymentType)
+                setUserPlan(response.data.user.paymentDetail.paymentType)
             } catch (error) {
                 console.log('Error in fetching user data');
 
